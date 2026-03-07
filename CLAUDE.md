@@ -54,8 +54,12 @@ tests/
 
 dist/                   # built artifacts (gitignored)
 pyproject.toml          # build config + project metadata
+smoke_test.py           # live-server smoke test (read-only + --write mode)
+ARCHITECTURE.md         # architecture decision records (ADRs)
+MERMAID.md              # Mermaid architecture diagrams
 CHANGELOG.md
 README.md
+CONTRIBUTING.md
 ```
 
 ## Architecture decisions (do not change without good reason)
@@ -73,6 +77,9 @@ README.md
   - `application/json` → `resp.json()`
   - `text/plain` → `int(text)` if possible, else `str`
   - empty body (204 No Content) → `None`
+- **Timeout**: `_OpenNMSBase.__init__` accepts `timeout=30` (seconds). Passed
+  to every `_session.get/post/put/delete` call. `OpenNMS.__init__` exposes it
+  as a public parameter.
 
 ## Development environment
 
@@ -117,6 +124,9 @@ The older path `setuptools.backends.legacy:build` does not work — do not use i
 ## Style
 
 - PEP 8 throughout: 79-character line limit, 4-space indentation.
-- No docstrings or comments on code that is self-evident.
+- Every public method has a Google-style docstring with `Args:` and `Returns:`
+  sections where non-trivial — required for autodoc compatibility (Sphinx,
+  pdoc, mkdocstrings). Private helpers have at minimum a one-line docstring.
+- No inline comments on code that is self-evident.
 - No error handling for scenarios that cannot happen.
 - No abstractions introduced for one-off operations.

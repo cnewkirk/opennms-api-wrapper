@@ -9,7 +9,7 @@ description = "A thin Python wrapper for the OpenNMS REST API (Horizon 35)"
 readme = "README.md"
 requires-python = ">=3.8"
 authors = [
-    { name = "cnewkirk", email = "cnewkirk@users.noreply.github.com" },
+    { name = 'Richard "Chance" Newkirk', email = "chance.newkirk+github@pm.me" },
 ]
 license = { file = "LICENSE" }
 keywords = ["opennms", "network-management", "rest", "api", "wrapper", "nms"]
