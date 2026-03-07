@@ -167,7 +167,7 @@ Release checklist:
 
 1. Bump `version` in `pyproject.toml`.
 2. Add a changelog entry in `CHANGELOG.md`.
-3. Commit, push to `main`.
+3. Commit, push a branch, open a PR, and merge to `main`.
 4. `gh release create vX.Y.Z` — the publish workflow builds and uploads
    to PyPI automatically.
 
@@ -180,6 +180,13 @@ python -m build          # produces dist/*.tar.gz and dist/*.whl
 
 The build backend is `setuptools.build_meta` (in `pyproject.toml`).
 The older path `setuptools.backends.legacy:build` does not work — do not use it.
+
+## Git workflow
+
+- **Never push directly to `main`.**  All changes go through a branch + PR.
+- Branch naming: `feature/<topic>`, `fix/<topic>`, `docs/<topic>`, etc.
+- Commit on the branch, push, open a PR with `gh pr create`, and merge once
+  CI is green.
 
 ## Style
 
