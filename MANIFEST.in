@@ -1,0 +1,3 @@
+include CHANGELOG.md
+include CLAUDE.md
+recursive-include tests *.py
