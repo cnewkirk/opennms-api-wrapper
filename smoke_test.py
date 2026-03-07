@@ -205,8 +205,14 @@ def test_nodes(c):
     if nid:
         run(f"get_node                    id={nid}", c.get_node, nid,
             detail_fn=lambda r: r.get("label", "") if isinstance(r, dict) else "")
-        run(f"get_node_ip_interfaces      id={nid}", c.get_node_ip_interfaces,
+        ifaces_r = run(f"get_node_ip_interfaces      id={nid}", c.get_node_ip_interfaces,
             nid, limit=3, detail_fn=lambda r: _n(r, "ipInterface"))
+        if isinstance(ifaces_r, dict):
+            _ifaces = ifaces_r.get("ipInterface", [])
+            if _ifaces:
+                _ip = _ifaces[0].get("ipAddress")
+                if _ip:
+                    run(f"get_node_ip_services        ip={_ip}", c.get_node_ip_services, nid, _ip)
         run(f"get_node_snmp_interfaces    id={nid}", c.get_node_snmp_interfaces,
             nid, limit=3, detail_fn=lambda r: _n(r, "snmpInterface"))
         run(f"get_node_categories         id={nid}", c.get_node_categories, nid)
@@ -216,10 +222,11 @@ def test_nodes(c):
         run(f"get_node_outages            id={nid}", c.get_node_outages, nid)
         run(f"get_resources_for_node      id={nid}", c.get_resources_for_node, str(nid))
     else:
-        for lbl in ("get_node", "get_node_ip_interfaces", "get_node_snmp_interfaces",
-                    "get_node_categories", "get_node_asset_record",
-                    "get_node_hardware_inventory", "get_node_metadata",
-                    "get_node_outages", "get_resources_for_node"):
+        for lbl in ("get_node", "get_node_ip_interfaces", "get_node_ip_services",
+                    "get_node_snmp_interfaces", "get_node_categories",
+                    "get_node_asset_record", "get_node_hardware_inventory",
+                    "get_node_metadata", "get_node_outages",
+                    "get_resources_for_node"):
             _skip(lbl, "no nodes")
 
 
@@ -238,23 +245,48 @@ def test_outages(c):
 
 def test_requisitions(c):
     _section("requisitions")
-    run("get_requisitions",               c.get_requisitions,
-        detail_fn=lambda r: _n(r, "model-import"))
+    result = run("get_requisitions",               c.get_requisitions,
+                 detail_fn=lambda r: _n(r, "model-import"))
     run("get_requisition_count",          c.get_requisition_count,
         detail_fn=lambda r: str(r))
     run("get_deployed_requisitions",      c.get_deployed_requisitions,
         detail_fn=lambda r: _n(r, "model-import"))
     run("get_deployed_requisition_count", c.get_deployed_requisition_count,
         detail_fn=lambda r: str(r))
+    reqs = []
+    if isinstance(result, dict):
+        reqs = result.get("model-import", result.get("requisition", []))
+    elif isinstance(result, list):
+        reqs = result
+    if reqs and isinstance(reqs, list):
+        rname = reqs[0].get("foreign-source") or reqs[0].get("name")
+        if rname:
+            run(f"get_requisition       ({rname})", c.get_requisition, rname)
+            run(f"get_requisition_nodes ({rname})", c.get_requisition_nodes, rname)
+    else:
+        _skip("get_requisition / get_requisition_nodes", "no requisitions")
 
 
 def test_foreign_sources(c):
     _section("foreign sources")
-    run("get_foreign_sources",              c.get_foreign_sources)
+    result = run("get_foreign_sources",              c.get_foreign_sources)
     run("get_deployed_foreign_sources",     c.get_deployed_foreign_sources)
     run("get_deployed_foreign_source_count", c.get_deployed_foreign_source_count,
         detail_fn=lambda r: str(r))
     run("get_default_foreign_source",       c.get_default_foreign_source)
+    sources = []
+    if isinstance(result, dict):
+        sources = result.get("foreignSource", [])
+    elif isinstance(result, list):
+        sources = result
+    if sources and isinstance(sources, list):
+        sname = sources[0].get("name")
+        if sname:
+            run(f"get_foreign_source           ({sname})", c.get_foreign_source, sname)
+            run(f"get_foreign_source_detectors ({sname})", c.get_foreign_source_detectors, sname)
+            run(f"get_foreign_source_policies  ({sname})", c.get_foreign_source_policies, sname)
+    else:
+        _skip("get_foreign_source / detectors / policies", "no foreign sources")
 
 
 def test_snmp_config(c):
@@ -329,15 +361,53 @@ def test_sched_outages(c):
 
 def test_ksc_reports(c):
     _section("ksc reports")
-    run("get_ksc_reports",      c.get_ksc_reports,
-        detail_fn=lambda r: _n(r, "kscReport"))
+    result = run("get_ksc_reports", c.get_ksc_reports,
+                 detail_fn=lambda r: _n(r, "kscReport"))
     run("get_ksc_report_count", c.get_ksc_report_count,
         detail_fn=lambda r: str(r))
+    reports = result.get("kscReport", []) if isinstance(result, dict) else []
+    if reports:
+        rid = reports[0].get("id")
+        run(f"get_ksc_report  id={rid}", c.get_ksc_report, rid)
+    else:
+        _skip("get_ksc_report", "no KSC reports")
 
 
 def test_resources(c):
     _section("resources")
     run("get_resources", c.get_resources, depth=1)
+
+
+def test_measurements(c):
+    _section("measurements")
+    # Measurements require a node with collected SNMP performance data.
+    # Skip gracefully if no suitable resources can be found.
+    try:
+        nr = c.get_nodes(limit=1)
+        nodes = nr.get("node", []) if isinstance(nr, dict) else []
+    except Exception:
+        nodes = []
+    if not nodes:
+        _skip("get_measurements", "no nodes")
+        return
+    nid = nodes[0].get("id")
+    try:
+        rr = c.get_resources_for_node(str(nid))
+        node_res = rr.get("resource", {}) if isinstance(rr, dict) else {}
+        children = (node_res.get("children") or {}).get("resource", [])
+        if not isinstance(children, list):
+            children = []
+        iface_res = next(
+            (r for r in children if "interfaceSnmp" in r.get("id", "")),
+            None,
+        )
+    except Exception:
+        iface_res = None
+    if iface_res is None:
+        _skip("get_measurements", "no SNMP interface resources on first node")
+        return
+    rid = iface_res.get("id", "")
+    run("get_measurements  ifInOctets", c.get_measurements, rid, "ifInOctets")
 
 
 def test_heatmap(c):
@@ -348,6 +418,31 @@ def test_heatmap(c):
     run("get_heatmap_alarms_categories",          c.get_heatmap_alarms_categories)
     run("get_heatmap_alarms_foreign_sources",     c.get_heatmap_alarms_foreign_sources)
     run("get_heatmap_alarms_monitored_services",  c.get_heatmap_alarms_monitored_services)
+    # nodes_by methods require a grouping key; discover one from categories
+    try:
+        _cats = c.get_categories()
+        cat_name = (_cats.get("category") or [{}])[0].get("name") if isinstance(_cats, dict) else None
+    except Exception:
+        cat_name = None
+    if cat_name:
+        run(f"get_heatmap_outages_nodes_by_category ({cat_name})",
+            c.get_heatmap_outages_nodes_by_category, cat_name)
+        run(f"get_heatmap_alarms_nodes_by_category  ({cat_name})",
+            c.get_heatmap_alarms_nodes_by_category, cat_name)
+    else:
+        _skip("heatmap nodes_by_category", "no categories")
+    try:
+        _fss = c.get_foreign_sources()
+        fs_name = (_fss.get("foreignSource") or [{}])[0].get("name") if isinstance(_fss, dict) else None
+    except Exception:
+        fs_name = None
+    if fs_name:
+        run(f"get_heatmap_outages_nodes_by_foreign_source ({fs_name})",
+            c.get_heatmap_outages_nodes_by_foreign_source, fs_name)
+        run(f"get_heatmap_alarms_nodes_by_foreign_source  ({fs_name})",
+            c.get_heatmap_alarms_nodes_by_foreign_source, fs_name)
+    else:
+        _skip("heatmap nodes_by_foreign_source", "no foreign sources")
 
 
 def test_maps(c):
@@ -610,6 +705,7 @@ def main():
     test_sched_outages(client)
     test_ksc_reports(client)
     test_resources(client)
+    test_measurements(client)
     test_heatmap(client)
     test_maps(client)
     test_graphs(client)
