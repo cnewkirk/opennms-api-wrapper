@@ -55,6 +55,11 @@ tests/
 dist/                   # built artifacts (gitignored)
 pyproject.toml          # build config + project metadata
 smoke_test.py           # live-server smoke test (read-only + --write mode)
+                        #   python smoke_test.py                 # read-only, safe for any server
+                        #   python smoke_test.py --write         # write ops, prompts for confirmation
+                        #   python smoke_test.py --write --yes   # skip prompt (CI only)
+                        #   python smoke_test.py --no-color      # plain output for log files
+                        #   env vars: OPENNMS_URL, OPENNMS_USER, OPENNMS_PASSWORD, OPENNMS_VERIFY_SSL
 ARCHITECTURE.md         # architecture decision records (ADRs)
 MERMAID.md              # Mermaid architecture diagrams
 CHANGELOG.md
