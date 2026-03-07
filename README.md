@@ -10,12 +10,15 @@ A thin, dependency-minimal Python 3 wrapper for the
 Validated against OpenNMS Meridian 2024.3.0 with a live-server smoke test
 suite.
 
+**[Full API reference →](https://cnewkirk.github.io/opennms-api-wrapper/api/)**
+
 ## Features
 
 - Covers every v1 (`/opennms/rest/`) and v2 (`/opennms/api/v2/`) endpoint
 - JSON everywhere — no XML handling required
 - Single runtime dependency: [`requests`](https://docs.python-requests.org/)
 - Synchronous and straightforward — no async complexity
+- `TypedDict` schemas for all write payloads — field names, types, and docs in your IDE
 - 463-test suite with full method coverage (mocked HTTP — no live server required)
 - Live-server smoke test validated against Meridian 2024.3.0
 
@@ -24,7 +27,7 @@ suite.
 **From the GitHub release** (no clone required — recommended for most users):
 
 ```bash
-pip install https://github.com/cnewkirk/opennms-api-wrapper/archive/refs/tags/v0.3.0.tar.gz
+pip install https://github.com/cnewkirk/opennms-api-wrapper/archive/refs/tags/v0.3.1.tar.gz
 ```
 
 **From source** (clone first, then install):
@@ -143,7 +146,7 @@ client = opennms.OpenNMS(
 
 `smoke_test.py` exercises the wrapper against a real OpenNMS server.  It is
 intended for use against a dev or staging instance before each release — not
-as a substitute for the 430+ test mocked unit suite.
+as a substitute for the 463-test mocked unit suite.
 
 Tests that depend on optional plugins or heavy endpoints are reported as
 **WARN** (non-fatal) rather than FAIL.  Each warning includes the specific
