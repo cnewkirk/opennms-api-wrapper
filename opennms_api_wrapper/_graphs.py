@@ -63,3 +63,37 @@ class GraphsMixin:
             params["context"] = context
         return self._get(f"graphs/search/results/{namespace}",
                          params=params or None)
+
+    # ------------------------------------------------------------------
+    # Prefab graphs
+    # ------------------------------------------------------------------
+
+    def get_prefab_graph_names(self):
+        """List all prefab graph names.
+
+        Hits the same path as ``get_graph_containers()`` but documents the
+        expected return type when the server is configured for prefab graphs
+        (a list of name strings).
+        """
+        return self._get("graphs")
+
+    def get_prefab_graph(self, name: str):
+        """Get a specific prefab graph definition by *name*."""
+        return self._get(f"graphs/{name}")
+
+    def get_prefab_graphs_for_resource(self, resource_id: str):
+        """List prefab graphs available for a given *resource_id*.
+
+        Args:
+            resource_id: Full resource ID, e.g.
+                ``"node[1].interfaceSnmp[eth0-04013f75f101]"``.
+        """
+        return self._get(f"graphs/for/{resource_id}")
+
+    def get_prefab_graphs_for_node(self, node_criteria: str):
+        """List prefab graphs available for a given node.
+
+        Args:
+            node_criteria: Node DB ID or ``"foreignSource:foreignId"``.
+        """
+        return self._get(f"graphs/fornode/{node_criteria}")

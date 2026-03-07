@@ -587,12 +587,228 @@ def test_business_services(c):
         detail_fn=lambda r: _n(r, "business-service"))
 
 
+def test_enlinkd(c):
+    _section("enlinkd (v2)")
+    _, nid = _first(c.get_nodes, "node")
+    if nid:
+        warn(f"get_node_enlinkd  id={nid}", c.get_node_enlinkd, nid,
+             note="requires enlinkd daemon to be enabled")
+    else:
+        _skip("get_node_enlinkd", "no nodes")
+
+
 def test_v2_interfaces(c):
     _section("ip/snmp interfaces (v2)")
     run("get_ip_interfaces",   c.get_ip_interfaces, limit=5,
         detail_fn=lambda r: _n(r, "ipInterface"))
     run("get_snmp_interfaces", c.get_snmp_interfaces, limit=5,
         detail_fn=lambda r: _n(r, "snmpInterface"))
+
+
+def test_monitoring_locations(c):
+    _section("monitoring locations")
+    run("get_monitoring_locations", c.get_monitoring_locations,
+        detail_fn=lambda r: _n(r, "location"))
+    run("get_monitoring_location_count", c.get_monitoring_location_count,
+        detail_fn=lambda r: str(r))
+    run("get_default_monitoring_location", c.get_default_monitoring_location)
+
+
+def test_minions(c):
+    _section("minions")
+    run("get_minions", c.get_minions,
+        detail_fn=lambda r: _n(r, "minion"))
+    run("get_minion_count", c.get_minion_count,
+        detail_fn=lambda r: str(r))
+
+
+def test_ifservices(c):
+    _section("ifservices")
+    run("get_ifservices", c.get_ifservices,
+        detail_fn=lambda r: _n(r, "service"))
+    run("get_ifservices_v2", c.get_ifservices_v2, limit=5,
+        detail_fn=lambda r: _n(r, "service"))
+
+
+def test_availability(c):
+    _section("availability")
+    run("get_availability", c.get_availability)
+    _, nid = _first(c.get_nodes, "node")
+    if nid:
+        run(f"get_availability_node  id={nid}", c.get_availability_node, nid)
+    else:
+        _skip("get_availability_node", "no nodes")
+
+
+def test_health(c):
+    _section("health")
+    run("get_health", c.get_health)
+    warn("get_health_probe", c.get_health_probe,
+         note="returns 599 if any health check is unhealthy")
+
+
+def test_whoami(c):
+    _section("whoami")
+    run("get_whoami", c.get_whoami,
+        detail_fn=lambda r: r.get("id", "") if isinstance(r, dict) else "")
+
+
+def test_monitoring_systems(c):
+    _section("monitoring systems")
+    warn("get_monitoring_system", c.get_monitoring_system,
+         note="may not be available on all versions")
+
+
+def test_prefab_graphs(c):
+    _section("prefab graphs")
+    run("get_prefab_graph_names", c.get_prefab_graph_names)
+    _, nid = _first(c.get_nodes, "node")
+    if nid:
+        warn(f"get_prefab_graphs_for_node  id={nid}",
+             c.get_prefab_graphs_for_node, str(nid),
+             note="may time out on large node inventories")
+    else:
+        _skip("get_prefab_graphs_for_node", "no nodes")
+
+
+def test_flow_dscp(c):
+    _section("flow DSCP")
+    _note = "requires flow persistence (Elasticsearch/OpenSearch)"
+    warn("get_flow_dscp", c.get_flow_dscp, top_n=5, note=_note)
+    warn("get_flow_dscp_enumerate", c.get_flow_dscp_enumerate,
+         limit=5, note=_note)
+    warn("get_flow_graph_url", c.get_flow_graph_url, note=_note)
+
+
+def test_business_service_functions(c):
+    _section("business service functions (v2)")
+    run("get_map_functions", c.get_map_functions)
+    run("get_reduce_functions", c.get_reduce_functions)
+
+
+def test_classifications(c):
+    _section("classifications")
+    warn("get_classification_rules", c.get_classification_rules,
+         note="requires flow classification plugin")
+    warn("get_classification_groups", c.get_classification_groups,
+         note="requires flow classification plugin")
+    warn("get_classification_protocols", c.get_classification_protocols,
+         note="requires flow classification plugin")
+
+
+def test_situation_feedback(c):
+    _section("situation feedback")
+    warn("get_situation_feedback_tags", c.get_situation_feedback_tags,
+         note="requires situation correlation + feedback feature")
+
+
+def test_user_defined_links(c):
+    _section("user-defined links (v2)")
+    run("get_user_defined_links", c.get_user_defined_links)
+
+
+def test_applications(c):
+    _section("applications (v2)")
+    run("get_applications", c.get_applications,
+        detail_fn=lambda r: _n(r, "application"))
+
+
+def test_perspective_poller(c):
+    _section("perspective poller (v2)")
+    warn("get_perspective_poller_status (app 1)",
+         c.get_perspective_poller_status, 1,
+         note="requires perspective poller + application with id=1")
+
+
+def test_foreign_sources_config(c):
+    _section("foreign sources config")
+    run("get_foreign_source_config_policies",
+        c.get_foreign_source_config_policies)
+    run("get_foreign_source_config_detectors",
+        c.get_foreign_source_config_detectors)
+    run("get_foreign_source_config_assets",
+        c.get_foreign_source_config_assets)
+    run("get_foreign_source_config_categories",
+        c.get_foreign_source_config_categories)
+
+
+def test_requisition_names(c):
+    _section("requisition names")
+    run("get_requisition_names", c.get_requisition_names)
+
+
+def test_snmp_metadata(c):
+    _section("snmp metadata (v2)")
+    _, nid = _first(c.get_nodes, "node")
+    if nid:
+        run(f"get_snmp_metadata  id={nid}", c.get_snmp_metadata, nid)
+    else:
+        _skip("get_snmp_metadata", "no nodes")
+
+
+def test_provisiond(c):
+    _section("provisiond (v2)")
+    warn("get_provisiond_status", c.get_provisiond_status,
+         note="requires provisiond v2 API support")
+
+
+def test_eventconf(c):
+    _section("eventconf (v2)")
+    warn("get_eventconf_source_names", c.get_eventconf_source_names,
+         note="requires eventconf v2 API support")
+    warn("get_eventconf_filter", c.get_eventconf_filter,
+         note="requires eventconf v2 API support")
+
+
+def test_asset_suggestions(c):
+    _section("asset suggestions")
+    run("get_asset_suggestions", c.get_asset_suggestions)
+
+
+def test_scv(c):
+    _section("secure credentials vault")
+    warn("get_credentials", c.get_credentials,
+         note="requires SCV REST API support")
+
+
+def test_config_mgmt(c):
+    _section("configuration management")
+    run("get_config_names", c.get_config_names)
+    warn("get_config_schemas", c.get_config_schemas,
+         note="may return empty body on some versions")
+
+
+def test_snmptrap_nbi(c):
+    _section("SNMP trap NBI config")
+    warn("get_snmptrap_nbi_config", c.get_snmptrap_nbi_config,
+         note="requires SNMP trap NBI plugin")
+    warn("get_snmptrap_nbi_status", c.get_snmptrap_nbi_status,
+         note="requires SNMP trap NBI plugin")
+
+
+def test_email_nbi(c):
+    _section("email NBI config")
+    warn("get_email_nbi_config", c.get_email_nbi_config,
+         note="requires email NBI plugin")
+    warn("get_email_nbi_status", c.get_email_nbi_status,
+         note="requires email NBI plugin")
+
+
+def test_syslog_nbi(c):
+    _section("syslog NBI config")
+    warn("get_syslog_nbi_config", c.get_syslog_nbi_config,
+         note="requires syslog NBI plugin")
+    warn("get_syslog_nbi_status", c.get_syslog_nbi_status,
+         note="requires syslog NBI plugin")
+
+
+def test_javamail_config(c):
+    _section("javamail config")
+    warn("get_javamail_default_config", c.get_javamail_default_config,
+         note="may not be available on all versions")
+    run("get_javamail_readmails", c.get_javamail_readmails)
+    run("get_javamail_sendmails", c.get_javamail_sendmails)
+    run("get_javamail_end2ends", c.get_javamail_end2ends)
 
 
 # ── Write-operation tests ──────────────────────────────────────────────────────
@@ -793,7 +1009,35 @@ def main():
     test_device_config(client)
     test_situations(client)
     test_business_services(client)
+    test_enlinkd(client)
     test_v2_interfaces(client)
+    test_monitoring_locations(client)
+    test_minions(client)
+    test_ifservices(client)
+    test_availability(client)
+    test_health(client)
+    test_whoami(client)
+    test_monitoring_systems(client)
+    test_prefab_graphs(client)
+    test_flow_dscp(client)
+    test_business_service_functions(client)
+    test_classifications(client)
+    test_situation_feedback(client)
+    test_user_defined_links(client)
+    test_applications(client)
+    test_perspective_poller(client)
+    test_foreign_sources_config(client)
+    test_requisition_names(client)
+    test_snmp_metadata(client)
+    test_provisiond(client)
+    test_eventconf(client)
+    test_asset_suggestions(client)
+    test_scv(client)
+    test_config_mgmt(client)
+    test_snmptrap_nbi(client)
+    test_email_nbi(client)
+    test_syslog_nbi(client)
+    test_javamail_config(client)
 
     if args.write:
         test_write_ops(client)

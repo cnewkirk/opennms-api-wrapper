@@ -16,7 +16,7 @@ suite.
 - JSON everywhere — no XML handling required
 - Single runtime dependency: [`requests`](https://docs.python-requests.org/)
 - Synchronous and straightforward — no async complexity
-- 290-test suite with full method coverage (mocked HTTP — no live server required)
+- 454-test suite with full method coverage (mocked HTTP — no live server required)
 - Live-server smoke test validated against Meridian 2024.3.0
 
 ## Installation
@@ -24,7 +24,7 @@ suite.
 **From the GitHub release** (no clone required — recommended for most users):
 
 ```bash
-pip install https://github.com/cnewkirk/opennms-api-wrapper/archive/refs/tags/v0.2.0.tar.gz
+pip install https://github.com/cnewkirk/opennms-api-wrapper/archive/refs/tags/v0.3.0.tar.gz
 ```
 
 **From source** (clone first, then install):
@@ -99,6 +99,31 @@ alarms = client.get_alarms_v2(fiql="severity==MAJOR")
 | Discovery (v2) | submit scan configuration |
 | IP interfaces (v2) | list with FIQL |
 | SNMP interfaces (v2) | list with FIQL |
+| EnLinkd (v2) | aggregate, LLDP/CDP/OSPF/IS-IS/Bridge links and elements |
+| Monitoring locations | list, get, default, count, create, update, delete |
+| Minions | list, get, count |
+| If services | list (v1), update (v1), list with FIQL (v2) |
+| Availability | summary, by category, by node, per-category-node |
+| Health | health check, probe |
+| Whoami | current user info |
+| Classifications | rules CRUD, groups CRUD, classify, protocols, CSV import |
+| Situation feedback | tags, get/submit feedback |
+| User-defined links (v2) | list, get, create, delete |
+| Applications (v2) | list, get, create, delete |
+| Perspective poller (v2) | application status, service status |
+| Foreign sources config | policies, detectors, services, assets, categories |
+| Requisition names | list all names |
+| SNMP metadata (v2) | get by node |
+| Provisiond (v2) | daemon status, job status |
+| Event configuration (v2) | filter, sources, CRUD, upload, enable/disable, vendors |
+| Monitoring systems | main system info |
+| Asset suggestions | field suggestions |
+| Secure credentials vault | full CRUD |
+| Configuration management | names, schemas, config CRUD, sub-parts |
+| SNMP trap NBI config | config, status, trap sink CRUD |
+| Email NBI config | config, status, destination CRUD |
+| Syslog NBI config | config, status, destination CRUD |
+| Javamail config | defaults, readmails/sendmails/end2ends CRUD |
 
 ## Authentication
 
@@ -118,7 +143,7 @@ client = opennms.OpenNMS(
 
 `smoke_test.py` exercises the wrapper against a real OpenNMS server.  It is
 intended for use against a dev or staging instance before each release — not
-as a substitute for the 290-test mocked unit suite.
+as a substitute for the 430+ test mocked unit suite.
 
 Tests that depend on optional plugins or heavy endpoints are reported as
 **WARN** (non-fatal) rather than FAIL.  Each warning includes the specific

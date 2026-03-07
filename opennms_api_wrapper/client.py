@@ -30,6 +30,31 @@ from ._info import InfoMixin
 from ._discovery import DiscoveryMixin
 from ._ipinterfaces_v2 import IpInterfacesV2Mixin
 from ._snmpinterfaces_v2 import SnmpInterfacesV2Mixin
+from ._enlinkd import EnLinkdMixin
+from ._monitoring_locations import MonitoringLocationsMixin
+from ._minions import MinionsMixin
+from ._ifservices import IfServicesMixin
+from ._availability import AvailabilityMixin
+from ._health import HealthMixin
+from ._whoami import WhoamiMixin
+from ._classifications import ClassificationsMixin
+from ._situation_feedback import SituationFeedbackMixin
+from ._user_defined_links import UserDefinedLinksMixin
+from ._applications import ApplicationsMixin
+from ._perspective_poller import PerspectivePollerMixin
+from ._foreign_sources_config import ForeignSourcesConfigMixin
+from ._requisition_names import RequisitionNamesMixin
+from ._snmp_metadata import SnmpMetadataMixin
+from ._provisiond import ProvisiondMixin
+from ._eventconf import EventConfMixin
+from ._monitoring_systems import MonitoringSystemsMixin
+from ._asset_suggestions import AssetSuggestionsMixin
+from ._scv import ScvMixin
+from ._config_mgmt import ConfigMgmtMixin
+from ._snmptrap_nbi import SnmpTrapNbiMixin
+from ._email_nbi import EmailNbiMixin
+from ._syslog_nbi import SyslogNbiMixin
+from ._javamail_config import JavamailConfigMixin
 
 
 class OpenNMS(
@@ -64,6 +89,31 @@ class OpenNMS(
     DiscoveryMixin,
     IpInterfacesV2Mixin,
     SnmpInterfacesV2Mixin,
+    EnLinkdMixin,
+    MonitoringLocationsMixin,
+    MinionsMixin,
+    IfServicesMixin,
+    AvailabilityMixin,
+    HealthMixin,
+    WhoamiMixin,
+    ClassificationsMixin,
+    SituationFeedbackMixin,
+    UserDefinedLinksMixin,
+    ApplicationsMixin,
+    PerspectivePollerMixin,
+    ForeignSourcesConfigMixin,
+    RequisitionNamesMixin,
+    SnmpMetadataMixin,
+    ProvisiondMixin,
+    EventConfMixin,
+    MonitoringSystemsMixin,
+    AssetSuggestionsMixin,
+    ScvMixin,
+    ConfigMgmtMixin,
+    SnmpTrapNbiMixin,
+    EmailNbiMixin,
+    SyslogNbiMixin,
+    JavamailConfigMixin,
 ):
     """Thin Python wrapper for the OpenNMS REST API.
 

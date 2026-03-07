@@ -97,8 +97,16 @@ class _OpenNMSBase:
                                      timeout=self._timeout)
         return self._parse(resp)
 
-    def _delete(self, path: str, params: dict = None, v2: bool = False):
+    def _delete(self, path: str, params: dict = None, json_data=None,
+                v2: bool = False):
         """Send a DELETE request and return the parsed response."""
         resp = self._session.delete(self._url(path, v2), params=params,
-                                    timeout=self._timeout)
+                                    json=json_data, timeout=self._timeout)
+        return self._parse(resp)
+
+    def _patch(self, path: str, json_data=None, params: dict = None,
+               v2: bool = False):
+        """Send a PATCH request and return the parsed response."""
+        resp = self._session.patch(self._url(path, v2), json=json_data,
+                                   params=params, timeout=self._timeout)
         return self._parse(resp)

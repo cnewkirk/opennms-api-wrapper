@@ -856,6 +856,139 @@ METADATA_LIST = [
 # Server Info
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# EnLinkd (v2) – topology link and element DTOs
+# ---------------------------------------------------------------------------
+
+LLDP_LINK_NODE = {
+    "lldpLocalPort": "Gi0/0/0",
+    "lldpLocalPortUrl": "/opennms/element/node.jsp?node=1",
+    "lldpRemChassisId": "00:11:22:33:44:55",
+    "lldpRemChassisIdUrl": "/opennms/element/node.jsp?node=2",
+    "lldpRemInfo": "router02.example.com",
+    "lldpRemPort": "Gi0/0/1",
+    "lldpRemPortUrl": "/opennms/element/snmpinterface.jsp?node=2&ifindex=2",
+    "lldpCreateTime": "2024-06-01T08:00:00.000+0000",
+    "lldpLastPollTime": "2024-06-01T09:00:00.000+0000",
+}
+
+CDP_LINK_NODE = {
+    "cdpLocalPort": "GigabitEthernet0/0",
+    "cdpLocalPortUrl": "/opennms/element/node.jsp?node=1",
+    "cdpCacheDevice": "router02.example.com",
+    "cdpCacheDeviceUrl": "/opennms/element/node.jsp?node=2",
+    "cdpCacheDevicePort": "GigabitEthernet0/1",
+    "cdpCacheDevicePortUrl": "/opennms/element/snmpinterface.jsp?node=2&ifindex=2",
+    "cdpCachePlatform": "Cisco IOS Software, ISR4331",
+    "cdpCreateTime": "2024-06-01T08:00:00.000+0000",
+    "cdpLastPollTime": "2024-06-01T09:00:00.000+0000",
+}
+
+OSPF_LINK_NODE = {
+    "ospfLocalPort": "192.168.1.1",
+    "ospfLocalPortUrl": "/opennms/element/node.jsp?node=1",
+    "ospfRemRouterId": "192.168.1.2",
+    "ospfRemRouterUrl": "/opennms/element/node.jsp?node=2",
+    "ospfRemPort": "192.168.1.2",
+    "ospfRemPortUrl": "/opennms/element/snmpinterface.jsp?node=2&ifindex=2",
+    "ospfLinkInfo": "point-to-point",
+    "ospfLinkCreateTime": "2024-06-01T08:00:00.000+0000",
+    "ospfLinkLastPollTime": "2024-06-01T09:00:00.000+0000",
+}
+
+ISIS_LINK_NODE = {
+    "isisCircIfIndex": 6,
+    "isisCircAdminState": "on",
+    "isisISAdjNeighSysID": "0100.0200.0300",
+    "isisISAdjNeighSysType": "l1_l2IntermediateSystem",
+    "isisISAdjNeighSysUrl": "/opennms/element/node.jsp?node=2",
+    "isisISAdjNeighSNPAAddress": "00:11:22:33:44:55",
+    "isisISAdjNeighPort": "Gi0/0/1",
+    "isisISAdjState": "up",
+    "isisISAdjNbrExtendedCircID": 1,
+    "isisISAdjUrl": "/opennms/element/snmpinterface.jsp?node=2&ifindex=2",
+    "isisLinkCreateTime": "2024-06-01T08:00:00.000+0000",
+    "isisLinkLastPollTime": "2024-06-01T09:00:00.000+0000",
+}
+
+BRIDGE_LINK_NODE = {
+    "bridgeLocalPort": "FastEthernet0/1",
+    "bridgeLocalPortUrl": "/opennms/element/node.jsp?node=1",
+    "BridgeLinkRemoteNodes": [
+        {
+            "bridgeRemote": "switch02.example.com",
+            "bridgeRemoteUrl": "/opennms/element/node.jsp?node=2",
+            "bridgeRemotePort": "FastEthernet0/2",
+            "bridgeRemotePortUrl": "/opennms/element/snmpinterface.jsp?node=2&ifindex=2",
+        }
+    ],
+    "bridgeInfo": "STP designated bridge",
+    "bridgeLinkCreateTime": "2024-06-01T08:00:00.000+0000",
+    "bridgeLinkLastPollTime": "2024-06-01T09:00:00.000+0000",
+}
+
+LLDP_ELEMENT_NODE = {
+    "lldpChassisId": "00:11:22:33:44:55",
+    "lldpSysName": "router01",
+    "lldpCreateTime": "2024-06-01T08:00:00.000+0000",
+    "lldpLastPollTime": "2024-06-01T09:00:00.000+0000",
+}
+
+CDP_ELEMENT_NODE = {
+    "cdpGlobalRun": "true",
+    "cdpGlobalDeviceId": "router01.example.com",
+    "cdpGlobalDeviceIdFormat": "other",
+    "cdpCreateTime": "2024-06-01T08:00:00.000+0000",
+    "cdpLastPollTime": "2024-06-01T09:00:00.000+0000",
+}
+
+OSPF_ELEMENT_NODE = {
+    "ospfRouterId": "192.168.1.1",
+    "ospfVersionNumber": 2,
+    "ospfAdminStat": "enabled",
+    "ospfCreateTime": "2024-06-01T08:00:00.000+0000",
+    "ospfLastPollTime": "2024-06-01T09:00:00.000+0000",
+}
+
+ISIS_ELEMENT_NODE = {
+    "isisSysID": "0100.0200.0300",
+    "isisSysAdminState": "on",
+    "isisCreateTime": "2024-06-01T08:00:00.000+0000",
+    "isisLastPollTime": "2024-06-01T09:00:00.000+0000",
+}
+
+BRIDGE_ELEMENT_NODE = {
+    "baseBridgeAddress": "00:11:22:33:44:55",
+    "baseNumPorts": 24,
+    "baseType": "transparent-only",
+    "stpProtocolSpecification": "ieee8021d",
+    "stpPriority": 32768,
+    "stpDesignatedRoot": "8000.001122334455",
+    "stpRootCost": 0,
+    "stpRootPort": 0,
+    "vlan": 1,
+    "vlanname": "default",
+    "bridgeNodeCreateTime": "2024-06-01T08:00:00.000+0000",
+    "bridgeNodeLastPollTime": "2024-06-01T09:00:00.000+0000",
+}
+
+ENLINKD_DTO = {
+    "lldpLinkNodes": [LLDP_LINK_NODE],
+    "cdpLinkNodes": [CDP_LINK_NODE],
+    "ospfLinkNodes": [OSPF_LINK_NODE],
+    "isisLinkNodes": [ISIS_LINK_NODE],
+    "bridgeLinkNodes": [BRIDGE_LINK_NODE],
+    "lldpElementNode": LLDP_ELEMENT_NODE,
+    "cdpElementNode": CDP_ELEMENT_NODE,
+    "ospfElementNode": OSPF_ELEMENT_NODE,
+    "isisElementNode": ISIS_ELEMENT_NODE,
+    "bridgeElementNodes": [BRIDGE_ELEMENT_NODE],
+}
+
+# ---------------------------------------------------------------------------
+# Server Info
+# ---------------------------------------------------------------------------
+
 SERVER_INFO = {
     "displayVersion": "Horizon 35.0.0",
     "version": "35.0.0",
@@ -873,3 +1006,601 @@ SERVER_INFO = {
         "OpenNMS:Name=Alarmd":   "running",
     },
 }
+
+# ---------------------------------------------------------------------------
+# Prefab Graphs
+# ---------------------------------------------------------------------------
+
+PREFAB_GRAPH_NAMES = ["mib2.bits", "mib2.percentdiscards", "netsnmp.cpuStats"]
+
+PREFAB_GRAPH = {
+    "name": "mib2.bits",
+    "title": "Bits In/Out",
+    "columns": ["ifInOctets", "ifOutOctets"],
+    "command": "--title=\"Bits In/Out\"",
+    "types": ["interfaceSnmp"],
+}
+
+PREFAB_GRAPHS_FOR_RESOURCE = {
+    "name": ["mib2.bits", "mib2.percentdiscards"],
+}
+
+PREFAB_GRAPHS_FOR_NODE = {
+    "name": ["mib2.bits", "netsnmp.cpuStats"],
+}
+
+# ---------------------------------------------------------------------------
+# Flow DSCP
+# ---------------------------------------------------------------------------
+
+FLOW_DSCP = {
+    "start": 1425580938256,
+    "end": 1425588138256,
+    "headers": [
+        {"dscp": 0, "bytesIn": 1048576, "bytesOut": 204800},
+        {"dscp": 46, "bytesIn": 524288, "bytesOut": 102400},
+    ],
+}
+
+FLOW_DSCP_ENUMERATE = {"dscp": [0, 8, 46]}
+
+FLOW_DSCP_SERIES = {
+    "start": 1425580938256,
+    "end": 1425588138256,
+    "step": 300000,
+    "timestamps": [1425581100000, 1425581400000],
+    "columns": [
+        {
+            "label": "0",
+            "ingress": {"values": [139948.5, 199006.3]},
+            "egress":  {"values": [51661.2,  64741.0]},
+        }
+    ],
+}
+
+FLOW_GRAPH_URL = "http://grafana:3000/d/flows"
+
+# ---------------------------------------------------------------------------
+# Business Service Edge / Functions
+# ---------------------------------------------------------------------------
+
+BS_EDGE = {
+    "id": 2001,
+    "type": "IP_SERVICE",
+    "reductionKeys": ["uei.opennms.org/nodes/nodeDown::1"],
+    "mapFunction": {"type": "Identity", "properties": {}},
+    "weight": 1,
+    "operationalStatus": "MAJOR",
+}
+
+BS_MAP_FUNCTION = {
+    "name": "Identity",
+    "type": "Identity",
+    "properties": {},
+}
+
+BS_MAP_FUNCTIONS = [BS_MAP_FUNCTION, {"name": "Increase", "type": "Increase", "properties": {}}]
+
+BS_REDUCE_FUNCTION = {
+    "name": "HighestSeverity",
+    "type": "HighestSeverity",
+    "properties": {},
+}
+
+BS_REDUCE_FUNCTIONS = [
+    BS_REDUCE_FUNCTION,
+    {"name": "Threshold", "type": "Threshold", "properties": {"threshold": "0.5"}},
+]
+
+# ---------------------------------------------------------------------------
+# Monitoring Location
+# ---------------------------------------------------------------------------
+
+MONITORING_LOCATION = {
+    "location-name": "Default",
+    "monitoring-area": "default",
+    "priority": 100,
+    "tags": [],
+}
+
+MONITORING_LOCATION_LIST = {
+    "location": [MONITORING_LOCATION],
+    "totalCount": 1,
+    "count": 1,
+    "offset": 0,
+}
+
+# ---------------------------------------------------------------------------
+# Minion
+# ---------------------------------------------------------------------------
+
+MINION = {
+    "id": "minion-01",
+    "location": "Default",
+    "status": "UP",
+    "lastUpdated": "2024-06-01T09:00:00.000+0000",
+}
+
+MINION_LIST = {
+    "minion": [MINION],
+    "totalCount": 1,
+    "count": 1,
+    "offset": 0,
+}
+
+# ---------------------------------------------------------------------------
+# If Services
+# ---------------------------------------------------------------------------
+
+IF_SERVICE = {
+    "id": 201,
+    "serviceType": SERVICE_TYPE,
+    "status": "A",
+    "statusLong": "Active",
+    "ipInterfaceId": 101,
+    "nodeId": 1,
+}
+
+IF_SERVICE_LIST = {
+    "service": [IF_SERVICE],
+    "totalCount": 1,
+    "count": 1,
+    "offset": 0,
+}
+
+IF_SERVICE_LIST_V2 = {
+    "service": [IF_SERVICE],
+    "totalCount": 1,
+    "count": 1,
+    "offset": 0,
+}
+
+# ---------------------------------------------------------------------------
+# Availability
+# ---------------------------------------------------------------------------
+
+AVAILABILITY = {
+    "section": [
+        {
+            "name": "Production",
+            "categories": [
+                {
+                    "name": "Production",
+                    "normalPercent": 99.5,
+                    "warningPercent": 97.0,
+                }
+            ],
+        }
+    ],
+}
+
+AVAILABILITY_CATEGORY = {
+    "name": "Production",
+    "normalPercent": 99.5,
+    "warningPercent": 97.0,
+    "nodes": [],
+}
+
+AVAILABILITY_NODE = {
+    "id": 1,
+    "availability": 99.8,
+    "serviceCount": 3,
+    "serviceDownCount": 0,
+}
+
+# ---------------------------------------------------------------------------
+# Health
+# ---------------------------------------------------------------------------
+
+HEALTH = {
+    "healthy": True,
+    "responses": [
+        {"description": "Ensuring installed bundles are started", "status": "Success"},
+    ],
+}
+
+HEALTH_PROBE = {"status": "Everything is awesome"}
+
+# ---------------------------------------------------------------------------
+# Whoami
+# ---------------------------------------------------------------------------
+
+WHOAMI = {
+    "fullName": "Administrator",
+    "id": "admin",
+    "roles": ["ROLE_ADMIN", "ROLE_REST"],
+}
+
+# ---------------------------------------------------------------------------
+# Classification
+# ---------------------------------------------------------------------------
+
+CLASSIFICATION_RULE = {
+    "id": 1,
+    "name": "HTTPS",
+    "dstPort": "443",
+    "protocol": "tcp",
+    "groupId": 1,
+    "position": 0,
+}
+
+CLASSIFICATION_RULE_LIST = {
+    "classificationRule": [CLASSIFICATION_RULE],
+    "totalCount": 1,
+    "count": 1,
+    "offset": 0,
+}
+
+CLASSIFICATION_GROUP = {
+    "id": 1,
+    "name": "default",
+    "enabled": True,
+    "readOnly": False,
+    "position": 0,
+}
+
+CLASSIFICATION_GROUP_LIST = {
+    "classificationGroup": [CLASSIFICATION_GROUP],
+    "totalCount": 1,
+    "count": 1,
+    "offset": 0,
+}
+
+CLASSIFY_RESULT = {"classification": "HTTPS"}
+
+CLASSIFICATION_PROTOCOLS = ["TCP", "UDP", "ICMP"]
+
+# ---------------------------------------------------------------------------
+# Situation Feedback
+# ---------------------------------------------------------------------------
+
+SITUATION_FEEDBACK_TAG = {"name": "correct", "count": 5}
+
+SITUATION_FEEDBACK_TAGS = [SITUATION_FEEDBACK_TAG]
+
+SITUATION_FEEDBACK = [
+    {
+        "situationKey": "uei.opennms.org/alarms/situation::99",
+        "alarmKey": "uei.opennms.org/nodes/nodeDown::1",
+        "fingerprint": "abc123",
+        "feedbackType": "CORRECT",
+        "reason": "correlation is correct",
+        "user": "admin",
+        "timestamp": 1717234200000,
+    }
+]
+
+# ---------------------------------------------------------------------------
+# User Defined Links
+# ---------------------------------------------------------------------------
+
+USER_DEFINED_LINK = {
+    "id": 1,
+    "nodeIdA": 1,
+    "nodeIdZ": 2,
+    "componentLabelA": "eth0",
+    "componentLabelZ": "eth0",
+    "linkId": "custom-link-1",
+    "linkLabel": "Cross connect",
+    "owner": "admin",
+}
+
+USER_DEFINED_LINK_LIST = {
+    "user-defined-link": [USER_DEFINED_LINK],
+    "totalCount": 1,
+    "count": 1,
+    "offset": 0,
+}
+
+# ---------------------------------------------------------------------------
+# Applications (v2)
+# ---------------------------------------------------------------------------
+
+APPLICATION = {
+    "id": 1,
+    "name": "Web Services",
+    "monitoredServices": [
+        {"id": 201, "serviceName": "HTTP"},
+    ],
+}
+
+APPLICATION_LIST = {
+    "application": [APPLICATION],
+    "totalCount": 1,
+    "count": 1,
+    "offset": 0,
+}
+
+# ---------------------------------------------------------------------------
+# Perspective Poller (v2)
+# ---------------------------------------------------------------------------
+
+PERSPECTIVE_POLLER_STATUS = {
+    "applicationId": 1,
+    "services": [
+        {
+            "serviceId": 201,
+            "locations": [
+                {"location": "Default", "status": "Up"},
+            ],
+        }
+    ],
+}
+
+# ---------------------------------------------------------------------------
+# Foreign Sources Config
+# ---------------------------------------------------------------------------
+
+FS_CONFIG_POLICIES = {
+    "plugin": [
+        {
+            "name": "Match IP Interface",
+            "class": "org.opennms.netmgt.provision.persist.policies.MatchingIpInterfacePolicy",
+        }
+    ],
+}
+
+FS_CONFIG_DETECTORS = {
+    "plugin": [
+        {
+            "name": "ICMP",
+            "class": "org.opennms.netmgt.provision.detector.icmp.IcmpDetector",
+        }
+    ],
+}
+
+FS_CONFIG_SERVICES = {"service": ["ICMP", "SNMP", "HTTP"]}
+
+FS_CONFIG_ASSETS = {"asset": ["manufacturer", "vendor", "serialNumber"]}
+
+FS_CONFIG_CATEGORIES = {"category": ["Production", "Development"]}
+
+# ---------------------------------------------------------------------------
+# Requisition Names
+# ---------------------------------------------------------------------------
+
+REQUISITION_NAMES = {
+    "foreign-source": ["Routers", "Switches", "Servers"],
+    "count": 3,
+}
+
+# ---------------------------------------------------------------------------
+# SNMP Metadata (v2)
+# ---------------------------------------------------------------------------
+
+SNMP_METADATA_ENTRY = {
+    "nodeId": 1,
+    "entries": [
+        {
+            "oid": ".1.3.6.1.2.1.1.1.0",
+            "value": "Cisco IOS Software",
+            "instance": "0",
+        }
+    ],
+}
+
+# ---------------------------------------------------------------------------
+# Provisiond (v2)
+# ---------------------------------------------------------------------------
+
+PROVISIOND_STATUS = {
+    "status": "RUNNING",
+    "jobCount": 0,
+    "jobs": [],
+}
+
+PROVISIOND_JOB_STATUS = {
+    "id": "job-123",
+    "status": "COMPLETED",
+    "foreignSource": "Routers",
+    "startTime": "2024-06-01T09:00:00.000+0000",
+    "endTime": "2024-06-01T09:01:00.000+0000",
+}
+
+# ---------------------------------------------------------------------------
+# Event Configuration (v2)
+# ---------------------------------------------------------------------------
+
+EVENTCONF_FILTER = {
+    "events": [
+        {
+            "uei": "uei.opennms.org/nodes/nodeDown",
+            "label": "Node Down",
+            "source": "default",
+        }
+    ],
+}
+
+EVENTCONF_SOURCES = {
+    "sources": [
+        {"id": "default", "label": "Default Events"},
+    ],
+}
+
+EVENTCONF_SOURCE = {
+    "id": "default",
+    "label": "Default Events",
+    "eventCount": 150,
+}
+
+EVENTCONF_SOURCE_NAMES = ["default", "Cisco", "Juniper"]
+
+EVENTCONF_VENDOR_EVENTS = {
+    "events": [
+        {"uei": "uei.opennms.org/vendor/Cisco/traps/bgpUp", "label": "BGP Up"},
+    ],
+}
+
+EVENTCONF_EVENT = {
+    "uei": "uei.opennms.org/custom/testEvent",
+    "label": "Test Event",
+    "descr": "A test event",
+    "logmsg": {"content": "Test event fired", "dest": "logndisplay"},
+    "severity": "Warning",
+}
+
+# ---------------------------------------------------------------------------
+# Monitoring Systems
+# ---------------------------------------------------------------------------
+
+MONITORING_SYSTEM = {
+    "id": "00000000-0000-0000-0000-000000000000",
+    "label": "localhost",
+    "location": "Default",
+    "type": "OpenNMS",
+    "status": "UP",
+    "lastUpdated": "2024-06-01T09:00:00.000+0000",
+}
+
+# ---------------------------------------------------------------------------
+# Asset Suggestions
+# ---------------------------------------------------------------------------
+
+ASSET_SUGGESTIONS = {
+    "assetSuggestion": [
+        {"column": "manufacturer", "values": ["Cisco", "Juniper"]},
+        {"column": "operatingSystem", "values": ["IOS-XE", "JUNOS"]},
+    ],
+}
+
+# ---------------------------------------------------------------------------
+# Secure Credentials Vault (SCV)
+# ---------------------------------------------------------------------------
+
+CREDENTIAL = {
+    "alias": "my-device",
+    "username": "admin",
+    "password": "secret",
+    "attributes": {},
+}
+
+CREDENTIAL_LIST = {
+    "credential": [CREDENTIAL],
+    "totalCount": 1,
+    "count": 1,
+    "offset": 0,
+}
+
+# ---------------------------------------------------------------------------
+# Configuration Management
+# ---------------------------------------------------------------------------
+
+CONFIG_NAMES = ["provisiond", "poller", "collectd"]
+
+CONFIG_SCHEMAS = {
+    "schema": [
+        {"name": "provisiond", "description": "Provisioning daemon config"},
+    ],
+}
+
+CONFIG_SCHEMA = {
+    "name": "provisiond",
+    "description": "Provisioning daemon config",
+    "properties": {},
+}
+
+CONFIG_IDS = ["default"]
+
+CONFIG = {
+    "name": "provisiond",
+    "id": "default",
+    "properties": {"importThreads": 8},
+}
+
+# ---------------------------------------------------------------------------
+# SNMP Trap NBI
+# ---------------------------------------------------------------------------
+
+SNMPTRAP_NBI_CONFIG = {
+    "enabled": True,
+    "trapsinks": [
+        {"name": "remote-nms", "ipAddress": "10.0.0.1", "port": 162, "community": "public"},
+    ],
+}
+
+SNMPTRAP_NBI_STATUS = {"enabled": True}
+
+SNMPTRAP_NBI_TRAPSINK = {
+    "name": "remote-nms",
+    "ipAddress": "10.0.0.1",
+    "port": 162,
+    "community": "public",
+}
+
+SNMPTRAP_NBI_TRAPSINK_LIST = {"trapsink": [SNMPTRAP_NBI_TRAPSINK]}
+
+# ---------------------------------------------------------------------------
+# Email NBI
+# ---------------------------------------------------------------------------
+
+EMAIL_NBI_CONFIG = {
+    "enabled": False,
+    "destinations": [],
+}
+
+EMAIL_NBI_STATUS = {"enabled": False}
+
+EMAIL_NBI_DESTINATION = {
+    "name": "ops-team",
+    "firstOccurrenceOnly": True,
+    "filters": [],
+}
+
+EMAIL_NBI_DESTINATION_LIST = {"destination": [EMAIL_NBI_DESTINATION]}
+
+# ---------------------------------------------------------------------------
+# Syslog NBI
+# ---------------------------------------------------------------------------
+
+SYSLOG_NBI_CONFIG = {
+    "enabled": False,
+    "destinations": [],
+}
+
+SYSLOG_NBI_STATUS = {"enabled": False}
+
+SYSLOG_NBI_DESTINATION = {
+    "name": "siem",
+    "host": "10.0.0.2",
+    "port": 514,
+    "firstOccurrenceOnly": False,
+    "filters": [],
+}
+
+SYSLOG_NBI_DESTINATION_LIST = {"destination": [SYSLOG_NBI_DESTINATION]}
+
+# ---------------------------------------------------------------------------
+# Javamail Configuration
+# ---------------------------------------------------------------------------
+
+JAVAMAIL_DEFAULT_CONFIG = {
+    "defaultReadConfigName": "localhost",
+    "defaultSendConfigName": "localhost",
+    "defaultEnd2endConfigName": "localhost",
+}
+
+JAVAMAIL_READMAIL = {
+    "name": "localhost",
+    "host": "localhost",
+    "port": 993,
+    "protocol": "imaps",
+}
+
+JAVAMAIL_READMAIL_LIST = {"readmail": [JAVAMAIL_READMAIL]}
+
+JAVAMAIL_SENDMAIL = {
+    "name": "localhost",
+    "host": "localhost",
+    "port": 25,
+    "protocol": "smtp",
+}
+
+JAVAMAIL_SENDMAIL_LIST = {"sendmail": [JAVAMAIL_SENDMAIL]}
+
+JAVAMAIL_END2END = {
+    "name": "localhost",
+    "readMailConfigName": "localhost",
+    "sendMailConfigName": "localhost",
+}
+
+JAVAMAIL_END2END_LIST = {"end2end": [JAVAMAIL_END2END]}

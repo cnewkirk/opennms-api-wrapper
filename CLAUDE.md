@@ -15,7 +15,7 @@ client class with one method per API endpoint.
 opennms_api_wrapper/    # installable package
     __init__.py         # exports OpenNMS, __version__
     client.py           # OpenNMS class (combines all mixins)
-    _base.py            # _OpenNMSBase: HTTP helpers (_get/_post/_put/_delete/_parse)
+    _base.py            # _OpenNMSBase: HTTP helpers (_get/_post/_put/_delete/_patch/_parse)
     _alarms.py          # AlarmsMixin
     _alarm_stats.py     # AlarmStatsMixin
     _alarm_history.py   # AlarmHistoryMixin
@@ -46,11 +46,36 @@ opennms_api_wrapper/    # installable package
     _discovery.py       # DiscoveryMixin  (v2)
     _ipinterfaces_v2.py    # IpInterfacesV2Mixin
     _snmpinterfaces_v2.py  # SnmpInterfacesV2Mixin
+    _enlinkd.py            # EnLinkdMixin  (v2)
+    _monitoring_locations.py  # MonitoringLocationsMixin
+    _minions.py               # MinionsMixin
+    _ifservices.py            # IfServicesMixin
+    _availability.py          # AvailabilityMixin
+    _health.py                # HealthMixin
+    _whoami.py                # WhoamiMixin
+    _classifications.py       # ClassificationsMixin
+    _situation_feedback.py    # SituationFeedbackMixin
+    _user_defined_links.py    # UserDefinedLinksMixin  (v2)
+    _applications.py          # ApplicationsMixin  (v2)
+    _perspective_poller.py    # PerspectivePollerMixin  (v2)
+    _foreign_sources_config.py  # ForeignSourcesConfigMixin
+    _requisition_names.py     # RequisitionNamesMixin
+    _snmp_metadata.py         # SnmpMetadataMixin  (v2)
+    _provisiond.py            # ProvisiondMixin  (v2)
+    _eventconf.py             # EventConfMixin  (v2)
+    _monitoring_systems.py    # MonitoringSystemsMixin
+    _asset_suggestions.py     # AssetSuggestionsMixin
+    _scv.py                   # ScvMixin
+    _config_mgmt.py           # ConfigMgmtMixin
+    _snmptrap_nbi.py          # SnmpTrapNbiMixin
+    _email_nbi.py             # EmailNbiMixin
+    _syslog_nbi.py            # SyslogNbiMixin
+    _javamail_config.py       # JavamailConfigMixin
 
 tests/
     conftest.py         # client fixture, V1/V2 URL constants, qs() helper
     fixtures.py         # all accurate OpenNMS Horizon 35 response shapes
-    test_*.py           # one file per mixin (30 files, 290 tests total)
+    test_*.py           # one file per mixin (58 files, 454 tests total)
 
 dist/                   # built artifacts (gitignored)
 pyproject.toml          # build config + project metadata
@@ -97,6 +122,8 @@ CONTRIBUTING.md
   heavy server-side queries use `warn()` instead of `run()`. Warnings are
   non-fatal and include the required plugin/feature name. Only hard `FAIL`s
   cause a non-zero exit code.
+- **Smoke test SSL**: always use `OPENNMS_VERIFY_SSL=true` — the live server
+  has a valid certificate.  Never disable SSL verification.
 
 ## Development environment
 
@@ -104,7 +131,7 @@ CONTRIBUTING.md
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"   # installs requests + pytest + responses
-pytest tests/ -v          # run full suite (290 tests, ~0.2 s)
+pytest tests/ -v          # run full suite (454 tests, ~0.4 s)
 ```
 
 Always activate the `.venv` before running any commands — never rely on the

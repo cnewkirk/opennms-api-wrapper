@@ -3,7 +3,7 @@
 ## Package composition
 
 `OpenNMS` (in `client.py`) is built by multiple-inheriting from `_OpenNMSBase`
-and 30 mixin classes — one per API resource group.  Dashed arrows represent
+and 54 mixin classes — one per API resource group.  Dashed arrows represent
 mixin inheritance; the solid arrow represents the base-class relationship.
 
 ```mermaid
@@ -30,7 +30,10 @@ flowchart TD
     subgraph provision_sg["Provisioning"]
         RequisitionsMixin
         ForeignSourcesMixin
+        ForeignSourcesConfigMixin
+        RequisitionNamesMixin
         SnmpConfigMixin
+        ProvisiondMixin
     end
 
     subgraph admin_sg["Administration"]
@@ -39,6 +42,10 @@ flowchart TD
         CategoriesMixin
         SchedOutagesMixin
         KscReportsMixin
+        MonitoringLocationsMixin
+        MinionsMixin
+        MonitoringSystemsMixin
+        WhoamiMixin
     end
 
     subgraph data_sg["Data and Reporting"]
@@ -47,6 +54,7 @@ flowchart TD
         HeatmapMixin
         FlowsMixin
         DeviceConfigMixin
+        ClassificationsMixin
     end
 
     subgraph viz_sg["Visualization"]
@@ -61,14 +69,37 @@ flowchart TD
         DiscoveryMixin
         IpInterfacesV2Mixin
         SnmpInterfacesV2Mixin
+        EnLinkdMixin
+        ApplicationsMixin
+        PerspectivePollerMixin
+        UserDefinedLinksMixin
+        SnmpMetadataMixin
+        EventConfMixin
+    end
+
+    subgraph ops_sg["Operations"]
+        AvailabilityMixin
+        HealthMixin
+        IfServicesMixin
+        SituationFeedbackMixin
+        AssetSuggestionsMixin
+    end
+
+    subgraph config_sg["Configuration"]
+        ScvMixin
+        ConfigMgmtMixin
+        SnmpTrapNbiMixin
+        EmailNbiMixin
+        SyslogNbiMixin
+        JavamailConfigMixin
     end
 
     InfoMixin["InfoMixin"]
 
-    BaseClass["_OpenNMSBase - _base.py<br/>_get / _post / _put / _delete<br/>_parse / _url"]
+    BaseClass["_OpenNMSBase - _base.py<br/>_get / _post / _put / _delete / _patch<br/>_parse / _url"]
 
     subgraph client_sg["client.py"]
-        OpenNMS["OpenNMS<br/>252 public methods - flat namespace"]
+        OpenNMS["OpenNMS<br/>~400 public methods - flat namespace"]
     end
 
     caller -->|"client.method()"| OpenNMS
@@ -81,6 +112,8 @@ flowchart TD
     data_sg      -.->|"mixin"| OpenNMS
     viz_sg       -.->|"mixin"| OpenNMS
     v2_sg        -.->|"mixin"| OpenNMS
+    ops_sg       -.->|"mixin"| OpenNMS
+    config_sg    -.->|"mixin"| OpenNMS
     InfoMixin    -.->|"mixin"| OpenNMS
 
     BaseClass -->|"base class"| OpenNMS
@@ -93,11 +126,13 @@ flowchart TD
     class AlarmsMixin,AlarmStatsMixin,AlarmHistoryMixin mixin
     class EventsMixin,NotificationsMixin,AcksMixin mixin
     class NodesMixin,OutagesMixin mixin
-    class RequisitionsMixin,ForeignSourcesMixin,SnmpConfigMixin mixin
-    class GroupsMixin,UsersMixin,CategoriesMixin,SchedOutagesMixin,KscReportsMixin mixin
-    class ResourcesMixin,MeasurementsMixin,HeatmapMixin,FlowsMixin,DeviceConfigMixin mixin
+    class RequisitionsMixin,ForeignSourcesMixin,ForeignSourcesConfigMixin,RequisitionNamesMixin,SnmpConfigMixin,ProvisiondMixin mixin
+    class GroupsMixin,UsersMixin,CategoriesMixin,SchedOutagesMixin,KscReportsMixin,MonitoringLocationsMixin,MinionsMixin,MonitoringSystemsMixin,WhoamiMixin mixin
+    class ResourcesMixin,MeasurementsMixin,HeatmapMixin,FlowsMixin,DeviceConfigMixin,ClassificationsMixin mixin
     class MapsMixin,GraphsMixin mixin
-    class SituationsMixin,BusinessServicesMixin,MetadataMixin,DiscoveryMixin,IpInterfacesV2Mixin,SnmpInterfacesV2Mixin mixin
+    class SituationsMixin,BusinessServicesMixin,MetadataMixin,DiscoveryMixin,IpInterfacesV2Mixin,SnmpInterfacesV2Mixin,EnLinkdMixin,ApplicationsMixin,PerspectivePollerMixin,UserDefinedLinksMixin,SnmpMetadataMixin,EventConfMixin mixin
+    class AvailabilityMixin,HealthMixin,IfServicesMixin,SituationFeedbackMixin,AssetSuggestionsMixin mixin
+    class ScvMixin,ConfigMgmtMixin,SnmpTrapNbiMixin,EmailNbiMixin,SyslogNbiMixin,JavamailConfigMixin mixin
     class InfoMixin mixin
     class OpenNMS core
     class BaseClass base
