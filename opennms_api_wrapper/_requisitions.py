@@ -44,7 +44,7 @@ class RequisitionsMixin:
                 and existing nodes are not rescanned.
         """
         params = {} if rescan_existing else {"rescanExisting": "false"}
-        return self._put(f"requisitions/{name}/import", params=params or None)
+        return self._put(f"requisitions/{name}/import", params=params)
 
     def update_requisition(self, name: str, data: dict):
         """Update metadata on an existing requisition.

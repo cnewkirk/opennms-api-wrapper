@@ -1,12 +1,15 @@
 """Base HTTP client for the OpenNMS REST API."""
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 
 class _OpenNMSBase:
     """Base class providing authenticated HTTP helpers."""
 
     def __init__(self, url: str, username: str, password: str,
-                 verify_ssl: bool = True, timeout: int = 30):
+                 verify_ssl: bool = True, timeout: int = 30,
+                 retries: int = 3):
         """Initialize base URLs, credentials, and a shared requests session.
 
         Args:
@@ -17,6 +20,9 @@ class _OpenNMSBase:
                 disabled. Defaults to ``True``.
             timeout: Socket timeout in seconds for all HTTP requests.
                 Defaults to ``30``.  Pass ``None`` to disable.
+            retries: Number of retries on connection errors and
+                HTTP 500/502/503/504.  Uses exponential backoff with
+                a 0.5 s factor.  Pass ``0`` to disable retries.
         """
         base = url.rstrip("/")
         self._v1_url = f"{base}/opennms/rest"
@@ -29,6 +35,17 @@ class _OpenNMSBase:
             "Content-Type": "application/json",
         })
         self._session.verify = verify_ssl
+        if retries > 0:
+            retry = Retry(
+                total=retries,
+                backoff_factor=0.5,
+                status_forcelist=(500, 502, 503, 504),
+                allowed_methods=None,
+                raise_on_status=False,
+            )
+            adapter = HTTPAdapter(max_retries=retry)
+            self._session.mount("https://", adapter)
+            self._session.mount("http://", adapter)
 
     def _url(self, path: str, v2: bool = False) -> str:
         """Build a full endpoint URL, using the v2 base if *v2* is True."""
@@ -109,4 +126,27 @@ class _OpenNMSBase:
         """Send a PATCH request and return the parsed response."""
         resp = self._session.patch(self._url(path, v2), json=json_data,
                                    params=params, timeout=self._timeout)
+        return self._parse(resp)
+
+    def _get_text(self, path: str, v2: bool = False) -> str:
+        """Send a GET request and return the raw response text."""
+        resp = self._session.get(self._url(path, v2),
+                                 timeout=self._timeout)
+        resp.raise_for_status()
+        return resp.text
+
+    def _post_files(self, path: str, files: dict,
+                    v2: bool = False):
+        """Send a POST request with multipart file upload."""
+        resp = self._session.post(self._url(path, v2), files=files,
+                                  timeout=self._timeout)
+        return self._parse(resp)
+
+    def _post_text(self, path: str, data: str, content_type: str,
+                   v2: bool = False):
+        """Send a POST request with a raw text body."""
+        resp = self._session.post(
+            self._url(path, v2), data=data,
+            headers={"Content-Type": content_type},
+            timeout=self._timeout)
         return self._parse(resp)

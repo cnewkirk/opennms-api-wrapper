@@ -118,6 +118,10 @@ CONTRIBUTING.md
 - **Timeout**: `_OpenNMSBase.__init__` accepts `timeout=30` (seconds). Passed
   to every `_session.get/post/put/delete` call. `OpenNMS.__init__` exposes it
   as a public parameter.
+- **Retries**: `_OpenNMSBase.__init__` mounts a urllib3 `Retry` adapter
+  on the session when `retries > 0` (default 3). Retries on connection
+  errors and HTTP 500/502/503/504 with 0.5s backoff factor. Pass
+  `retries=0` to disable.
 - **Smoke test warn level**: endpoints that depend on optional plugins or
   heavy server-side queries use `warn()` instead of `run()`. Warnings are
   non-fatal and include the required plugin/feature name. Only hard `FAIL`s

@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-03-07
+
+### Added
+
+- **Retry with exponential backoff**: HTTP client now retries on connection
+  errors and transient server errors (500, 502, 503, 504) with exponential
+  backoff (0.5 s factor, up to 3 retries by default).  Uses urllib3's built-in
+  `Retry` — no new dependencies.  Pass `retries=0` to disable.
+- Smoke test: deeper drill-down coverage for nodes (single IP interface, SNMP
+  interface, category, service), requisition nodes (interfaces, categories,
+  assets), foreign source detectors/policies, business services, enlinkd link
+  types/elements, classifications, eventconf sources, SCV credentials, and
+  config management schemas.
+- New unit tests for eventconf file upload (from path and from bytes).
+- 7 new retry configuration tests (`test_retries.py`).
+
+### Changed
+
+- Mixin methods now pass empty `params={}` directly instead of using
+  `params={} or None`; `requests` handles empty dicts correctly and this
+  removes a subtle footgun.
+- `_eventconf.py`: refactored to use `_post_files()`, `_post_text()`, and
+  `_get_text()` base helpers instead of raw `_session` calls.
+- `_classifications.py`: `import_classification_rules_csv()` refactored to
+  use `_post_text()`.
+- ADR-010 updated from "No retry" to "Retry with exponential backoff".
+
 ## [0.3.0] - 2026-03-07
 
 ### Added

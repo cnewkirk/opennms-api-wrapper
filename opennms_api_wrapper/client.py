@@ -164,9 +164,14 @@ class OpenNMS(
             production).
         timeout: Socket timeout in seconds for all HTTP requests.
             Defaults to ``30``.  Pass ``None`` to disable.
+        retries: Number of retries on connection errors and HTTP
+            500/502/503/504 with exponential backoff (0.5 s factor).
+            Defaults to ``3``.  Pass ``0`` to disable.
     """
 
     def __init__(self, url: str, username: str, password: str,
-                 verify_ssl: bool = True, timeout: int = 30):
+                 verify_ssl: bool = True, timeout: int = 30,
+                 retries: int = 3):
         """Initialize the OpenNMS client."""
-        super().__init__(url, username, password, verify_ssl, timeout)
+        super().__init__(url, username, password, verify_ssl, timeout,
+                         retries)

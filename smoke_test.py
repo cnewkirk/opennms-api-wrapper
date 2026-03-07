@@ -265,26 +265,62 @@ def test_nodes(c):
             detail_fn=lambda r: r.get("label", "") if isinstance(r, dict) else "")
         ifaces_r = run(f"get_node_ip_interfaces      id={nid}", c.get_node_ip_interfaces,
             nid, limit=3, detail_fn=lambda r: _n(r, "ipInterface"))
+        _ip = None
+        _svc = None
         if isinstance(ifaces_r, dict):
             _ifaces = ifaces_r.get("ipInterface", [])
             if _ifaces:
                 _ip = _ifaces[0].get("ipAddress")
                 if _ip:
-                    run(f"get_node_ip_services        ip={_ip}", c.get_node_ip_services, nid, _ip)
-        run(f"get_node_snmp_interfaces    id={nid}", c.get_node_snmp_interfaces,
+                    run(f"get_node_ip_interface       ip={_ip}",
+                        c.get_node_ip_interface, nid, _ip)
+                    svc_r = run(f"get_node_ip_services        ip={_ip}",
+                                c.get_node_ip_services, nid, _ip)
+                    if isinstance(svc_r, dict):
+                        _svcs = svc_r.get("service", [])
+                        if _svcs:
+                            _svc = _svcs[0].get("serviceType", {}).get("name")
+                            if _svc:
+                                run(f"get_node_ip_service     svc={_svc}",
+                                    c.get_node_ip_service, nid, _ip, _svc)
+        snmp_r = run(f"get_node_snmp_interfaces    id={nid}", c.get_node_snmp_interfaces,
             nid, limit=3, detail_fn=lambda r: _n(r, "snmpInterface"))
-        run(f"get_node_categories         id={nid}", c.get_node_categories, nid)
+        if isinstance(snmp_r, dict):
+            _snmps = snmp_r.get("snmpInterface", [])
+            if _snmps:
+                _ifindex = _snmps[0].get("ifIndex")
+                if _ifindex is not None:
+                    run(f"get_node_snmp_interface  ifIndex={_ifindex}",
+                        c.get_node_snmp_interface, nid, _ifindex)
+        cats_r = run(f"get_node_categories         id={nid}", c.get_node_categories, nid)
+        if isinstance(cats_r, dict):
+            _cats = cats_r.get("category", [])
+            if _cats:
+                _cname = _cats[0].get("name")
+                if _cname:
+                    run(f"get_node_category       ({_cname})",
+                        c.get_node_category, nid, _cname)
         run(f"get_node_asset_record       id={nid}", c.get_node_asset_record, nid)
         warn(f"get_node_hardware_inventory id={nid}", c.get_node_hardware_inventory, nid,
              note="requires opennms-plugin-provisioning-snmp-hardware-inventory")
         run(f"get_node_metadata           id={nid}", c.get_node_metadata, nid)
+        if _ip:
+            warn(f"get_interface_metadata    ip={_ip}",
+                 c.get_interface_metadata, nid, _ip,
+                 note="may 404 if no metadata on interface")
+            if _svc:
+                warn(f"get_service_metadata     svc={_svc}",
+                     c.get_service_metadata, nid, _ip, _svc,
+                     note="may 404 if no metadata on service")
         run(f"get_node_outages            id={nid}", c.get_node_outages, nid)
         warn(f"get_resources_for_node      id={nid}", c.get_resources_for_node, str(nid))
     else:
-        for lbl in ("get_node", "get_node_ip_interfaces", "get_node_ip_services",
-                    "get_node_snmp_interfaces", "get_node_categories",
-                    "get_node_asset_record", "get_node_hardware_inventory",
-                    "get_node_metadata", "get_node_outages",
+        for lbl in ("get_node", "get_node_ip_interfaces", "get_node_ip_interface",
+                    "get_node_ip_services", "get_node_snmp_interfaces",
+                    "get_node_snmp_interface", "get_node_categories",
+                    "get_node_category", "get_node_asset_record",
+                    "get_node_hardware_inventory", "get_node_metadata",
+                    "get_interface_metadata", "get_node_outages",
                     "get_resources_for_node"):
             _skip(lbl, "no nodes")
 
@@ -321,7 +357,24 @@ def test_requisitions(c):
         rname = reqs[0].get("foreign-source") or reqs[0].get("name")
         if rname:
             run(f"get_requisition       ({rname})", c.get_requisition, rname)
-            run(f"get_requisition_nodes ({rname})", c.get_requisition_nodes, rname)
+            nodes_r = run(f"get_requisition_nodes ({rname})",
+                          c.get_requisition_nodes, rname)
+            _rnodes = []
+            if isinstance(nodes_r, dict):
+                _rnodes = nodes_r.get("node", [])
+            elif isinstance(nodes_r, list):
+                _rnodes = nodes_r
+            if _rnodes:
+                fid = _rnodes[0].get("foreign-id")
+                if fid:
+                    run(f"get_requisition_node            ({fid})",
+                        c.get_requisition_node, rname, fid)
+                    run(f"get_requisition_node_interfaces ({fid})",
+                        c.get_requisition_node_interfaces, rname, fid)
+                    run(f"get_requisition_node_categories ({fid})",
+                        c.get_requisition_node_categories, rname, fid)
+                    run(f"get_requisition_node_assets     ({fid})",
+                        c.get_requisition_node_assets, rname, fid)
     else:
         _skip("get_requisition / get_requisition_nodes", "no requisitions")
 
@@ -342,8 +395,24 @@ def test_foreign_sources(c):
         sname = sources[0].get("name")
         if sname:
             run(f"get_foreign_source           ({sname})", c.get_foreign_source, sname)
-            run(f"get_foreign_source_detectors ({sname})", c.get_foreign_source_detectors, sname)
-            run(f"get_foreign_source_policies  ({sname})", c.get_foreign_source_policies, sname)
+            det_r = run(f"get_foreign_source_detectors ({sname})",
+                        c.get_foreign_source_detectors, sname)
+            dets = det_r if isinstance(det_r, list) else (
+                det_r.get("detector", []) if isinstance(det_r, dict) else [])
+            if dets:
+                dname = dets[0].get("name")
+                if dname:
+                    run(f"get_foreign_source_detector  ({dname})",
+                        c.get_foreign_source_detector, sname, dname)
+            pol_r = run(f"get_foreign_source_policies  ({sname})",
+                        c.get_foreign_source_policies, sname)
+            pols = pol_r if isinstance(pol_r, list) else (
+                pol_r.get("policy", []) if isinstance(pol_r, dict) else [])
+            if pols:
+                pname = pols[0].get("name")
+                if pname:
+                    run(f"get_foreign_source_policy    ({pname})",
+                        c.get_foreign_source_policy, sname, pname)
     else:
         _skip("get_foreign_source / detectors / policies", "no foreign sources")
 
@@ -583,16 +652,50 @@ def test_situations(c):
 
 def test_business_services(c):
     _section("business services (v2)")
-    run("get_business_services", c.get_business_services,
-        detail_fn=lambda r: _n(r, "business-service"))
+    result = run("get_business_services", c.get_business_services,
+                 detail_fn=lambda r: _n(r, "business-service"))
+    bsvcs = []
+    if isinstance(result, dict):
+        bsvcs = result.get("business-service",
+                result.get("business-services", []))
+    elif isinstance(result, list):
+        bsvcs = result
+    if bsvcs:
+        bid = bsvcs[0].get("id")
+        if bid:
+            run(f"get_business_service  id={bid}",
+                c.get_business_service, bid)
+    else:
+        _skip("get_business_service", "no business services")
 
 
 def test_enlinkd(c):
     _section("enlinkd (v2)")
     _, nid = _first(c.get_nodes, "node")
+    _enlinkd_note = "requires enlinkd daemon"
     if nid:
-        warn(f"get_node_enlinkd  id={nid}", c.get_node_enlinkd, nid,
-             note="requires enlinkd daemon to be enabled")
+        warn(f"get_node_enlinkd         id={nid}", c.get_node_enlinkd, nid,
+             note=_enlinkd_note)
+        warn(f"get_node_lldp_links      id={nid}", c.get_node_lldp_links, nid,
+             note=_enlinkd_note)
+        warn(f"get_node_cdp_links       id={nid}", c.get_node_cdp_links, nid,
+             note=_enlinkd_note)
+        warn(f"get_node_ospf_links      id={nid}", c.get_node_ospf_links, nid,
+             note=_enlinkd_note)
+        warn(f"get_node_isis_links      id={nid}", c.get_node_isis_links, nid,
+             note=_enlinkd_note)
+        warn(f"get_node_bridge_links    id={nid}", c.get_node_bridge_links, nid,
+             note=_enlinkd_note)
+        warn(f"get_node_lldp_element    id={nid}", c.get_node_lldp_element, nid,
+             note=_enlinkd_note)
+        warn(f"get_node_cdp_element     id={nid}", c.get_node_cdp_element, nid,
+             note=_enlinkd_note)
+        warn(f"get_node_ospf_element    id={nid}", c.get_node_ospf_element, nid,
+             note=_enlinkd_note)
+        warn(f"get_node_isis_element    id={nid}", c.get_node_isis_element, nid,
+             note=_enlinkd_note)
+        warn(f"get_node_bridge_elements id={nid}", c.get_node_bridge_elements, nid,
+             note=_enlinkd_note)
     else:
         _skip("get_node_enlinkd", "no nodes")
 
@@ -682,18 +785,54 @@ def test_flow_dscp(c):
 
 def test_business_service_functions(c):
     _section("business service functions (v2)")
-    run("get_map_functions", c.get_map_functions)
-    run("get_reduce_functions", c.get_reduce_functions)
+    map_r = run("get_map_functions", c.get_map_functions)
+    reduce_r = run("get_reduce_functions", c.get_reduce_functions)
+    # Extract a function name to test individual lookup
+    _mfuncs = map_r if isinstance(map_r, list) else (
+        map_r.get("functions", []) if isinstance(map_r, dict) else [])
+    if _mfuncs:
+        mname = _mfuncs[0] if isinstance(_mfuncs[0], str) else _mfuncs[0].get("name", "")
+        if mname:
+            run(f"get_map_function  ({mname})", c.get_map_function, mname)
+    _rfuncs = reduce_r if isinstance(reduce_r, list) else (
+        reduce_r.get("functions", []) if isinstance(reduce_r, dict) else [])
+    if _rfuncs:
+        rname = _rfuncs[0] if isinstance(_rfuncs[0], str) else _rfuncs[0].get("name", "")
+        if rname:
+            run(f"get_reduce_function  ({rname})", c.get_reduce_function, rname)
 
 
 def test_classifications(c):
     _section("classifications")
-    warn("get_classification_rules", c.get_classification_rules,
-         note="requires flow classification plugin")
-    warn("get_classification_groups", c.get_classification_groups,
-         note="requires flow classification plugin")
+    _cls_note = "requires flow classification plugin"
+    rules_r = warn("get_classification_rules", c.get_classification_rules,
+                   note=_cls_note)
+    groups_r = warn("get_classification_groups", c.get_classification_groups,
+                    note=_cls_note)
     warn("get_classification_protocols", c.get_classification_protocols,
-         note="requires flow classification plugin")
+         note=_cls_note)
+    # Drill into first rule if available
+    rules = []
+    if isinstance(rules_r, dict):
+        rules = rules_r.get("rule", rules_r.get("classification", []))
+    elif isinstance(rules_r, list):
+        rules = rules_r
+    if rules:
+        rid = rules[0].get("id")
+        if rid:
+            warn(f"get_classification_rule   id={rid}",
+                 c.get_classification_rule, rid, note=_cls_note)
+    # Drill into first group if available
+    groups = []
+    if isinstance(groups_r, dict):
+        groups = groups_r.get("group", [])
+    elif isinstance(groups_r, list):
+        groups = groups_r
+    if groups:
+        gid = groups[0].get("id")
+        if gid:
+            warn(f"get_classification_group  id={gid}",
+                 c.get_classification_group, gid, note=_cls_note)
 
 
 def test_situation_feedback(c):
@@ -704,13 +843,36 @@ def test_situation_feedback(c):
 
 def test_user_defined_links(c):
     _section("user-defined links (v2)")
-    run("get_user_defined_links", c.get_user_defined_links)
+    result = run("get_user_defined_links", c.get_user_defined_links)
+    links = []
+    if isinstance(result, dict):
+        links = result.get("user-defined-link", [])
+    elif isinstance(result, list):
+        links = result
+    if links:
+        lid = links[0].get("id")
+        if lid:
+            run(f"get_user_defined_link  id={lid}",
+                c.get_user_defined_link, lid)
+    else:
+        _skip("get_user_defined_link", "no user-defined links")
 
 
 def test_applications(c):
     _section("applications (v2)")
-    run("get_applications", c.get_applications,
-        detail_fn=lambda r: _n(r, "application"))
+    result = run("get_applications", c.get_applications,
+                 detail_fn=lambda r: _n(r, "application"))
+    apps = []
+    if isinstance(result, dict):
+        apps = result.get("application", [])
+    elif isinstance(result, list):
+        apps = result
+    if apps:
+        aid = apps[0].get("id")
+        if aid:
+            run(f"get_application  id={aid}", c.get_application, aid)
+    else:
+        _skip("get_application", "no applications")
 
 
 def test_perspective_poller(c):
@@ -754,10 +916,23 @@ def test_provisiond(c):
 
 def test_eventconf(c):
     _section("eventconf (v2)")
-    warn("get_eventconf_source_names", c.get_eventconf_source_names,
-         note="requires eventconf v2 API support")
-    warn("get_eventconf_filter", c.get_eventconf_filter,
-         note="requires eventconf v2 API support")
+    _ec_note = "requires eventconf v2 API support"
+    names_r = warn("get_eventconf_source_names", c.get_eventconf_source_names,
+                   note=_ec_note)
+    warn("get_eventconf_filter", c.get_eventconf_filter, note=_ec_note)
+    warn("get_eventconf_filter_sources", c.get_eventconf_filter_sources,
+         note=_ec_note)
+    # Drill into first source if source names returned
+    src_name = None
+    if isinstance(names_r, list) and names_r:
+        src_name = names_r[0]
+    if src_name:
+        warn(f"get_eventconf_source          ({src_name})",
+             c.get_eventconf_source, src_name, note=_ec_note)
+        warn(f"get_eventconf_filter_events   ({src_name})",
+             c.get_eventconf_filter_events, src_name, note=_ec_note)
+        warn(f"download_eventconf_events     ({src_name})",
+             c.download_eventconf_events, src_name, note=_ec_note)
 
 
 def test_asset_suggestions(c):
@@ -767,15 +942,32 @@ def test_asset_suggestions(c):
 
 def test_scv(c):
     _section("secure credentials vault")
-    warn("get_credentials", c.get_credentials,
-         note="requires SCV REST API support")
+    result = warn("get_credentials", c.get_credentials,
+                  note="requires SCV REST API support")
+    creds = []
+    if isinstance(result, dict):
+        creds = result.get("credential", [])
+    elif isinstance(result, list):
+        creds = result
+    if creds:
+        alias = creds[0] if isinstance(creds[0], str) else creds[0].get("alias")
+        if alias:
+            warn(f"get_credential  ({alias})", c.get_credential, alias,
+                 note="requires SCV REST API support")
 
 
 def test_config_mgmt(c):
     _section("configuration management")
-    run("get_config_names", c.get_config_names)
+    names_r = run("get_config_names", c.get_config_names)
     warn("get_config_schemas", c.get_config_schemas,
          note="may return empty body on some versions")
+    cfg_names = names_r if isinstance(names_r, list) else []
+    if cfg_names:
+        cname = cfg_names[0]
+        warn(f"get_config_schema  ({cname})", c.get_config_schema, cname,
+             note="may return empty body on some versions")
+        warn(f"get_config_ids     ({cname})", c.get_config_ids, cname,
+             note="may return empty body on some versions")
 
 
 def test_snmptrap_nbi(c):

@@ -12,7 +12,7 @@ class SnmpConfigMixin:
         params = {}
         if location:
             params["location"] = location
-        return self._get(f"snmpConfig/{ip_address}", params=params or None)
+        return self._get(f"snmpConfig/{ip_address}", params=params)
 
     def set_snmp_config(self, ip_address: str, config: dict):
         """Add or update the SNMP configuration for *ip_address*.

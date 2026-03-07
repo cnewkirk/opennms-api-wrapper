@@ -1,5 +1,7 @@
 """Tests for EventConfMixin – /api/v2/eventconf."""
 import json
+import os
+import tempfile
 import responses
 from .conftest import V2, qs
 from .fixtures import (
@@ -121,3 +123,30 @@ def test_delete_eventconf_events(client):
     result = client.delete_eventconf_events("default",
                                             {"ids": ["evt-1"]})
     assert result is None
+
+
+@responses.activate
+def test_upload_eventconf_from_file(client):
+    responses.add(responses.POST, f"{V2}/eventconf/upload", status=204)
+    xml = b"<events><event-file>custom.xml</event-file></events>"
+    with tempfile.NamedTemporaryFile(suffix=".xml", delete=False) as fh:
+        fh.write(xml)
+        fh.flush()
+        path = fh.name
+    try:
+        result = client.upload_eventconf(path)
+    finally:
+        os.unlink(path)
+    assert result is None
+    assert b"custom.xml" in responses.calls[0].request.body
+
+
+@responses.activate
+def test_upload_eventconf_from_bytes(client):
+    responses.add(responses.POST, f"{V2}/eventconf/upload", status=204)
+    xml = b"<events><event-file>custom.xml</event-file></events>"
+    result = client.upload_eventconf(xml)
+    assert result is None
+    body = responses.calls[0].request.body
+    assert b"custom.xml" in body
+    assert b"events.xml" in body

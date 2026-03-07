@@ -374,47 +374,63 @@ def _get(self, path, params=None, v2=False):
 
 ---
 
-## ADR-010 · No retry / backoff logic
+## ADR-010 · Retry with exponential backoff
 
 ### Status
-Accepted
+Accepted — supersedes earlier "No retry" decision
 
 ### Context
 HTTP clients in production environments commonly need to retry on transient
-errors (429 Too Many Requests, 503 Service Unavailable, connection resets).
+errors (500 Internal Server Error, 502 Bad Gateway, 503 Service Unavailable,
+504 Gateway Timeout, connection resets).  The OpenNMS REST API occasionally
+returns transient 500s under load.  `requests` uses `urllib3` under the hood,
+which provides a built-in `Retry` class with exponential backoff — no new
+dependencies required.
 
 ### Decision
-No retry logic.  A failed call raises `requests.exceptions.HTTPError` (or
-a connection error) immediately.
+`_OpenNMSBase.__init__` accepts a `retries` parameter (default 3).  When
+`retries > 0`, a `urllib3.util.retry.Retry` adapter is mounted on the session
+for both `http://` and `https://`.
+
+```python
+if retries > 0:
+    retry = Retry(
+        total=retries,
+        backoff_factor=0.5,
+        status_forcelist=(500, 502, 503, 504),
+        allowed_methods=None,
+        raise_on_status=False,
+    )
+    adapter = HTTPAdapter(max_retries=retry)
+    self._session.mount("https://", adapter)
+    self._session.mount("http://", adapter)
+```
+
+Key parameters:
+- `backoff_factor=0.5` → delays of 0.5 s, 1 s, 2 s (3.5 s total max wait).
+- `status_forcelist=(500, 502, 503, 504)` → retry on transient server errors.
+- `allowed_methods=None` → retry all HTTP methods (OpenNMS REST operations
+  are functionally idempotent).
+- `raise_on_status=False` → after retries are exhausted, the last response
+  is returned so `_parse()` → `raise_for_status()` raises `HTTPError` as
+  before (backwards-compatible error behaviour).
+- Pass `retries=0` to disable and get the old one-request-per-call behaviour.
 
 ### Consequences
 
 **Pros**
-- Keeps the library thin and predictable: every call maps to exactly one
-  HTTP request.
-- Callers with specific retry requirements (different backoff strategies,
-  retry budgets, circuit breakers) can implement exactly what they need.
-- `urllib3.util.Retry` + `requests.adapters.HTTPAdapter` is a well-known
-  pattern callers can add externally without modifying this library.
+- Transient 500s and connection resets are handled transparently — all
+  consumers (including the smoke test) benefit automatically.
+- No new runtime dependency; `urllib3` ships with `requests`.
+- Opt-out is trivial: `retries=0`.
 
 **Cons**
-- Callers who want any retry at all must add their own wrapper.
-- A 429 on a bulk operation (acking 500 alarms) requires the caller to
-  implement paging-and-retry manually.
-
-**Guidance for callers who need retries**
-
-```python
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
-
-adapter = HTTPAdapter(max_retries=Retry(
-    total=3, backoff_factor=1,
-    status_forcelist=[429, 500, 502, 503, 504],
-))
-client._session.mount("https://", adapter)
-client._session.mount("http://",  adapter)
-```
+- Non-idempotent side effects (e.g. creating a resource) could in theory
+  execute twice if the server processes the request but the response is lost.
+  In practice, OpenNMS REST endpoints either return the same result or reject
+  duplicates (requisition nodes keyed by foreign-id, acks keyed by alarm-id).
+- Adds up to 3.5 s of hidden latency on a truly broken endpoint before the
+  caller sees the error.
 
 ---
 
@@ -458,5 +474,5 @@ except PackageNotFoundError:
 | 007 | `v2=True` flag | One client, full surface | Flag leaks into every helper |
 | 008 | Mocked HTTP tests | Fast, deterministic, portable | Fixtures can drift |
 | 009 | `timeout=30` default | Threads cannot hang indefinitely | Long ops may need higher timeout |
-| 010 | No retry | Thin, predictable | Callers must add retries |
+| 010 | Retry w/ backoff (default 3) | Transient 500s handled transparently | Up to 3.5 s hidden latency |
 | 011 | `importlib.metadata` version | Single source of truth | Returns `unknown` from uninstalled source |

@@ -111,12 +111,10 @@ class ClassificationsMixin:
             group_id: Target group database ID.
             csv_text: CSV-formatted rules to import.
         """
-        url = self._url(f"classifications/groups/{group_id}")
-        resp = self._session.post(
-            url, data=csv_text,
-            headers={"Content-Type": "text/comma-separated-values"},
-            timeout=self._timeout)
-        return self._parse(resp)
+        return self._post_text(
+            f"classifications/groups/{group_id}",
+            data=csv_text,
+            content_type="text/comma-separated-values")
 
     # ------------------------------------------------------------------
     # Protocols

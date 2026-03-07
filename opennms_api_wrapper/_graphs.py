@@ -62,7 +62,7 @@ class GraphsMixin:
         if context:
             params["context"] = context
         return self._get(f"graphs/search/results/{namespace}",
-                         params=params or None)
+                         params=params)
 
     # ------------------------------------------------------------------
     # Prefab graphs

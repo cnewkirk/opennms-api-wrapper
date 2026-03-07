@@ -55,7 +55,7 @@ class ResourcesMixin:
             params["nodeSubresources"] = ",".join(node_subresources)
         if string_properties:
             params["stringProperties"] = ",".join(string_properties)
-        return self._get("resources/select", params=params or None)
+        return self._get("resources/select", params=params)
 
     def delete_resource(self, resource_id: str):
         """Delete a resource and all its child resources.

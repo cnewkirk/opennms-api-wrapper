@@ -20,7 +20,7 @@ class EventConfMixin:
             params["uei"] = uei
         if vendor:
             params["vendor"] = vendor
-        return self._get("eventconf/filter", params=params or None,
+        return self._get("eventconf/filter", params=params,
                          v2=True)
 
     def get_eventconf_filter_sources(self, filter: str = None,
@@ -35,7 +35,7 @@ class EventConfMixin:
         if filter:
             params["filter"] = filter
         return self._get("eventconf/filter/sources",
-                         params=params or None, v2=True)
+                         params=params, v2=True)
 
     def get_eventconf_filter_events(self, source_id: str, **kwargs):
         """Get events for a specific configuration source.
@@ -44,9 +44,8 @@ class EventConfMixin:
             source_id: Event configuration source identifier.
             **kwargs: Additional query parameters.
         """
-        params = kwargs or None
         return self._get(f"eventconf/filter/{source_id}/events",
-                         params=params, v2=True)
+                         params=kwargs, v2=True)
 
     # ------------------------------------------------------------------
     # Sources
@@ -73,12 +72,8 @@ class EventConfMixin:
         Returns:
             Raw response text (typically XML).
         """
-        resp = self._session.get(
-            self._url(f"eventconf/sources/{source_id}/events/download",
-                      v2=True),
-            timeout=self._timeout)
-        resp.raise_for_status()
-        return resp.text
+        return self._get_text(
+            f"eventconf/sources/{source_id}/events/download", v2=True)
 
     # ------------------------------------------------------------------
     # Vendor events
@@ -134,16 +129,12 @@ class EventConfMixin:
         """
         if isinstance(file_path_or_bytes, str):
             with open(file_path_or_bytes, "rb") as fh:
-                files = {"file": fh}
-                resp = self._session.post(
-                    self._url("eventconf/upload", v2=True),
-                    files=files, timeout=self._timeout)
-        else:
-            files = {"file": ("events.xml", file_path_or_bytes)}
-            resp = self._session.post(
-                self._url("eventconf/upload", v2=True),
-                files=files, timeout=self._timeout)
-        return self._parse(resp)
+                return self._post_files(
+                    "eventconf/upload", files={"file": fh},
+                    v2=True)
+        files = {"file": ("events.xml", file_path_or_bytes)}
+        return self._post_files("eventconf/upload", files=files,
+                                v2=True)
 
     # ------------------------------------------------------------------
     # Status (PATCH)

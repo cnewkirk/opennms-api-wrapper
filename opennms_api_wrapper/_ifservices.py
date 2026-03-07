@@ -9,8 +9,7 @@ class IfServicesMixin:
             **kwargs: Query parameters such as ``limit``, ``offset``,
                 ``node.label``, ``ipInterface.ipAddress``, etc.
         """
-        params = kwargs or None
-        return self._get("ifservices", params=params)
+        return self._get("ifservices", params=kwargs)
 
     def update_ifservices(self, **kwargs):
         """Bulk-update monitored services.

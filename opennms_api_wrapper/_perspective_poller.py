@@ -18,7 +18,7 @@ class PerspectivePollerMixin:
         if end is not None:
             params["end"] = end
         return self._get(f"perspectivepoller/{app_id}",
-                         params=params or None, v2=True)
+                         params=params, v2=True)
 
     def get_perspective_poller_service_status(self, app_id: int,
                                              service_id: int,
@@ -39,4 +39,4 @@ class PerspectivePollerMixin:
             params["end"] = end
         return self._get(
             f"perspectivepoller/{app_id}/{service_id}",
-            params=params or None, v2=True)
+            params=params, v2=True)
