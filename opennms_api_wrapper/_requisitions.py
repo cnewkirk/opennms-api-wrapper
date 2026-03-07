@@ -1,5 +1,5 @@
 """Requisitions (Provisioning) REST API – /rest/requisitions."""
-from .types import RequisitionNode
+from .types import RequisitionNode, Requisition
 
 
 class RequisitionsMixin:
@@ -27,7 +27,7 @@ class RequisitionsMixin:
         """Return the count of deployed requisitions."""
         return self._get("requisitions/deployed/count")
 
-    def create_requisition(self, requisition: dict):
+    def create_requisition(self, requisition: Requisition):
         """Add or replace a requisition.
 
         Args:
@@ -47,7 +47,7 @@ class RequisitionsMixin:
         params = {} if rescan_existing else {"rescanExisting": "false"}
         return self._put(f"requisitions/{name}/import", params=params)
 
-    def update_requisition(self, name: str, data: dict):
+    def update_requisition(self, name: str, data: Requisition):
         """Update metadata on an existing requisition.
 
         Args:
@@ -87,7 +87,7 @@ class RequisitionsMixin:
         """
         return self._post(f"requisitions/{name}/nodes", json_data=node)
 
-    def update_requisition_node(self, name: str, foreign_id: str, node: dict):
+    def update_requisition_node(self, name: str, foreign_id: str, node: RequisitionNode):
         """Update a node in requisition *name*.
 
         Args:

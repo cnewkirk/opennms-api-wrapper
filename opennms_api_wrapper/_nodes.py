@@ -1,4 +1,5 @@
 """Nodes REST API – /rest/nodes and sub-resources."""
+from .types import Node, NodeIpInterface, NodeSnmpInterface, NodeAssetRecord, HardwareEntity, Category
 
 
 class NodesMixin:
@@ -40,7 +41,7 @@ class NodesMixin:
                            v2=True)
         return result.get("totalCount", 0)
 
-    def create_node(self, node: dict):
+    def create_node(self, node: Node):
         """Create a node via the v1 API (POST /rest/nodes).
 
         Args:
@@ -63,7 +64,7 @@ class NodesMixin:
         """
         return self._post("nodes", json_data=node)
 
-    def update_node(self, node_id, node: dict):
+    def update_node(self, node_id, node: Node):
         """Update node properties (PUT /rest/nodes/{id}).
 
         Args:
@@ -102,7 +103,7 @@ class NodesMixin:
         """Get a specific IP interface by *ip_address*."""
         return self._get(f"nodes/{node_id}/ipinterfaces/{ip_address}")
 
-    def create_node_ip_interface(self, node_id, interface: dict):
+    def create_node_ip_interface(self, node_id, interface: NodeIpInterface):
         """Add an IP interface to *node_id*.
 
         Args:
@@ -113,7 +114,7 @@ class NodesMixin:
         """
         return self._post(f"nodes/{node_id}/ipinterfaces", json_data=interface)
 
-    def update_node_ip_interface(self, node_id, ip_address: str, interface: dict):
+    def update_node_ip_interface(self, node_id, ip_address: str, interface: NodeIpInterface):
         """Update an IP interface.
 
         Args:
@@ -181,7 +182,7 @@ class NodesMixin:
         """Get a specific SNMP interface by ifIndex."""
         return self._get(f"nodes/{node_id}/snmpinterfaces/{ifindex}")
 
-    def create_node_snmp_interface(self, node_id, interface: dict):
+    def create_node_snmp_interface(self, node_id, interface: NodeSnmpInterface):
         """Add an SNMP interface to *node_id*.
 
         Args:
@@ -190,7 +191,7 @@ class NodesMixin:
         """
         return self._post(f"nodes/{node_id}/snmpinterfaces", json_data=interface)
 
-    def update_node_snmp_interface(self, node_id, ifindex: int, interface: dict):
+    def update_node_snmp_interface(self, node_id, ifindex: int, interface: NodeSnmpInterface):
         """Update an SNMP interface.
 
         Args:
@@ -226,7 +227,7 @@ class NodesMixin:
         """
         return self._post(f"nodes/{node_id}/categories", json_data=category)
 
-    def update_node_category(self, node_id, category: str, data: dict):
+    def update_node_category(self, node_id, category: str, data: Category):
         """Update a category association for *node_id*.
 
         Args:
@@ -248,7 +249,7 @@ class NodesMixin:
         """Get the asset record for *node_id*."""
         return self._get(f"nodes/{node_id}/assetRecord")
 
-    def update_node_asset_record(self, node_id, asset: dict):
+    def update_node_asset_record(self, node_id, asset: NodeAssetRecord):
         """Update the asset record for *node_id*.
 
         Args:
@@ -272,7 +273,7 @@ class NodesMixin:
         """Get a specific hardware entity by *ent_physical_index*."""
         return self._get(f"nodes/{node_id}/hardwareInventory/{ent_physical_index}")
 
-    def add_node_hardware_inventory(self, node_id, data: dict):
+    def add_node_hardware_inventory(self, node_id, data: HardwareEntity):
         """Add a hardware inventory entry to *node_id*.
 
         Args:
@@ -282,7 +283,7 @@ class NodesMixin:
         return self._post(f"nodes/{node_id}/hardwareInventory", json_data=data)
 
     def update_node_hardware_entity(self, node_id, ent_physical_index: int,
-                                    data: dict):
+                                    data: HardwareEntity):
         """Update a specific hardware entity.
 
         Args:

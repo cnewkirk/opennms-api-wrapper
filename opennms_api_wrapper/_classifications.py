@@ -1,4 +1,5 @@
 """Flow Classification REST API – /rest/classifications."""
+from .types import ClassificationRule, ClassificationGroup, ClassifyRequest
 
 
 class ClassificationsMixin:
@@ -20,7 +21,7 @@ class ClassificationsMixin:
         """Get a specific classification rule by *rule_id*."""
         return self._get(f"classifications/{rule_id}")
 
-    def create_classification_rule(self, rule: dict):
+    def create_classification_rule(self, rule: ClassificationRule):
         """Create a new classification rule.
 
         Args:
@@ -30,7 +31,7 @@ class ClassificationsMixin:
         """
         return self._post("classifications", json_data=rule)
 
-    def update_classification_rule(self, rule_id: int, rule: dict):
+    def update_classification_rule(self, rule_id: int, rule: ClassificationRule):
         """Update a classification rule.
 
         Args:
@@ -52,7 +53,7 @@ class ClassificationsMixin:
         """Delete a specific classification rule."""
         return self._delete(f"classifications/{rule_id}")
 
-    def classify(self, request: dict):
+    def classify(self, request: ClassifyRequest):
         """Classify a flow record against the configured rules.
 
         Args:
@@ -81,7 +82,7 @@ class ClassificationsMixin:
         """Get a specific classification group by *group_id*."""
         return self._get(f"classifications/groups/{group_id}")
 
-    def create_classification_group(self, group: dict):
+    def create_classification_group(self, group: ClassificationGroup):
         """Create a new classification group.
 
         Args:
@@ -89,7 +90,7 @@ class ClassificationsMixin:
         """
         return self._post("classifications/groups", json_data=group)
 
-    def update_classification_group(self, group_id: int, group: dict):
+    def update_classification_group(self, group_id: int, group: ClassificationGroup):
         """Update a classification group.
 
         Args:

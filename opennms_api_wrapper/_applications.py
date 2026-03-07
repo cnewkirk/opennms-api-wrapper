@@ -1,4 +1,5 @@
 """Applications REST API v2 – /api/v2/applications."""
+from .types import Application
 
 
 class ApplicationsMixin:
@@ -16,7 +17,7 @@ class ApplicationsMixin:
         """Get a specific application by *app_id*."""
         return self._get(f"applications/{app_id}", v2=True)
 
-    def create_application(self, app: dict):
+    def create_application(self, app: Application):
         """Create a new application.
 
         Args:

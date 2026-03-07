@@ -1,4 +1,5 @@
 """Measurements REST API – /rest/measurements."""
+from .types import MeasurementsQuery
 
 
 class MeasurementsMixin:
@@ -40,7 +41,7 @@ class MeasurementsMixin:
             params["fallback-attribute"] = fallback_attribute
         return self._get(f"measurements/{resource_id}/{attribute}", params=params)
 
-    def get_measurements_multi(self, query: dict):
+    def get_measurements_multi(self, query: MeasurementsQuery):
         """Retrieve measurements for multiple attributes with JEXL expressions.
 
         Args:

@@ -1,4 +1,5 @@
 """Scheduled Outages REST API – /rest/sched-outages."""
+from .types import SchedOutage
 
 
 class SchedOutagesMixin:
@@ -14,7 +15,7 @@ class SchedOutagesMixin:
         """Get a specific scheduled outage by *outage_name*."""
         return self._get(f"sched-outages/{outage_name}")
 
-    def create_sched_outage(self, outage: dict):
+    def create_sched_outage(self, outage: SchedOutage):
         """Add a new (or replace an existing) scheduled outage.
 
         Args:

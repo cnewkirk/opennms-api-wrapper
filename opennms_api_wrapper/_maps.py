@@ -1,4 +1,5 @@
 """Maps REST API – /rest/maps."""
+from .types import Map
 
 
 class MapsMixin:
@@ -14,7 +15,7 @@ class MapsMixin:
         """Get nodes, links, and elements for map *map_id*."""
         return self._get(f"maps/{map_id}/mapElements")
 
-    def create_map(self, map_data: dict):
+    def create_map(self, map_data: Map):
         """Add a new map.
 
         Args:
@@ -22,7 +23,7 @@ class MapsMixin:
         """
         return self._post("maps", json_data=map_data)
 
-    def update_map(self, map_id: int, map_data: dict):
+    def update_map(self, map_id: int, map_data: Map):
         """Update map properties.
 
         Args:

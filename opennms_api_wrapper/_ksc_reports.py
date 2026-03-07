@@ -1,4 +1,5 @@
 """KSC Reports REST API – /rest/ksc."""
+from .types import KscReport
 
 
 class KscReportsMixin:
@@ -14,7 +15,7 @@ class KscReportsMixin:
         """Return the total number of KSC reports."""
         return self._get("ksc/count")
 
-    def create_ksc_report(self, report: dict):
+    def create_ksc_report(self, report: KscReport):
         """Create a new KSC report.
 
         Args:
@@ -38,7 +39,7 @@ class KscReportsMixin:
         """
         return self._post("ksc", json_data=report)
 
-    def update_ksc_report(self, report_id: int, report: dict):
+    def update_ksc_report(self, report_id: int, report: KscReport):
         """Modify an existing KSC report.
 
         Args:

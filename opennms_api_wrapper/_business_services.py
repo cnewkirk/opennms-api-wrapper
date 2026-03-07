@@ -1,4 +1,5 @@
 """Business Service Monitoring REST API v2 – /api/v2/business-services."""
+from .types import BusinessService, BsIpServiceEdge, BsReductionKeyEdge, BsChildEdge
 
 
 class BusinessServicesMixin:
@@ -10,7 +11,7 @@ class BusinessServicesMixin:
         """Get a specific business service by *service_id*."""
         return self._get(f"business-services/{service_id}", v2=True)
 
-    def create_business_service(self, service: dict):
+    def create_business_service(self, service: BusinessService):
         """Create a new business service.
 
         Args:
@@ -27,7 +28,7 @@ class BusinessServicesMixin:
         """
         return self._post("business-services", json_data=service, v2=True)
 
-    def update_business_service(self, service_id: int, service: dict):
+    def update_business_service(self, service_id: int, service: BusinessService):
         """Update a business service.
 
         Args:
@@ -49,7 +50,7 @@ class BusinessServicesMixin:
         """Get a specific business service edge by *edge_id*."""
         return self._get(f"business-services/edges/{edge_id}", v2=True)
 
-    def add_ip_service_edge(self, service_id: int, edge: dict):
+    def add_ip_service_edge(self, service_id: int, edge: BsIpServiceEdge):
         """Add an IP-service edge to a business service.
 
         Args:
@@ -61,7 +62,7 @@ class BusinessServicesMixin:
             f"business-services/{service_id}/ip-service-edge",
             json_data=edge, v2=True)
 
-    def add_reduction_key_edge(self, service_id: int, edge: dict):
+    def add_reduction_key_edge(self, service_id: int, edge: BsReductionKeyEdge):
         """Add a reduction-key edge to a business service.
 
         Args:
@@ -73,7 +74,7 @@ class BusinessServicesMixin:
             f"business-services/{service_id}/reduction-key-edge",
             json_data=edge, v2=True)
 
-    def add_child_edge(self, service_id: int, edge: dict):
+    def add_child_edge(self, service_id: int, edge: BsChildEdge):
         """Add a child-service edge to a business service.
 
         Args:

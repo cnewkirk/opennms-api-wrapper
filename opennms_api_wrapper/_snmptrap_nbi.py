@@ -1,4 +1,5 @@
 """SNMP Trap NBI Configuration REST API – /rest/config/snmptrap-nbi."""
+from .types import SnmpTrapNbiTrapSink, SnmpTrapNbiConfig
 
 
 class SnmpTrapNbiMixin:
@@ -29,7 +30,7 @@ class SnmpTrapNbiMixin:
         """Get a specific trap sink by *name*."""
         return self._get(f"{self._SNMPTRAP_NBI}/trapsinks/{name}")
 
-    def create_snmptrap_nbi_trapsink(self, data: dict):
+    def create_snmptrap_nbi_trapsink(self, data: SnmpTrapNbiTrapSink):
         """Create a new SNMP trap NBI trap sink.
 
         Args:
@@ -39,7 +40,7 @@ class SnmpTrapNbiMixin:
         return self._post(f"{self._SNMPTRAP_NBI}/trapsinks",
                           json_data=data)
 
-    def update_snmptrap_nbi_trapsink(self, name: str, data: dict):
+    def update_snmptrap_nbi_trapsink(self, name: str, data: SnmpTrapNbiTrapSink):
         """Update a trap sink.
 
         Args:
@@ -53,7 +54,7 @@ class SnmpTrapNbiMixin:
         """Delete a trap sink."""
         return self._delete(f"{self._SNMPTRAP_NBI}/trapsinks/{name}")
 
-    def update_snmptrap_nbi_config(self, data: dict):
+    def update_snmptrap_nbi_config(self, data: SnmpTrapNbiConfig):
         """Update the SNMP trap NBI configuration.
 
         Args:

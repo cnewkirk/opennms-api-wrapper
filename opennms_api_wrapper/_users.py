@@ -1,4 +1,5 @@
 """Users REST API – /rest/users."""
+from .types import User
 
 
 class UsersMixin:
@@ -10,7 +11,7 @@ class UsersMixin:
         """Get a specific user by *username*."""
         return self._get(f"users/{username}")
 
-    def create_user(self, user: dict, hash_password: bool = False):
+    def create_user(self, user: User, hash_password: bool = False):
         """Create a new user.
 
         Args:
@@ -31,7 +32,7 @@ class UsersMixin:
         params = {"hashPassword": "true"} if hash_password else None
         return self._post("users", json_data=user, params=params)
 
-    def update_user(self, username: str, user: dict):
+    def update_user(self, username: str, user: User):
         """Update user properties.
 
         Args:

@@ -1,4 +1,5 @@
 """Events REST API – /rest/events."""
+from .types import Event
 
 
 class EventsMixin:
@@ -31,7 +32,7 @@ class EventsMixin:
 
     # Create
 
-    def create_event(self, event: dict):
+    def create_event(self, event: Event):
         """Publish an event to the OpenNMS event bus.
 
         Args:

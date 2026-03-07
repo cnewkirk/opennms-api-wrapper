@@ -1,4 +1,5 @@
 """Event Configuration REST API v2 – /api/v2/eventconf."""
+from .types import EventConfEvent
 
 
 class EventConfMixin:
@@ -92,7 +93,7 @@ class EventConfMixin:
     # CRUD
     # ------------------------------------------------------------------
 
-    def create_eventconf_event(self, source_id: str, event: dict):
+    def create_eventconf_event(self, source_id: str, event: EventConfEvent):
         """Create a new event definition in a source.
 
         Args:
@@ -104,7 +105,7 @@ class EventConfMixin:
             json_data=event, v2=True)
 
     def update_eventconf_event(self, source_id: str, event_id: str,
-                               event: dict):
+                               event: EventConfEvent):
         """Update an event definition.
 
         Args:

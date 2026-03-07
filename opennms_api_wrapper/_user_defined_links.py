@@ -1,4 +1,5 @@
 """User Defined Links REST API v2 – /api/v2/userdefinedlinks."""
+from .types import UserDefinedLink
 
 
 class UserDefinedLinksMixin:
@@ -10,7 +11,7 @@ class UserDefinedLinksMixin:
         """Get a specific user-defined link by *link_id*."""
         return self._get(f"userdefinedlinks/{link_id}", v2=True)
 
-    def create_user_defined_link(self, link: dict):
+    def create_user_defined_link(self, link: UserDefinedLink):
         """Create a new user-defined link.
 
         Args:

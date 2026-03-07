@@ -1,4 +1,5 @@
 """Email NBI Configuration REST API – /rest/config/email-nbi."""
+from .types import EmailNbiDestination, EmailNbiConfig
 
 
 class EmailNbiMixin:
@@ -29,7 +30,7 @@ class EmailNbiMixin:
         """Get a specific email destination by *name*."""
         return self._get(f"{self._EMAIL_NBI}/destinations/{name}")
 
-    def create_email_nbi_destination(self, data: dict):
+    def create_email_nbi_destination(self, data: EmailNbiDestination):
         """Create a new email NBI destination.
 
         Args:
@@ -39,7 +40,7 @@ class EmailNbiMixin:
         return self._post(f"{self._EMAIL_NBI}/destinations",
                           json_data=data)
 
-    def update_email_nbi_destination(self, name: str, data: dict):
+    def update_email_nbi_destination(self, name: str, data: EmailNbiDestination):
         """Update an email NBI destination.
 
         Args:
@@ -53,7 +54,7 @@ class EmailNbiMixin:
         """Delete an email NBI destination."""
         return self._delete(f"{self._EMAIL_NBI}/destinations/{name}")
 
-    def update_email_nbi_config(self, data: dict):
+    def update_email_nbi_config(self, data: EmailNbiConfig):
         """Update the email NBI configuration.
 
         Args:

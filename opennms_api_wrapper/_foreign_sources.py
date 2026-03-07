@@ -1,4 +1,5 @@
 """Foreign Sources REST API – /rest/foreignSources."""
+from .types import ForeignSource, ForeignSourceDetector, ForeignSourcePolicy
 
 
 class ForeignSourcesMixin:
@@ -26,7 +27,7 @@ class ForeignSourcesMixin:
         """Return the count of deployed foreign sources."""
         return self._get("foreignSources/deployed/count")
 
-    def create_foreign_source(self, foreign_source: dict):
+    def create_foreign_source(self, foreign_source: ForeignSource):
         """Create a new foreign source.
 
         Args:
@@ -52,7 +53,7 @@ class ForeignSourcesMixin:
         """
         return self._post("foreignSources", json_data=foreign_source)
 
-    def update_foreign_source(self, name: str, foreign_source: dict):
+    def update_foreign_source(self, name: str, foreign_source: ForeignSource):
         """Update an existing foreign source.
 
         Args:
@@ -77,7 +78,7 @@ class ForeignSourcesMixin:
         """Get a specific detector from foreign source *name*."""
         return self._get(f"foreignSources/{name}/detectors/{detector}")
 
-    def add_foreign_source_detector(self, name: str, detector: dict):
+    def add_foreign_source_detector(self, name: str, detector: ForeignSourceDetector):
         """Add a detector to foreign source *name*.
 
         Args:
@@ -103,7 +104,7 @@ class ForeignSourcesMixin:
         """Get a specific policy from foreign source *name*."""
         return self._get(f"foreignSources/{name}/policies/{policy}")
 
-    def add_foreign_source_policy(self, name: str, policy: dict):
+    def add_foreign_source_policy(self, name: str, policy: ForeignSourcePolicy):
         """Add a policy to foreign source *name*.
 
         Args:

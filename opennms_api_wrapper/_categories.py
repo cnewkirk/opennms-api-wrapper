@@ -1,4 +1,5 @@
 """Categories REST API – /rest/categories."""
+from .types import Category
 
 
 class CategoriesMixin:
@@ -14,7 +15,7 @@ class CategoriesMixin:
         """Get a specific category by *category* name."""
         return self._get(f"categories/{category}")
 
-    def create_category(self, category: dict):
+    def create_category(self, category: Category):
         """Add a new surveillance category.
 
         Args:
@@ -23,7 +24,7 @@ class CategoriesMixin:
         """
         return self._post("categories", json_data=category)
 
-    def update_category(self, category: str, data: dict):
+    def update_category(self, category: str, data: Category):
         """Update a category.
 
         Args:

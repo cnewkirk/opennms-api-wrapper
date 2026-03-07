@@ -1,4 +1,5 @@
 """Javamail Configuration REST API – /rest/config/javamail."""
+from .types import JavamailDefaultConfig, JavamailReadmail, JavamailSendmail, JavamailEnd2End
 
 
 class JavamailConfigMixin:
@@ -12,7 +13,7 @@ class JavamailConfigMixin:
         """Get the default Javamail configuration."""
         return self._get(self._JM)
 
-    def set_javamail_default_config(self, data: dict):
+    def set_javamail_default_config(self, data: JavamailDefaultConfig):
         """Update the default Javamail configuration.
 
         Args:
@@ -32,7 +33,7 @@ class JavamailConfigMixin:
         """Get a specific read-mail configuration by *name*."""
         return self._get(f"{self._JM}/readmails/{name}")
 
-    def create_javamail_readmail(self, data: dict):
+    def create_javamail_readmail(self, data: JavamailReadmail):
         """Create a new read-mail configuration.
 
         Args:
@@ -40,7 +41,7 @@ class JavamailConfigMixin:
         """
         return self._post(f"{self._JM}/readmails", json_data=data)
 
-    def update_javamail_readmail(self, name: str, data: dict):
+    def update_javamail_readmail(self, name: str, data: JavamailReadmail):
         """Update a read-mail configuration.
 
         Args:
@@ -66,7 +67,7 @@ class JavamailConfigMixin:
         """Get a specific send-mail configuration by *name*."""
         return self._get(f"{self._JM}/sendmails/{name}")
 
-    def create_javamail_sendmail(self, data: dict):
+    def create_javamail_sendmail(self, data: JavamailSendmail):
         """Create a new send-mail configuration.
 
         Args:
@@ -74,7 +75,7 @@ class JavamailConfigMixin:
         """
         return self._post(f"{self._JM}/sendmails", json_data=data)
 
-    def update_javamail_sendmail(self, name: str, data: dict):
+    def update_javamail_sendmail(self, name: str, data: JavamailSendmail):
         """Update a send-mail configuration.
 
         Args:
@@ -100,7 +101,7 @@ class JavamailConfigMixin:
         """Get a specific end-to-end mail test configuration by *name*."""
         return self._get(f"{self._JM}/end2ends/{name}")
 
-    def create_javamail_end2end(self, data: dict):
+    def create_javamail_end2end(self, data: JavamailEnd2End):
         """Create a new end-to-end mail test configuration.
 
         Args:
@@ -108,7 +109,7 @@ class JavamailConfigMixin:
         """
         return self._post(f"{self._JM}/end2ends", json_data=data)
 
-    def update_javamail_end2end(self, name: str, data: dict):
+    def update_javamail_end2end(self, name: str, data: JavamailEnd2End):
         """Update an end-to-end mail test configuration.
 
         Args:

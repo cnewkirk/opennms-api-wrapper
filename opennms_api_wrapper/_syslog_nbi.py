@@ -1,4 +1,5 @@
 """Syslog NBI Configuration REST API – /rest/config/syslog-nbi."""
+from .types import SyslogNbiDestination, SyslogNbiConfig
 
 
 class SyslogNbiMixin:
@@ -29,7 +30,7 @@ class SyslogNbiMixin:
         """Get a specific syslog destination by *name*."""
         return self._get(f"{self._SYSLOG_NBI}/destinations/{name}")
 
-    def create_syslog_nbi_destination(self, data: dict):
+    def create_syslog_nbi_destination(self, data: SyslogNbiDestination):
         """Create a new syslog NBI destination.
 
         Args:
@@ -39,7 +40,7 @@ class SyslogNbiMixin:
         return self._post(f"{self._SYSLOG_NBI}/destinations",
                           json_data=data)
 
-    def update_syslog_nbi_destination(self, name: str, data: dict):
+    def update_syslog_nbi_destination(self, name: str, data: SyslogNbiDestination):
         """Update a syslog NBI destination.
 
         Args:
@@ -53,7 +54,7 @@ class SyslogNbiMixin:
         """Delete a syslog NBI destination."""
         return self._delete(f"{self._SYSLOG_NBI}/destinations/{name}")
 
-    def update_syslog_nbi_config(self, data: dict):
+    def update_syslog_nbi_config(self, data: SyslogNbiConfig):
         """Update the syslog NBI configuration.
 
         Args:

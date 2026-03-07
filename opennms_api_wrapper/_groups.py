@@ -1,4 +1,5 @@
 """Groups REST API – /rest/groups."""
+from .types import Group
 
 
 class GroupsMixin:
@@ -14,7 +15,7 @@ class GroupsMixin:
         """Get a specific group by *group_name*."""
         return self._get(f"groups/{group_name}")
 
-    def create_group(self, group: dict):
+    def create_group(self, group: Group):
         """Create a new user group.
 
         Args:
@@ -23,7 +24,7 @@ class GroupsMixin:
         """
         return self._post("groups", json_data=group)
 
-    def update_group(self, group_name: str, group: dict):
+    def update_group(self, group_name: str, group: Group):
         """Update group metadata (e.g. comments field).
 
         Args:

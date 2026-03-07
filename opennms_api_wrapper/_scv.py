@@ -1,4 +1,5 @@
 """Secure Credentials Vault REST API – /rest/scv."""
+from .types import Credential
 
 
 class ScvMixin:
@@ -14,7 +15,7 @@ class ScvMixin:
         """
         return self._get(f"scv/{alias}")
 
-    def create_credential(self, data: dict):
+    def create_credential(self, data: Credential):
         """Create a new credential entry.
 
         Args:
@@ -23,7 +24,7 @@ class ScvMixin:
         """
         return self._post("scv", json_data=data)
 
-    def update_credential(self, alias: str, data: dict):
+    def update_credential(self, alias: str, data: Credential):
         """Update an existing credential.
 
         Args:
