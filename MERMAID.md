@@ -16,7 +16,7 @@ flowchart TD
         AlarmHistoryMixin
     end
 
-    subgraph events_sg["Events & Notifications"]
+    subgraph events_sg["Events and Notifications"]
         EventsMixin
         NotificationsMixin
         AcksMixin
@@ -41,7 +41,7 @@ flowchart TD
         KscReportsMixin
     end
 
-    subgraph data_sg["Data & Reporting"]
+    subgraph data_sg["Data and Reporting"]
         ResourcesMixin
         MeasurementsMixin
         HeatmapMixin
@@ -65,18 +65,13 @@ flowchart TD
 
     InfoMixin["InfoMixin"]
 
-    _OpenNMSBase["_OpenNMSBase  ·  _base.py
-    ─────────────────────────────
-    _get / _post / _put / _delete
-    _parse  ·  _url"]
+    BaseClass["_OpenNMSBase - _base.py<br/>_get / _post / _put / _delete<br/>_parse / _url"]
 
     subgraph client_sg["client.py"]
-        OpenNMS["OpenNMS
-        ─────────────────────────────
-        252 public methods · flat namespace"]
+        OpenNMS["OpenNMS<br/>252 public methods - flat namespace"]
     end
 
-    caller       -->|"client.method()"|  OpenNMS
+    caller -->|"client.method()"| OpenNMS
 
     fault_sg     -.->|"mixin"| OpenNMS
     events_sg    -.->|"mixin"| OpenNMS
@@ -88,7 +83,7 @@ flowchart TD
     v2_sg        -.->|"mixin"| OpenNMS
     InfoMixin    -.->|"mixin"| OpenNMS
 
-    _OpenNMSBase -->|"base class"| OpenNMS
+    BaseClass -->|"base class"| OpenNMS
 
     classDef mixin  fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f
     classDef core   fill:#fef3c7,stroke:#d97706,color:#78350f,font-weight:bold
@@ -105,7 +100,7 @@ flowchart TD
     class SituationsMixin,BusinessServicesMixin,MetadataMixin,DiscoveryMixin,IpInterfacesV2Mixin,SnmpInterfacesV2Mixin mixin
     class InfoMixin mixin
     class OpenNMS core
-    class _OpenNMSBase base
+    class BaseClass base
     class caller caller
 ```
 
@@ -119,45 +114,28 @@ What happens at runtime when any method on the client is called.
 flowchart LR
     code(["your_code.py"])
 
-    subgraph client_layer["client.py  ·  OpenNMS"]
-        method["client.get_alarms(severity='MAJOR')
-        client.create_node({…})
-        client.ack_alarm(42)  …"]
+    subgraph client_layer["client.py - OpenNMS"]
+        method["client.get_alarms(severity='MAJOR')<br/>client.create_node(node_data)<br/>client.ack_alarm(42)"]
     end
 
-    subgraph base_layer["_base.py  ·  _OpenNMSBase"]
+    subgraph base_layer["_base.py - _OpenNMSBase"]
         direction TB
-        helpers["_get / _post / _put / _delete
-        ─────────────────────────────────
-        selects v1 or v2 base URL
-        timeout=30 s on every request"]
-        parse["_parse(response)
-        ① raise_for_status()
-        ② JSON       →  dict / list
-        ③ text/plain →  int / str
-        ④ 204        →  None"]
+        helpers["_get / _post / _put / _delete<br/>selects v1 or v2 base URL<br/>timeout=30s on every request"]
+        parse["_parse(response)<br/>1. raise_for_status()<br/>2. JSON       -> dict / list<br/>3. text/plain -> int / str<br/>4. 204        -> None"]
         helpers --> parse
     end
 
     subgraph sess_layer["requests.Session"]
-        sess["HTTP Basic Auth
-        Accept: application/json
-        Content-Type: application/json
-        SSL verification  ·  connection pool"]
+        sess["HTTP Basic Auth<br/>Accept: application/json<br/>Content-Type: application/json<br/>SSL verification / connection pool"]
     end
 
-    subgraph api_layer["OpenNMS Server  (Horizon 30+)"]
+    subgraph api_layer["OpenNMS Server - Horizon 30+"]
         direction TB
-        v1["/opennms/rest/
-        v1 REST API
-        29 resource groups"]
-        v2["/opennms/api/v2/
-        v2 REST API
-        6 resource groups"]
+        v1["/opennms/rest/<br/>v1 REST API<br/>29 resource groups"]
+        v2["/opennms/api/v2/<br/>v2 REST API<br/>6 resource groups"]
     end
 
-    result(["Python object
-    dict · list · int · None"])
+    result(["Python object<br/>dict / list / int / None"])
 
     code         -->|"call"| client_layer
     client_layer -->|"delegates"| helpers
