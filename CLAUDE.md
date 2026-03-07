@@ -159,11 +159,23 @@ system Python or system pip.
 
 ## Build / release
 
+PyPI publishing is **automated** via `.github/workflows/publish.yml`.  It
+triggers on every GitHub release (`on: release: [published]`) and uses OIDC
+trusted publishing — no API token or manual `twine upload` needed.
+
+Release checklist:
+
+1. Bump `version` in `pyproject.toml`.
+2. Add a changelog entry in `CHANGELOG.md`.
+3. Commit, push to `main`.
+4. `gh release create vX.Y.Z` — the publish workflow builds and uploads
+   to PyPI automatically.
+
+To build locally (e.g. for inspection):
+
 ```bash
 pip install build
 python -m build          # produces dist/*.tar.gz and dist/*.whl
-pip install twine
-twine upload dist/*      # publish to PyPI
 ```
 
 The build backend is `setuptools.build_meta` (in `pyproject.toml`).
