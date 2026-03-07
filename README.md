@@ -16,7 +16,7 @@ suite.
 - JSON everywhere — no XML handling required
 - Single runtime dependency: [`requests`](https://docs.python-requests.org/)
 - Synchronous and straightforward — no async complexity
-- 454-test suite with full method coverage (mocked HTTP — no live server required)
+- 463-test suite with full method coverage (mocked HTTP — no live server required)
 - Live-server smoke test validated against Meridian 2024.3.0
 
 ## Installation

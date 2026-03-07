@@ -75,7 +75,7 @@ opennms_api_wrapper/    # installable package
 tests/
     conftest.py         # client fixture, V1/V2 URL constants, qs() helper
     fixtures.py         # all accurate OpenNMS Horizon 35 response shapes
-    test_*.py           # one file per mixin (58 files, 454 tests total)
+    test_*.py           # one file per mixin (58 files, 463 tests total)
 
 dist/                   # built artifacts (gitignored)
 pyproject.toml          # build config + project metadata
@@ -135,7 +135,7 @@ CONTRIBUTING.md
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"   # installs requests + pytest + responses
-pytest tests/ -v          # run full suite (454 tests, ~0.4 s)
+pytest tests/ -v          # run full suite (463 tests, ~0.4 s)
 ```
 
 Always activate the `.venv` before running any commands — never rely on the

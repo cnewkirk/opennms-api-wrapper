@@ -53,7 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   enable/disable).
 - `_delete()` now accepts optional `json_data` parameter (used by eventconf
   bulk delete).
-- 454-test suite (up from 301), all passing.
+- 463-test suite (up from 301), all passing.
 - Smoke test sections for all new endpoint groups (140 total checks, up from
   ~80).
 - Validated against OpenNMS Meridian 2024.3.0 (106 passed, 0 failed, 25
