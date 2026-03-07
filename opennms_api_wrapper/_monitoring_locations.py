@@ -1,4 +1,5 @@
 """Monitoring Locations REST API – /rest/monitoringLocations."""
+from .types import MonitoringLocation
 
 
 class MonitoringLocationsMixin:
@@ -24,13 +25,13 @@ class MonitoringLocationsMixin:
         """Return the number of monitoring locations."""
         return self._get("monitoringLocations/count")
 
-    def create_monitoring_location(self, location: dict):
+    def create_monitoring_location(self, location: MonitoringLocation):
         """Create a new monitoring location.
 
         Args:
-            location: Monitoring location definition dict.  Common keys:
-                ``location-name`` (str), ``monitoring-area`` (str),
-                ``priority`` (int).
+            location: Monitoring location definition.  See
+                :class:`~opennms_api_wrapper.types.MonitoringLocation`
+                for all available fields.
         """
         return self._post("monitoringLocations", json_data=location)
 

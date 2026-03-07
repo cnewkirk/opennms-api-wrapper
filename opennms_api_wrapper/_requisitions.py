@@ -1,4 +1,5 @@
 """Requisitions (Provisioning) REST API – /rest/requisitions."""
+from .types import RequisitionNode
 
 
 class RequisitionsMixin:
@@ -75,28 +76,14 @@ class RequisitionsMixin:
         """Get a specific node in a requisition by *foreign_id*."""
         return self._get(f"requisitions/{name}/nodes/{foreign_id}")
 
-    def create_requisition_node(self, name: str, node: dict):
+    def create_requisition_node(self, name: str, node: RequisitionNode):
         """Add or replace a node in requisition *name*.
 
         Args:
             name: Foreign source name of the requisition.
-            node: Node dict. Example::
-
-                {
-                    "foreign-id": "router01",
-                    "node-label": "myrouter",
-                    "location": "Default",
-                    "interface": [
-                        {
-                            "ip-addr": "192.168.0.1",
-                            "snmp-primary": "P",
-                            "status": 1,
-                            "monitored-service": [{"service-name": "ICMP"}]
-                        }
-                    ],
-                    "category": [{"name": "Production"}],
-                    "asset": [{"name": "description", "value": "Core router"}]
-                }
+            node: Node definition.  See
+                :class:`~opennms_api_wrapper.types.RequisitionNode`
+                for all available fields.
         """
         return self._post(f"requisitions/{name}/nodes", json_data=node)
 
