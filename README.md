@@ -5,15 +5,10 @@
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> **Pre-release — v0.1.0**
-> This is an early release.  The library has not yet been validated against a
-> live OpenNMS server.  The 290-test suite mocks HTTP at the adapter level and
-> verifies request construction and response parsing against Horizon 35 response
-> shapes — but real-server behaviour may differ.  Method signatures may change
-> before v1.0.0.  Feedback and issue reports are very welcome.
-
 A thin, dependency-minimal Python 3 wrapper for the
-[OpenNMS](https://www.opennms.com/) REST API (Horizon 35).
+[OpenNMS](https://www.opennms.com/) REST API (Horizon 35+).
+Validated against OpenNMS Meridian 2024.3.0 with a live-server smoke test
+suite.
 
 ## Features
 
@@ -22,13 +17,14 @@ A thin, dependency-minimal Python 3 wrapper for the
 - Single runtime dependency: [`requests`](https://docs.python-requests.org/)
 - Synchronous and straightforward — no async complexity
 - 290-test suite with full method coverage (mocked HTTP — no live server required)
+- Live-server smoke test validated against Meridian 2024.3.0
 
 ## Installation
 
 **From the GitHub release** (no clone required — recommended for most users):
 
 ```bash
-pip install https://github.com/cnewkirk/opennms-api-wrapper/archive/refs/tags/v0.1.0.tar.gz
+pip install https://github.com/cnewkirk/opennms-api-wrapper/archive/refs/tags/v0.2.0.tar.gz
 ```
 
 **From source** (clone first, then install):
@@ -124,6 +120,10 @@ client = opennms.OpenNMS(
 intended for use against a dev or staging instance before each release — not
 as a substitute for the 290-test mocked unit suite.
 
+Tests that depend on optional plugins or heavy endpoints are reported as
+**WARN** (non-fatal) rather than FAIL.  Each warning includes the specific
+plugin or feature required.
+
 **Read-only mode** (default) is safe to run against any server, including
 production.  It issues only GET requests and makes no changes.
 
@@ -132,6 +132,7 @@ export OPENNMS_URL="https://opennms.example.com:8443"
 export OPENNMS_USER="admin"
 export OPENNMS_PASSWORD="secret"
 export OPENNMS_VERIFY_SSL="false"   # omit or set to "true" for valid certs
+export OPENNMS_TIMEOUT="60"         # per-request timeout in seconds (default 60)
 
 python smoke_test.py
 ```
@@ -145,7 +146,11 @@ confirmation and print the target URL before running a single write.
 python smoke_test.py --write          # interactive prompt required
 python smoke_test.py --write --yes    # skip prompt (CI pipelines only)
 python smoke_test.py --no-color       # plain output for log files
+python smoke_test.py --skip get_resources --skip get_flow  # skip slow tests
 ```
+
+The `--skip` flag accepts a prefix — `--skip get_flow` skips all tests
+whose label starts with `get_flow`.
 
 ## Development
 

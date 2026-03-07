@@ -59,7 +59,9 @@ smoke_test.py           # live-server smoke test (read-only + --write mode)
                         #   python smoke_test.py --write         # write ops, prompts for confirmation
                         #   python smoke_test.py --write --yes   # skip prompt (CI only)
                         #   python smoke_test.py --no-color      # plain output for log files
-                        #   env vars: OPENNMS_URL, OPENNMS_USER, OPENNMS_PASSWORD, OPENNMS_VERIFY_SSL
+                        #   python smoke_test.py --skip get_flow # skip by label prefix
+                        #   env vars: OPENNMS_URL, OPENNMS_USER, OPENNMS_PASSWORD,
+                        #            OPENNMS_VERIFY_SSL, OPENNMS_TIMEOUT
 ARCHITECTURE.md         # architecture decision records (ADRs)
 MERMAID.md              # Mermaid architecture diagrams
 CHANGELOG.md
@@ -78,13 +80,23 @@ CONTRIBUTING.md
   One runtime dependency: `requests>=2.28`.
 - **v1 vs v2**: v1 endpoints live at `/opennms/rest/`, v2 at
   `/opennms/api/v2/`. Every `_get/_post/_put/_delete` accepts `v2=True`.
+- **Accept header**: `application/json, text/plain;q=0.9`. Some OpenNMS
+  versions return 406 if the Accept header does not include `text/plain` for
+  `/count` endpoints. JSON stays preferred via implicit q=1.0.
 - **`_parse()`** handles three response types:
   - `application/json` → `resp.json()`
   - `text/plain` → `int(text)` if possible, else `str`
   - empty body (204 No Content) → `None`
+- **Node count via v2**: `get_node_count()` uses `GET /api/v2/nodes?limit=1`
+  and extracts `totalCount`. The v1 `/rest/nodes` endpoint does not have a
+  `/count` sub-resource — it routes all sub-paths as node criteria.
 - **Timeout**: `_OpenNMSBase.__init__` accepts `timeout=30` (seconds). Passed
   to every `_session.get/post/put/delete` call. `OpenNMS.__init__` exposes it
   as a public parameter.
+- **Smoke test warn level**: endpoints that depend on optional plugins or
+  heavy server-side queries use `warn()` instead of `run()`. Warnings are
+  non-fatal and include the required plugin/feature name. Only hard `FAIL`s
+  cause a non-zero exit code.
 
 ## Development environment
 

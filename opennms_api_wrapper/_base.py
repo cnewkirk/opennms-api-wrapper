@@ -25,7 +25,7 @@ class _OpenNMSBase:
         self._session = requests.Session()
         self._session.auth = (username, password)
         self._session.headers.update({
-            "Accept": "application/json",
+            "Accept": "application/json, text/plain;q=0.9",
             "Content-Type": "application/json",
         })
         self._session.verify = verify_ssl

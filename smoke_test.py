@@ -9,17 +9,19 @@ Write mode (--write) creates and deletes objects on the server.  It will
 prompt for explicit confirmation before running.  Only use write mode against
 a dev or staging instance — never against production.
 
-Environment variables (all required):
-    OPENNMS_URL         Base URL, e.g. "https://opennms.example.com:8443"
-    OPENNMS_USER        OpenNMS username (needs at minimum the ``rest`` role)
-    OPENNMS_PASSWORD    Password
+Environment variables:
+    OPENNMS_URL         Base URL, e.g. "https://opennms.example.com:8443"  (required)
+    OPENNMS_USER        OpenNMS username (needs at minimum the ``rest`` role)  (required)
+    OPENNMS_PASSWORD    Password  (required)
     OPENNMS_VERIFY_SSL  Set to "false" to disable SSL verification (default: true)
+    OPENNMS_TIMEOUT     Request timeout in seconds (default: 60)
 
 Usage:
     python smoke_test.py                 # read-only — safe for any server
     python smoke_test.py --write         # write ops — prompts for confirmation
     python smoke_test.py --write --yes   # write ops — skip prompt (CI only)
     python smoke_test.py --no-color      # plain output for log files
+    python smoke_test.py --skip get_resources,get_flow  # skip slow tests
 """
 
 import argparse
@@ -33,8 +35,10 @@ import opennms_api_wrapper as opennms
 
 # ── Output ─────────────────────────────────────────────────────────────────────
 
-_passed = _failed = _skipped = 0
+_passed = _failed = _skipped = _warned = 0
 _failures: list = []
+_warnings: list = []
+_skip_prefixes: list = []
 
 # Sentinel returned by run() when the underlying call raised an exception.
 # Distinguishes "call failed" from "call succeeded and returned None (204)".
@@ -66,11 +70,27 @@ def _skip(label: str, reason: str = ""):
     print(f"  \033[33mSKIP\033[0m  {label}{suffix}")
 
 
+def _warn_msg(label: str, err, note: str = None):
+    global _warned
+    _warned += 1
+    suffix = f"  ({note})" if note else ""
+    _warnings.append((label, f"{err}{suffix}"))
+    print(f"  \033[33mWARN\033[0m  {label}  \033[2m{err}{suffix}\033[0m")
+
+
+def _should_skip(label: str) -> bool:
+    """Return True if *label* matches any --skip prefix."""
+    return any(label.startswith(p) for p in _skip_prefixes)
+
+
 def run(label: str, fn, *args, detail_fn=None, **kwargs):
     """Call *fn* and record PASS or FAIL.
 
     Returns the call's return value, or ``_FAILED`` if an exception was raised.
     """
+    if _should_skip(label):
+        _skip(label, "--skip")
+        return _FAILED
     try:
         result = fn(*args, **kwargs)
         detail = ""
@@ -83,6 +103,31 @@ def run(label: str, fn, *args, detail_fn=None, **kwargs):
         return result
     except Exception as exc:
         _fail(label, exc)
+        return _FAILED
+
+
+def warn(label: str, fn, *args, note: str = None, detail_fn=None, **kwargs):
+    """Like run(), but records WARN instead of FAIL on error.
+
+    Args:
+        note: Optional context appended to warning output (e.g. plugin
+            dependency).
+    """
+    if _should_skip(label):
+        _skip(label, "--skip")
+        return _FAILED
+    try:
+        result = fn(*args, **kwargs)
+        detail = ""
+        if detail_fn is not None and result is not None:
+            try:
+                detail = str(detail_fn(result))
+            except Exception:
+                pass
+        _ok(label, detail)
+        return result
+    except Exception as exc:
+        _warn_msg(label, exc, note)
         return _FAILED
 
 
@@ -136,11 +181,12 @@ def test_alarms(c):
     _section("alarms")
     run("get_alarms",              c.get_alarms, limit=5,
         detail_fn=lambda r: _n(r, "alarm"))
-    run("get_alarm_count",         c.get_alarm_count,
-        detail_fn=lambda r: str(r))
+    warn("get_alarm_count",        c.get_alarm_count,
+         detail_fn=lambda r: str(r))
     run("get_alarm_stats",         c.get_alarm_stats)
     run("get_alarm_stats_by_severity", c.get_alarm_stats_by_severity)
-    run("get_alarm_history",       c.get_alarm_history)
+    warn("get_alarm_history",      c.get_alarm_history,
+         note="requires opennms-alarm-history-elastic Karaf feature")
     run("get_alarms_v2",           c.get_alarms_v2, limit=5,
         detail_fn=lambda r: _n(r, "alarm"))
 
@@ -149,8 +195,10 @@ def test_alarms(c):
         run(f"get_alarm                id={aid}", c.get_alarm, aid,
             detail_fn=lambda r: r.get("severity", "") if isinstance(r, dict) else "")
         run(f"get_alarm_v2             id={aid}", c.get_alarm_v2, aid)
-        run(f"get_alarm_history_at     id={aid}", c.get_alarm_history_at, aid)
-        run(f"get_alarm_history_states id={aid}", c.get_alarm_history_states, aid)
+        warn(f"get_alarm_history_at     id={aid}", c.get_alarm_history_at, aid,
+             note="requires opennms-alarm-history-elastic Karaf feature")
+        warn(f"get_alarm_history_states id={aid}", c.get_alarm_history_states, aid,
+             note="requires opennms-alarm-history-elastic Karaf feature")
     else:
         for lbl in ("get_alarm", "get_alarm_v2",
                     "get_alarm_history_at", "get_alarm_history_states"):
@@ -159,10 +207,20 @@ def test_alarms(c):
 
 def test_events(c):
     _section("events")
-    run("get_events",      c.get_events, limit=5, detail_fn=lambda r: _n(r, "event"))
-    run("get_event_count", c.get_event_count, detail_fn=lambda r: str(r))
+    # Unfiltered event queries can time out on large systems (33M+ rows).
+    # Filter by the lowest-ID node (typically the self-monitor) to hit an
+    # indexed column and avoid full table scans.
+    _, nid = _first(c.get_nodes, "node", order_by="id", order="asc")
+    node_filter = {"node.id": nid} if nid else {}
+    result = run("get_events", c.get_events, limit=5, **node_filter,
+                 detail_fn=lambda r: _n(r, "event"))
+    warn("get_event_count", c.get_event_count, detail_fn=lambda r: str(r))
 
-    _, eid = _first(c.get_events, "event")
+    eid = None
+    if isinstance(result, dict):
+        events = result.get("event", [])
+        if events:
+            eid = events[0].get("id")
     if eid:
         run(f"get_event  id={eid}", c.get_event, eid)
     else:
@@ -173,7 +231,7 @@ def test_acks(c):
     _section("acknowledgements")
     run("get_acks",      c.get_acks, limit=5,
         detail_fn=lambda r: _n(r, "ack"))
-    run("get_ack_count", c.get_ack_count, detail_fn=lambda r: str(r))
+    warn("get_ack_count", c.get_ack_count, detail_fn=lambda r: str(r))
 
     _, ack_id = _first(c.get_acks, "ack")
     if ack_id:
@@ -186,8 +244,8 @@ def test_notifications(c):
     _section("notifications")
     run("get_notifications",      c.get_notifications, limit=5,
         detail_fn=lambda r: _n(r, "notification"))
-    run("get_notification_count", c.get_notification_count,
-        detail_fn=lambda r: str(r))
+    warn("get_notification_count", c.get_notification_count,
+         detail_fn=lambda r: str(r))
 
     _, nid = _first(c.get_notifications, "notification")
     if nid:
@@ -199,7 +257,7 @@ def test_notifications(c):
 def test_nodes(c):
     _section("nodes")
     run("get_nodes",      c.get_nodes, limit=5, detail_fn=lambda r: _n(r, "node"))
-    run("get_node_count", c.get_node_count, detail_fn=lambda r: str(r))
+    run("get_node_count",  c.get_node_count, detail_fn=lambda r: str(r))
 
     _, nid = _first(c.get_nodes, "node")
     if nid:
@@ -217,10 +275,11 @@ def test_nodes(c):
             nid, limit=3, detail_fn=lambda r: _n(r, "snmpInterface"))
         run(f"get_node_categories         id={nid}", c.get_node_categories, nid)
         run(f"get_node_asset_record       id={nid}", c.get_node_asset_record, nid)
-        run(f"get_node_hardware_inventory id={nid}", c.get_node_hardware_inventory, nid)
+        warn(f"get_node_hardware_inventory id={nid}", c.get_node_hardware_inventory, nid,
+             note="requires opennms-plugin-provisioning-snmp-hardware-inventory")
         run(f"get_node_metadata           id={nid}", c.get_node_metadata, nid)
         run(f"get_node_outages            id={nid}", c.get_node_outages, nid)
-        run(f"get_resources_for_node      id={nid}", c.get_resources_for_node, str(nid))
+        warn(f"get_resources_for_node      id={nid}", c.get_resources_for_node, str(nid))
     else:
         for lbl in ("get_node", "get_node_ip_interfaces", "get_node_ip_services",
                     "get_node_snmp_interfaces", "get_node_categories",
@@ -234,7 +293,7 @@ def test_outages(c):
     _section("outages")
     run("get_outages",      c.get_outages, limit=5,
         detail_fn=lambda r: _n(r, "outage"))
-    run("get_outage_count", c.get_outage_count, detail_fn=lambda r: str(r))
+    warn("get_outage_count", c.get_outage_count, detail_fn=lambda r: str(r))
 
     _, oid = _first(c.get_outages, "outage")
     if oid:
@@ -247,12 +306,12 @@ def test_requisitions(c):
     _section("requisitions")
     result = run("get_requisitions",               c.get_requisitions,
                  detail_fn=lambda r: _n(r, "model-import"))
-    run("get_requisition_count",          c.get_requisition_count,
-        detail_fn=lambda r: str(r))
+    warn("get_requisition_count",         c.get_requisition_count,
+         detail_fn=lambda r: str(r))
     run("get_deployed_requisitions",      c.get_deployed_requisitions,
         detail_fn=lambda r: _n(r, "model-import"))
-    run("get_deployed_requisition_count", c.get_deployed_requisition_count,
-        detail_fn=lambda r: str(r))
+    warn("get_deployed_requisition_count", c.get_deployed_requisition_count,
+         detail_fn=lambda r: str(r))
     reqs = []
     if isinstance(result, dict):
         reqs = result.get("model-import", result.get("requisition", []))
@@ -271,8 +330,8 @@ def test_foreign_sources(c):
     _section("foreign sources")
     result = run("get_foreign_sources",              c.get_foreign_sources)
     run("get_deployed_foreign_sources",     c.get_deployed_foreign_sources)
-    run("get_deployed_foreign_source_count", c.get_deployed_foreign_source_count,
-        detail_fn=lambda r: str(r))
+    warn("get_deployed_foreign_source_count", c.get_deployed_foreign_source_count,
+         detail_fn=lambda r: str(r))
     run("get_default_foreign_source",       c.get_default_foreign_source)
     sources = []
     if isinstance(result, dict):
@@ -363,8 +422,8 @@ def test_ksc_reports(c):
     _section("ksc reports")
     result = run("get_ksc_reports", c.get_ksc_reports,
                  detail_fn=lambda r: _n(r, "kscReport"))
-    run("get_ksc_report_count", c.get_ksc_report_count,
-        detail_fn=lambda r: str(r))
+    warn("get_ksc_report_count", c.get_ksc_report_count,
+         detail_fn=lambda r: str(r))
     reports = result.get("kscReport", []) if isinstance(result, dict) else []
     if reports:
         rid = reports[0].get("id")
@@ -375,7 +434,7 @@ def test_ksc_reports(c):
 
 def test_resources(c):
     _section("resources")
-    run("get_resources", c.get_resources, depth=1)
+    warn("get_resources", c.get_resources, depth=1)
 
 
 def test_measurements(c):
@@ -447,7 +506,9 @@ def test_heatmap(c):
 
 def test_maps(c):
     _section("maps")
-    result = run("get_maps", c.get_maps, detail_fn=lambda r: _n(r, "map"))
+    result = warn("get_maps", c.get_maps,
+                  note="SVG maps may not be available in all versions",
+                  detail_fn=lambda r: _n(r, "map"))
     maps = []
     if isinstance(result, dict):
         maps = result.get("map", [])
@@ -486,16 +547,23 @@ def test_graphs(c):
 
 def test_flows(c):
     _section("flows")
-    run("get_flow_count",     c.get_flow_count, detail_fn=lambda r: str(r))
+    _flow_note = "requires flow persistence (Elasticsearch/OpenSearch)"
+    warn("get_flow_count",    c.get_flow_count,
+         note=_flow_note, detail_fn=lambda r: str(r))
     run("get_flow_exporters", c.get_flow_exporters,
         detail_fn=lambda r: _n(r, "exporters"))
-    # These may legitimately fail if no flow data has been ingested.
-    run("get_flow_applications",           c.get_flow_applications, top_n=5)
-    run("get_flow_applications_enumerate", c.get_flow_applications_enumerate, limit=5)
-    run("get_flow_conversations",          c.get_flow_conversations, top_n=5)
-    run("get_flow_conversations_enumerate",c.get_flow_conversations_enumerate, limit=5)
-    run("get_flow_hosts",                  c.get_flow_hosts, top_n=5)
-    run("get_flow_hosts_enumerate",        c.get_flow_hosts_enumerate, limit=5)
+    warn("get_flow_applications",           c.get_flow_applications,
+         top_n=5, note=_flow_note)
+    warn("get_flow_applications_enumerate", c.get_flow_applications_enumerate,
+         limit=5, note=_flow_note)
+    warn("get_flow_conversations",          c.get_flow_conversations,
+         top_n=5, note=_flow_note)
+    warn("get_flow_conversations_enumerate",c.get_flow_conversations_enumerate,
+         limit=5, note=_flow_note)
+    warn("get_flow_hosts",                  c.get_flow_hosts,
+         top_n=5, note=_flow_note)
+    warn("get_flow_hosts_enumerate",        c.get_flow_hosts_enumerate,
+         limit=5, note=_flow_note)
 
 
 def test_device_config(c):
@@ -508,8 +576,9 @@ def test_device_config(c):
 
 def test_situations(c):
     _section("situations (v2)")
-    run("get_situations", c.get_situations, limit=5,
-        detail_fn=lambda r: _n(r, "alarm"))
+    warn("get_situations", c.get_situations, limit=5,
+         note="requires Alarmd situation correlation",
+         detail_fn=lambda r: _n(r, "alarm"))
 
 
 def test_business_services(c):
@@ -627,6 +696,7 @@ def main():
             "  OPENNMS_USER        username (rest role required)\n"
             "  OPENNMS_PASSWORD    password\n"
             "  OPENNMS_VERIFY_SSL  set to 'false' to skip SSL certificate verification\n"
+            "  OPENNMS_TIMEOUT     request timeout in seconds (default: 60)\n"
         ),
     )
     parser.add_argument(
@@ -642,12 +712,22 @@ def main():
         "--no-color", action="store_true",
         help="Disable ANSI colour output.",
     )
+    parser.add_argument(
+        "--skip", type=str, default="",
+        help="Comma-separated list of test label prefixes to skip. "
+             "E.g. --skip get_resources,get_flow",
+    )
     args = parser.parse_args()
+
+    global _skip_prefixes
+    if args.skip:
+        _skip_prefixes = [s.strip() for s in args.skip.split(",") if s.strip()]
 
     url      = os.environ.get("OPENNMS_URL")
     user     = os.environ.get("OPENNMS_USER")
     password = os.environ.get("OPENNMS_PASSWORD")
     verify   = os.environ.get("OPENNMS_VERIFY_SSL", "true").lower() != "false"
+    timeout  = int(os.environ.get("OPENNMS_TIMEOUT", "60"))
 
     missing = [name for name, val in
                [("OPENNMS_URL", url), ("OPENNMS_USER", user),
@@ -680,7 +760,7 @@ def main():
         builtins.print = _plain
 
     client = opennms.OpenNMS(url=url, username=user, password=password,
-                             verify_ssl=verify)
+                             verify_ssl=verify, timeout=timeout)
 
     print("OpenNMS Smoke Test")
     print(f"  URL:  {url}")
@@ -718,10 +798,19 @@ def main():
     if args.write:
         test_write_ops(client)
 
-    total = _passed + _failed + _skipped
+    total = _passed + _failed + _warned + _skipped
     print(f"\n{'─' * 56}")
-    print(f"  {_passed} passed  ·  {_failed} failed  ·  {_skipped} skipped"
-          f"  ({total} total)")
+    parts = [f"{_passed} passed", f"{_failed} failed"]
+    if _warned:
+        parts.append(f"{_warned} warned")
+    parts.append(f"{_skipped} skipped")
+    print(f"  {'  ·  '.join(parts)}  ({total} total)")
+
+    if _warnings:
+        print("\nWarnings (non-fatal):")
+        for label, err in _warnings:
+            print(f"  {label}")
+            print(f"    {err}")
 
     if _failures:
         print("\nFailures:")

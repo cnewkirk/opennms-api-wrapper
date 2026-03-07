@@ -31,8 +31,14 @@ class NodesMixin:
         return self._get(f"nodes/{node_id}")
 
     def get_node_count(self) -> int:
-        """Return the total number of nodes."""
-        return self._get("nodes/count")
+        """Return the total number of nodes.
+
+        Uses the v2 API because the v1 ``/nodes`` endpoint does not
+        expose a ``/count`` sub-resource.
+        """
+        result = self._get("nodes", params={"limit": 1, "offset": 0},
+                           v2=True)
+        return result.get("totalCount", 0)
 
     def create_node(self, node: dict):
         """Create a node via the v1 API (POST /rest/nodes).

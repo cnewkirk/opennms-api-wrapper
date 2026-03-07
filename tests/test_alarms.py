@@ -13,7 +13,7 @@ def test_get_alarms_default(client):
     req = responses.calls[0].request
     assert qs(req.url)["limit"] == ["10"]
     assert qs(req.url)["offset"] == ["0"]
-    assert req.headers["Accept"] == "application/json"
+    assert req.headers["Accept"] == "application/json, text/plain;q=0.9"
 
 
 @responses.activate

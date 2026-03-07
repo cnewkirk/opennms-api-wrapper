@@ -1,7 +1,7 @@
 """Tests for NodesMixin – /rest/nodes and sub-resources."""
 import json
 import responses
-from .conftest import V1, qs
+from .conftest import V1, V2, qs
 from .fixtures import (
     NODE, NODE_LIST,
     IP_INTERFACE, IP_INTERFACE_LIST,
@@ -62,9 +62,12 @@ def test_get_node_by_fs_fid(client):
 
 @responses.activate
 def test_get_node_count(client):
-    responses.add(responses.GET, f"{V1}/nodes/count",
-                  body="57", content_type="text/plain")
-    assert client.get_node_count() == 57
+    responses.add(responses.GET, f"{V2}/nodes",
+                  json={"totalCount": 57, "count": 1, "offset": 0, "node": []})
+    result = client.get_node_count()
+    assert result == 57
+    params = qs(responses.calls[0].request.url)
+    assert params["limit"] == ["1"]
 
 
 @responses.activate
