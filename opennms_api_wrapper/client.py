@@ -172,6 +172,5 @@ class OpenNMS(
     def __init__(self, url: str, username: str, password: str,
                  verify_ssl: bool = True, timeout: int = 30,
                  retries: int = 3):
-        """Initialize the OpenNMS client."""
         super().__init__(url, username, password, verify_ssl, timeout,
                          retries)
