@@ -35,7 +35,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest", "responses", "mkdocs-material", "mkdocstrings[python]"]
+dev = ["pytest", "responses", "mkdocs-material", "mkdocstrings[python]", "ruff", "mypy"]
 
 [project.urls]
 Homepage = "https://github.com/cnewkirk/opennms-api-wrapper"
@@ -47,6 +47,17 @@ Changelog = "https://github.com/cnewkirk/opennms-api-wrapper/blob/main/CHANGELOG
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["opennms_api_wrapper*"]
+
+[tool.ruff]
+line-length = 79
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
+ignore = ["E501"]  # line length not enforced on docstrings
+
+[tool.mypy]
+python_version = "3.9"
+follow_imports = "skip"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
