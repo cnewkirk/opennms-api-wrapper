@@ -38,10 +38,10 @@ dependencies = [
 dev = ["pytest", "responses"]
 
 [project.urls]
-Homepage = "https://github.com/cnewkirk/python3-opennms"
-Repository = "https://github.com/cnewkirk/python3-opennms"
-"Bug Tracker" = "https://github.com/cnewkirk/python3-opennms/issues"
-Changelog = "https://github.com/cnewkirk/python3-opennms/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/cnewkirk/opennms-api-wrapper"
+Repository = "https://github.com/cnewkirk/opennms-api-wrapper"
+"Bug Tracker" = "https://github.com/cnewkirk/opennms-api-wrapper/issues"
+Changelog = "https://github.com/cnewkirk/opennms-api-wrapper/blob/main/CHANGELOG.md"
 
 [tool.setuptools.packages.find]
 where = ["."]

@@ -1,7 +1,7 @@
 # opennms-api-wrapper
 
-[![CI](https://github.com/cnewkirk/python3-opennms/actions/workflows/ci.yml/badge.svg)](https://github.com/cnewkirk/python3-opennms/actions/workflows/ci.yml)
-[![GitHub release](https://img.shields.io/github/v/release/cnewkirk/python3-opennms)](https://github.com/cnewkirk/python3-opennms/releases)
+[![CI](https://github.com/cnewkirk/opennms-api-wrapper/actions/workflows/ci.yml/badge.svg)](https://github.com/cnewkirk/opennms-api-wrapper/actions/workflows/ci.yml)
+[![GitHub release](https://img.shields.io/github/v/release/cnewkirk/opennms-api-wrapper)](https://github.com/cnewkirk/opennms-api-wrapper/releases)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -26,14 +26,14 @@ A thin, dependency-minimal Python 3 wrapper for the
 **From the GitHub release** (no clone required — recommended for most users):
 
 ```bash
-pip install https://github.com/cnewkirk/python3-opennms/archive/refs/tags/v0.1.0.tar.gz
+pip install https://github.com/cnewkirk/opennms-api-wrapper/archive/refs/tags/v0.1.0.tar.gz
 ```
 
 **From source** (clone first, then install):
 
 ```bash
-git clone https://github.com/cnewkirk/python3-opennms.git
-cd python3-opennms
+git clone https://github.com/cnewkirk/opennms-api-wrapper.git
+cd opennms-api-wrapper
 pip install .
 ```
 
@@ -119,8 +119,8 @@ client = opennms.OpenNMS(
 ## Development
 
 ```bash
-git clone https://github.com/cnewkirk/python3-opennms.git
-cd python3-opennms
+git clone https://github.com/cnewkirk/opennms-api-wrapper.git
+cd opennms-api-wrapper
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
@@ -130,7 +130,7 @@ pytest tests/ -v
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at
-https://github.com/cnewkirk/python3-opennms.
+https://github.com/cnewkirk/opennms-api-wrapper.
 
 ## Acknowledgements
 

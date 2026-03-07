@@ -5,8 +5,8 @@ Bug reports and pull requests are welcome.
 ## Development setup
 
 ```bash
-git clone https://github.com/cnewkirk/python3-opennms.git
-cd python3-opennms
+git clone https://github.com/cnewkirk/opennms-api-wrapper.git
+cd opennms-api-wrapper
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
