@@ -1,0 +1,48 @@
+site_name: opennms-api-wrapper
+site_description: A thin Python wrapper for the OpenNMS REST API (Horizon 35+)
+site_url: https://cnewkirk.github.io/opennms-api-wrapper/
+repo_url: https://github.com/cnewkirk/opennms-api-wrapper
+repo_name: cnewkirk/opennms-api-wrapper
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+          options:
+            inherited_members: true
+            filters: ["!^_"]
+            members_order: alphabetical
+            show_source: false
+            docstring_style: google
+            show_root_heading: true
+            show_root_full_path: false
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+
+nav:
+  - Home: index.md
+  - API Reference: api.md
