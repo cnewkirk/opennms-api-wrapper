@@ -174,3 +174,11 @@ class OpenNMS(
                  retries: int = 3):
         super().__init__(url, username, password, verify_ssl, timeout,
                          retries)
+
+
+# Force pdoc to render all public methods inherited from private mixin modules.
+__pdoc__ = {
+    f"OpenNMS.{name}": True
+    for name in dir(OpenNMS)
+    if not name.startswith("_")
+}
