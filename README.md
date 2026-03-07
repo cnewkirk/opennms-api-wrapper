@@ -6,9 +6,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 > **Pre-release — v0.1.0**
-> This is an early release.  The API is functional and fully tested against
-> OpenNMS Horizon 35, but may change before v1.0.0.  Feedback and issue
-> reports are welcome.
+> This is an early release.  The library has not yet been validated against a
+> live OpenNMS server.  The 290-test suite mocks HTTP at the adapter level and
+> verifies request construction and response parsing against Horizon 35 response
+> shapes — but real-server behaviour may differ.  Method signatures may change
+> before v1.0.0.  Feedback and issue reports are very welcome.
 
 A thin, dependency-minimal Python 3 wrapper for the
 [OpenNMS](https://www.opennms.com/) REST API (Horizon 35).
@@ -19,7 +21,7 @@ A thin, dependency-minimal Python 3 wrapper for the
 - JSON everywhere — no XML handling required
 - Single runtime dependency: [`requests`](https://docs.python-requests.org/)
 - Synchronous and straightforward — no async complexity
-- 290-test suite with full method coverage
+- 290-test suite with full method coverage (mocked HTTP — no live server required)
 
 ## Installation
 
@@ -46,7 +48,7 @@ When the package is published to PyPI, installation will simplify to
 import opennms_api_wrapper as opennms
 
 client = opennms.OpenNMS(
-    url="https://opennms.example.com:8980",
+    url="https://opennms.example.com:8443",
     username="admin",
     password="admin",
 )
@@ -109,11 +111,40 @@ verification (useful for self-signed certs in lab environments):
 
 ```python
 client = opennms.OpenNMS(
-    url="https://opennms.example.com:8980",
+    url="https://opennms.example.com:8443",
     username="admin",
     password="admin",
     verify_ssl=False,
 )
+```
+
+## Smoke testing
+
+`smoke_test.py` exercises the wrapper against a real OpenNMS server.  It is
+intended for use against a dev or staging instance before each release — not
+as a substitute for the 290-test mocked unit suite.
+
+**Read-only mode** (default) is safe to run against any server, including
+production.  It issues only GET requests and makes no changes.
+
+```bash
+export OPENNMS_URL="https://opennms.example.com:8443"
+export OPENNMS_USER="admin"
+export OPENNMS_PASSWORD="secret"
+export OPENNMS_VERIFY_SSL="false"   # omit or set to "true" for valid certs
+
+python smoke_test.py
+```
+
+**Write mode** creates and then deletes objects on the server (events,
+categories, groups, requisitions, maps, etc.).  It will prompt for explicit
+confirmation and print the target URL before running a single write.
+**Only use write mode against a dev or staging instance — never production.**
+
+```bash
+python smoke_test.py --write          # interactive prompt required
+python smoke_test.py --write --yes    # skip prompt (CI pipelines only)
+python smoke_test.py --no-color       # plain output for log files
 ```
 
 ## Development

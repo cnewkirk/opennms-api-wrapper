@@ -2,15 +2,24 @@
 """
 smoke_test.py – Exercise the OpenNMS API wrapper against a live server.
 
-Environment variables:
-    OPENNMS_URL         Base URL, e.g. "https://opennms.example.com:8980"
+Read-only mode (default) is safe to run against any server, including
+production.  It issues only GET requests and makes no changes.
+
+Write mode (--write) creates and deletes objects on the server.  It will
+prompt for explicit confirmation before running.  Only use write mode against
+a dev or staging instance — never against production.
+
+Environment variables (all required):
+    OPENNMS_URL         Base URL, e.g. "https://opennms.example.com:8443"
     OPENNMS_USER        OpenNMS username (needs at minimum the ``rest`` role)
     OPENNMS_PASSWORD    Password
     OPENNMS_VERIFY_SSL  Set to "false" to disable SSL verification (default: true)
 
 Usage:
-    python smoke_test.py            # read-only getters – safe for pre-production
-    python smoke_test.py --write    # also exercise write ops – dev/staging only
+    python smoke_test.py                 # read-only — safe for any server
+    python smoke_test.py --write         # write ops — prompts for confirmation
+    python smoke_test.py --write --yes   # write ops — skip prompt (CI only)
+    python smoke_test.py --no-color      # plain output for log files
 """
 
 import argparse
@@ -519,7 +528,7 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=(
             "environment variables:\n"
-            "  OPENNMS_URL         base URL (e.g. https://onms.example.com:8980)\n"
+            "  OPENNMS_URL         base URL (e.g. https://onms.example.com:8443)\n"
             "  OPENNMS_USER        username (rest role required)\n"
             "  OPENNMS_PASSWORD    password\n"
             "  OPENNMS_VERIFY_SSL  set to 'false' to skip SSL certificate verification\n"
@@ -529,6 +538,10 @@ def main():
         "--write", action="store_true",
         help="Also exercise write operations (create/update/delete). "
              "Use in dev/staging only.",
+    )
+    parser.add_argument(
+        "--yes", action="store_true",
+        help="Skip the write-mode confirmation prompt (for CI pipelines).",
     )
     parser.add_argument(
         "--no-color", action="store_true",
@@ -547,6 +560,19 @@ def main():
                if not val]
     if missing:
         sys.exit(f"Error: missing environment variable(s): {', '.join(missing)}")
+
+    if args.write and not args.yes:
+        print("\n  WARNING: Write mode will create and delete objects on the server.")
+        print("  Operations that will mutate server state:")
+        print("    create_event, ack_alarm/unack_alarm, category CRUD,")
+        print("    group CRUD, scheduled outage CRUD, requisition CRUD, map CRUD")
+        print("  All created objects are deleted at the end of the run.")
+        print("  ONLY use against a dev or staging server -- NEVER production.")
+        print(f"\n  Target URL: {url}")
+        confirm = input("\n  Type 'yes' to continue: ").strip()
+        if confirm.lower() != "yes":
+            sys.exit("Aborted.")
+        print()
 
     if args.no_color:
         import builtins
@@ -612,5 +638,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-```
-</invoke>

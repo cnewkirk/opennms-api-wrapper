@@ -335,22 +335,19 @@ be run against a dev or staging instance before each release.
 
 ---
 
-## ADR-009 · No HTTP timeout (current gap — recommended fix)
+## ADR-009 · HTTP timeout
 
 ### Status
-Accepted with caveat / **Recommended for revision in v1.1**
+Accepted / Implemented in v0.1.0
 
 ### Context
 `requests` does not set a default socket timeout.  A call to a slow or
 unresponsive server will block the calling thread indefinitely.
 
-### Current state
-No timeout is set anywhere in the library.  Callers who need timeout
-behaviour must wrap calls themselves or set `client._session.timeout`
-directly (a private attribute).
-
-### Recommended change
-Add a `timeout` parameter to `OpenNMS.__init__` with a sensible default:
+### Decision
+Added a `timeout` parameter to `_OpenNMSBase.__init__` and `OpenNMS.__init__`
+defaulting to 30 seconds.  Every `_session.get/post/put/delete` call passes
+`timeout=self._timeout`.
 
 ```python
 def __init__(self, url, username, password, verify_ssl=True, timeout=30):
@@ -363,15 +360,17 @@ def _get(self, path, params=None, v2=False):
     return self._parse(resp)
 ```
 
-### Consequences of *not* fixing
+### Consequences
 
-**Risk**
-In production, a single slow OpenNMS call can permanently block a thread,
-exhaust a thread pool, or hang a process — with no timeout, exception, or
-log entry to diagnose.
+**Pros**
+- Threads cannot hang indefinitely on a slow or unresponsive server.
+- Callers who need a longer timeout can pass `timeout=N`; `timeout=None`
+  restores unbounded behaviour.
 
-**Risk level**
-Medium-high for production deployments; low for one-shot scripts.
+**Cons**
+- Long-running bulk operations or slow servers may now surface
+  `requests.exceptions.Timeout`; callers must set a higher `timeout` if
+  needed.
 
 ---
 
@@ -419,19 +418,14 @@ client._session.mount("http://",  adapter)
 
 ---
 
-## ADR-011 · `__version__` single-source ownership (current gap)
+## ADR-011 · `__version__` single-source ownership
 
 ### Status
-**Recommended for revision in v1.1**
+Accepted / Implemented in v0.1.0
 
-### Current state
-`__init__.py` declares `__version__ = "1.0.0"` as a hardcoded string, while
-`pyproject.toml` also carries a `version` field.  These must be updated in
-sync on every release and will inevitably drift.
-
-### Recommended change
-Remove the hardcoded string and derive the version at runtime from the
-installed package metadata:
+### Decision
+Removed the hardcoded `__version__` string from `__init__.py`.  Version is
+now derived at runtime from installed package metadata:
 
 ```python
 from importlib.metadata import version, PackageNotFoundError
@@ -441,10 +435,11 @@ except PackageNotFoundError:
     __version__ = "unknown"   # running directly from source, not installed
 ```
 
-`pyproject.toml` becomes the single source of truth.
+`pyproject.toml` is the single source of truth.
 
 ### Consequences
-- One fewer manual step on each release.
+- One fewer manual step on each release — only `pyproject.toml` needs
+  updating.
 - `__version__` is always accurate when the package is installed; returns
   `"unknown"` only when running directly from an uninstalled source tree.
 
@@ -462,6 +457,6 @@ except PackageNotFoundError:
 | 006 | `**filters` passthrough | Future-proof, zero maintenance | Typos are silent |
 | 007 | `v2=True` flag | One client, full surface | Flag leaks into every helper |
 | 008 | Mocked HTTP tests | Fast, deterministic, portable | Fixtures can drift |
-| 009 | No timeout *(gap)* | — | Threads can hang indefinitely |
+| 009 | `timeout=30` default | Threads cannot hang indefinitely | Long ops may need higher timeout |
 | 010 | No retry | Thin, predictable | Callers must add retries |
-| 011 | Dual `__version__` *(gap)* | — | Versions drift on release |
+| 011 | `importlib.metadata` version | Single source of truth | Returns `unknown` from uninstalled source |

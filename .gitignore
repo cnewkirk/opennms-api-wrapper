@@ -25,5 +25,11 @@ htmlcov/
 *.swp
 *.swo
 
+# macOS
+.DS_Store
+
+# Type checking
+.mypy_cache/
+
 # Claude Code local settings
 .claude/

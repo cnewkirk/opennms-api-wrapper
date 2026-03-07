@@ -16,7 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JSON-only request/response handling throughout; no XML dependency.
 - Synchronous, dependency-minimal design (only `requests` required at
   runtime).
-- Full test suite — 290 tests with 100 % method coverage.
+- 290-test suite with full method coverage; HTTP mocked at the adapter level
+  using the `responses` library — no live server required to run tests.
 - Resource groups covered: alarms, alarm statistics, alarm history, events,
   nodes (with IP interfaces, SNMP interfaces, monitored services, categories,
   assets, and hardware inventory), outages, notifications, acknowledgements,
