@@ -21,7 +21,7 @@ suite.
 - `TypedDict` schemas for all write payloads — field names, types, and docs in your IDE
 - Typed exception hierarchy — catch `NotFoundError`, `ForbiddenError`, etc. without importing `requests`
 - Pagination helper — `client.paginate()` yields all items from any list endpoint automatically
-- 490-test suite with full method coverage (mocked HTTP — no live server required)
+- Full test suite with method coverage (mocked HTTP — no live server required)
 - Live-server smoke test validated against Meridian 2024.3.0
 
 ## Installation
@@ -213,7 +213,7 @@ confirmation and print the target URL before running a single write.
 python smoke_test.py --write          # interactive prompt required
 python smoke_test.py --write --yes    # skip prompt (CI pipelines only)
 python smoke_test.py --no-color       # plain output for log files
-python smoke_test.py --skip get_resources --skip get_flow  # skip slow tests
+python smoke_test.py --skip get_resources,get_flow  # skip slow tests
 ```
 
 The `--skip` flag accepts a prefix — `--skip get_flow` skips all tests
@@ -232,8 +232,8 @@ pytest tests/ -v
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at
-https://github.com/cnewkirk/opennms-api-wrapper.
+Bug reports and pull requests are welcome on
+[GitHub](https://github.com/cnewkirk/opennms-api-wrapper).
 
 ## Acknowledgements
 

@@ -77,7 +77,7 @@ opennms_api_wrapper/    # installable package
 tests/
     conftest.py         # client fixture, V1/V2 URL constants, qs() helper
     fixtures.py         # all accurate OpenNMS Horizon 35 response shapes
-    test_*.py           # one file per mixin (60 files, 490 tests total)
+    test_*.py           # one file per mixin
 
 dist/                   # built artifacts (gitignored)
 pyproject.toml          # build config + project metadata
