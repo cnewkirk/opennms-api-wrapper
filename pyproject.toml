@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "opennms-api-wrapper"
-version = "0.4.3"
+version = "0.4.4"
 description = "An unofficial Python 3 client for the OpenNMS REST API (Horizon 35+)"
 readme = "README.md"
 requires-python = ">=3.8"
