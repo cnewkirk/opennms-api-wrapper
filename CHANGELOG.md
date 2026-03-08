@@ -32,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **TypedDict payload schemas**: `opennms_api_wrapper.types` now exports 42
+- **TypedDict payload schemas**: `opennms_api_wrapper.types` now exports
   `TypedDict` classes covering every write-method argument.  Schemas appear
   in IDE autocompletion and in the API docs; all fields are optional
   (`total=False`) for maximum flexibility.  Hyphenated v1 keys (e.g.,
@@ -40,8 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   other schemas use class syntax for full IDE autocompletion.
 - **MkDocs Material docs site**: replaced pdoc with MkDocs Material +
   mkdocstrings.  `mkdocs.yml`, `docs/index.md`, and `docs/api.md` added.
-  GitHub Pages workflow updated; all 413 public methods and all 42 TypedDict
-  schemas are now rendered at
+  GitHub Pages workflow updated; all public methods and TypedDict schemas
+  are now rendered at
   <https://cnewkirk.github.io/opennms-api-wrapper/api/>.
 - **Retry with exponential backoff**: HTTP client now retries on connection
   errors and transient server errors (500, 502, 503, 504) with exponential

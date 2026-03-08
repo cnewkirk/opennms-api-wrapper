@@ -3,7 +3,7 @@
 ## Package composition
 
 `OpenNMS` (in `client.py`) is built by multiple-inheriting from `_OpenNMSBase`
-and 54 mixin classes — one per API resource group.  Dashed arrows represent
+and one mixin class per API resource group.  Dashed arrows represent
 mixin inheritance; the solid arrow represents the base-class relationship.
 
 ```mermaid
@@ -99,7 +99,7 @@ flowchart TD
     BaseClass["_OpenNMSBase - _base.py<br/>_get / _post / _put / _delete / _patch<br/>_parse / _url"]
 
     subgraph client_sg["client.py"]
-        OpenNMS["OpenNMS<br/>~400 public methods - flat namespace"]
+        OpenNMS["OpenNMS<br/>flat namespace"]
     end
 
     caller -->|"client.method()"| OpenNMS

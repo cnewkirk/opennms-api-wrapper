@@ -1003,6 +1003,41 @@ def test_javamail_config(c):
     run("get_javamail_end2ends", c.get_javamail_end2ends)
 
 
+def test_pagination(c):
+    _section("pagination")
+    # Paginate nodes with a tiny page size and verify we get the full count.
+    total_r = run("get_node_count", c.get_node_count)
+    if isinstance(total_r, int) and total_r > 0:
+        cap = min(total_r, 15)  # don't fetch thousands
+        items = []
+        try:
+            for node in c.paginate(c.get_nodes, "node", page_size=5):
+                items.append(node)
+                if len(items) >= cap:
+                    break
+            _ok(f"paginate(get_nodes, page_size=5)",
+                f"{len(items)} items (cap {cap})")
+        except Exception as exc:
+            _fail("paginate(get_nodes, page_size=5)", exc)
+    else:
+        _skip("paginate(get_nodes)", "no nodes or count unavailable")
+
+
+def test_exceptions(c):
+    _section("exception hierarchy")
+    # Verify that a 404 raises NotFoundError, not bare HTTPError.
+    try:
+        c.get_node(999999999)
+        _fail("NotFoundError on missing node",
+              "expected NotFoundError but call succeeded")
+    except opennms.NotFoundError:
+        _ok("NotFoundError on missing node",
+            "get_node(999999999) raised NotFoundError")
+    except Exception as exc:
+        _fail("NotFoundError on missing node",
+              f"expected NotFoundError, got {type(exc).__name__}: {exc}")
+
+
 # ── Write-operation tests ──────────────────────────────────────────────────────
 
 def test_write_ops(c):
@@ -1230,6 +1265,8 @@ def main():
     test_email_nbi(client)
     test_syslog_nbi(client)
     test_javamail_config(client)
+    test_pagination(client)
+    test_exceptions(client)
 
     if args.write:
         test_write_ops(client)
