@@ -241,5 +241,13 @@ Bug reports and pull requests are welcome on
 
 This library was designed and tested by a human, with implementation
 assistance from [Claude Code](https://claude.ai/code) (Anthropic). All API
-shapes are derived from the official OpenNMS Horizon 35 REST API
-documentation.
+shapes are derived from the official [OpenNMS](https://www.opennms.com/)
+Horizon 35 REST API documentation.
+
+[requests](https://docs.python-requests.org/) handles all HTTP communication.
+[MkDocs Material](https://squidfunk.github.io/mkdocs-material/) renders the
+documentation site.
+
+[GitHub](https://github.com/), [Read the Docs](https://readthedocs.org/), and
+[PyPI](https://pypi.org/) generously provide source hosting, CI, versioned
+docs, and package distribution free of charge for open source projects.
