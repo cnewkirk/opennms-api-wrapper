@@ -73,6 +73,36 @@ client = opennms.OpenNMS(
 )
 ```
 
+## Smoke testing
+
+`smoke_test.py` (included in the source repository) exercises the wrapper
+against a real OpenNMS server. Configure it via environment variables:
+
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `OPENNMS_URL` | yes | — | Base URL, e.g. `https://opennms.example.com:8443` |
+| `OPENNMS_USER` | yes | — | Username (needs at minimum the `rest` role) |
+| `OPENNMS_PASSWORD` | yes | — | Password |
+| `OPENNMS_VERIFY_SSL` | no | `true` | Set to `false` to skip SSL certificate verification |
+| `OPENNMS_TIMEOUT` | no | `60` | Per-request timeout in seconds |
+
+**Read-only mode** (default) issues only GET requests — safe against any server including production:
+
+```bash
+export OPENNMS_URL="https://opennms.example.com:8443"
+export OPENNMS_USER="admin"
+export OPENNMS_PASSWORD="secret"
+python smoke_test.py
+```
+
+**Write mode** creates and then deletes objects. Only use against a dev or staging instance:
+
+```bash
+python smoke_test.py --write          # interactive prompt required
+python smoke_test.py --write --yes    # skip prompt (CI pipelines only)
+python smoke_test.py --skip get_flow  # skip tests by label prefix
+```
+
 ## All methods
 
 See the [API Reference](api.md) for all methods and TypedDict payload schemas.
