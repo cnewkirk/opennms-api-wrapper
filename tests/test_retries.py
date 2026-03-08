@@ -42,15 +42,13 @@ class TestDefaultRetries:
 
 
 class TestRetriesDisabled:
-    """retries=0 leaves the default urllib3 adapter (no retries)."""
+    """retries=0 mounts the pool adapter with max_retries=0 (no retries)."""
 
     def test_no_retry_adapter(self):
         client = opennms.OpenNMS(BASE_URL, "admin", "admin",
                                  verify_ssl=False, retries=0)
         retry = _get_retry(client, "http://")
-        # Default urllib3 Retry has total=0 (or is an int 0)
-        total = (retry.total if isinstance(retry, Retry)
-                 else retry)
+        total = retry.total if isinstance(retry, Retry) else retry
         assert total == 0
 
 

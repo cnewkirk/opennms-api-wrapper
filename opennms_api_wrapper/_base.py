@@ -24,7 +24,9 @@ class _OpenNMSBase:
             password: Password for HTTP Basic authentication.
             verify_ssl: When ``False`` SSL certificate verification is
                 disabled. Defaults to ``True``.
-            timeout: Socket timeout in seconds for all HTTP requests.
+            timeout: Read timeout in seconds for all HTTP requests.
+                The connect timeout is capped at ``min(timeout, 10)``
+                seconds so unreachable hosts fail fast.
                 Defaults to ``30``.  Pass ``None`` to disable.
             retries: Number of retries on connection errors and
                 HTTP 500/502/503/504.  Uses exponential backoff with
@@ -33,7 +35,7 @@ class _OpenNMSBase:
         base = url.rstrip("/")
         self._v1_url = f"{base}/opennms/rest"
         self._v2_url = f"{base}/opennms/api/v2"
-        self._timeout = timeout
+        self._timeout = (min(timeout, 10), timeout) if timeout is not None else None
         self._session = requests.Session()
         self._session.auth = (username, password)
         self._session.headers.update({
@@ -41,17 +43,18 @@ class _OpenNMSBase:
             "Content-Type": "application/json",
         })
         self._session.verify = verify_ssl
-        if retries > 0:
-            retry = Retry(
-                total=retries,
-                backoff_factor=0.5,
-                status_forcelist=(500, 502, 503, 504),
-                allowed_methods=None,
-                raise_on_status=False,
-            )
-            adapter = HTTPAdapter(max_retries=retry)
-            self._session.mount("https://", adapter)
-            self._session.mount("http://", adapter)
+        retry = Retry(
+            total=retries,
+            backoff_factor=0.5,
+            status_forcelist=(500, 502, 503, 504),
+            allowed_methods=None,
+            raise_on_status=False,
+        ) if retries > 0 else 0
+        adapter = HTTPAdapter(
+            pool_connections=4, pool_maxsize=20, max_retries=retry
+        )
+        self._session.mount("https://", adapter)
+        self._session.mount("http://", adapter)
 
     def _url(self, path: str, v2: bool = False) -> str:
         """Build a full endpoint URL, using the v2 base if *v2* is True."""
