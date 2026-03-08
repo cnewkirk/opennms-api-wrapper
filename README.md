@@ -19,7 +19,9 @@ suite.
 - Single runtime dependency: [`requests`](https://docs.python-requests.org/)
 - Synchronous and straightforward — no async complexity
 - `TypedDict` schemas for all write payloads — field names, types, and docs in your IDE
-- 463-test suite with full method coverage (mocked HTTP — no live server required)
+- Typed exception hierarchy — catch `NotFoundError`, `ForbiddenError`, etc. without importing `requests`
+- Pagination helper — `client.paginate()` yields all items from any list endpoint automatically
+- 478-test suite with full method coverage (mocked HTTP — no live server required)
 - Live-server smoke test validated against Meridian 2024.3.0
 
 ## Installation
@@ -67,6 +69,48 @@ client.ack_alarm(alarm_id=42)
 # List alarms with FIQL filter (v2)
 alarms = client.get_alarms_v2(fiql="severity==MAJOR")
 ```
+
+## Error handling
+
+HTTP errors raise typed exceptions — no need to import `requests`:
+
+```python
+import opennms_api_wrapper as opennms
+
+try:
+    node = client.get_node(99999)
+except opennms.NotFoundError:
+    print("Node does not exist")
+except opennms.ForbiddenError:
+    print("Insufficient permissions")
+except opennms.AuthenticationError:
+    print("Check your credentials")
+except opennms.OpenNMSError:
+    print("Unexpected error")
+```
+
+Full hierarchy: `OpenNMSHTTPError` (base, exposes `.status_code` and
+`.response`) → `BadRequestError` (400), `AuthenticationError` (401),
+`ForbiddenError` (403), `NotFoundError` (404), `ConflictError` (409),
+`ServerError` (5xx).
+
+## Pagination
+
+`client.paginate()` transparently handles `limit`/`offset` pagination and
+yields individual items:
+
+```python
+# Fetch every MAJOR alarm — no manual offset loop required
+for alarm in client.paginate(client.get_alarms, "alarm", severity="MAJOR"):
+    print(alarm["id"], alarm["nodeLabel"])
+
+# Works with any list endpoint
+for node in client.paginate(client.get_nodes, "node"):
+    print(node["id"], node["label"])
+```
+
+The optional `page_size` argument (default 100) controls how many items are
+fetched per request.
 
 ## API coverage
 
