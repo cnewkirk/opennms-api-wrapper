@@ -1,7 +1,13 @@
 """Base HTTP client for the OpenNMS REST API."""
 import requests
 from requests.adapters import HTTPAdapter
+from requests.exceptions import HTTPError
 from urllib3.util.retry import Retry
+
+from ._exceptions import (
+    BadRequestError, AuthenticationError, ForbiddenError,
+    NotFoundError, ConflictError, ServerError, OpenNMSHTTPError,
+)
 
 
 class _OpenNMSBase:
@@ -52,14 +58,35 @@ class _OpenNMSBase:
         base = self._v2_url if v2 else self._v1_url
         return f"{base}/{path.lstrip('/')}"
 
+    def _raise_for_status(self, resp: requests.Response) -> None:
+        """Translate an HTTP error response into a library exception."""
+        try:
+            resp.raise_for_status()
+        except HTTPError as exc:
+            status = resp.status_code
+            msg = str(exc)
+            if status == 400:
+                raise BadRequestError(msg, resp) from exc
+            if status == 401:
+                raise AuthenticationError(msg, resp) from exc
+            if status == 403:
+                raise ForbiddenError(msg, resp) from exc
+            if status == 404:
+                raise NotFoundError(msg, resp) from exc
+            if status == 409:
+                raise ConflictError(msg, resp) from exc
+            if 500 <= status < 600:
+                raise ServerError(msg, resp) from exc
+            raise OpenNMSHTTPError(msg, resp) from exc
+
     def _parse(self, resp: requests.Response):
         """Parse an HTTP response into a Python object.
 
         Returns a dict/list for JSON, int or str for text/plain, and None
-        for empty 204 responses.  Raises ``requests.exceptions.HTTPError``
-        on non-2xx status codes.
+        for empty 204 responses.  Raises an :class:`OpenNMSHTTPError`
+        subclass on non-2xx status codes.
         """
-        resp.raise_for_status()
+        self._raise_for_status(resp)
         if not resp.content:
             return None
         ct = resp.headers.get("Content-Type", "")
@@ -132,7 +159,7 @@ class _OpenNMSBase:
         """Send a GET request and return the raw response text."""
         resp = self._session.get(self._url(path, v2),
                                  timeout=self._timeout)
-        resp.raise_for_status()
+        self._raise_for_status(resp)
         return resp.text
 
     def _post_files(self, path: str, files: dict,
