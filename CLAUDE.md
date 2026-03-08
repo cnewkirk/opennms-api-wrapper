@@ -137,7 +137,7 @@ CONTRIBUTING.md
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"   # installs requests + pytest + responses
-pytest tests/ -v          # run full suite (463 tests, ~0.4 s)
+pytest tests/ -v          # run full suite (~0.4 s)
 ```
 
 Always activate the `.venv` before running any commands — never rely on the

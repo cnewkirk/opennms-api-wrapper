@@ -18,7 +18,7 @@ pip install -e ".[dev]"
 pytest tests/ -v
 ```
 
-All 463 tests should pass. CI runs the suite against Python 3.8–3.13 on
+All tests should pass. CI runs the suite against Python 3.8–3.13 on
 every push and pull request.
 
 ## Adding a new endpoint
