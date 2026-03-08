@@ -17,8 +17,8 @@ Accepted
 
 ### Context
 The OpenNMS REST API covers 35+ resource groups (alarms, nodes, flows,
-metadata, …) yielding roughly 250 public methods.  Placing all methods in one
-class produces a 2 000-line file that is hard to navigate, hard to test in
+metadata, …) yielding roughly 413 public methods.  Placing all methods in one
+class produces a 5 000-line file that is hard to navigate, hard to test in
 isolation, and impossible to maintain incrementally.  The alternatives were:
 
 | Option | Description |
@@ -26,7 +26,7 @@ isolation, and impossible to maintain incrementally.  The alternatives were:
 | **Flat module functions** | `opennms.get_alarms(client, ...)` — functional style, no class |
 | **One class, one file** | `OpenNMS` with all 250 methods in a single source file |
 | **Resource sub-clients** | `client.alarms.get(...)`, `client.nodes.get(...)` |
-| **Mixin-per-resource** | 30 small mixin classes assembled via multiple inheritance into one `OpenNMS` class |
+| **Mixin-per-resource** | 54 mixin classes assembled via multiple inheritance into one `OpenNMS` class |
 
 ### Decision
 Mixin-per-resource.  Each API resource group lives in its own file
@@ -47,8 +47,9 @@ inheritance, exposing a single flat namespace to callers.
 - Python's MRO is non-obvious to contributors unfamiliar with multiple
   inheritance.  A name collision between two mixins silently shadows one
   method; there is no compile-time detection.
-- The 30-class inheritance chain can confuse IDE introspection and some
-  documentation generators (though Sphinx and pdoc handle it correctly).
+- The 54-class inheritance chain can confuse IDE introspection and some
+  documentation generators (though mkdocstrings handles it correctly via
+  `inherited_members: true`).
 - Discipline on method naming (`get_alarm_*`, `get_node_*`) is enforced only
   by convention, not the language.
 
