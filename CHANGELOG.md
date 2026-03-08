@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] - 2026-03-08
+
+### Added
+
+- **`py.typed` marker (PEP 561)**: type checkers (mypy, pyright, Pylance) now
+  automatically discover the package's TypedDicts and annotations without any
+  user configuration.  `Typing :: Typed` PyPI classifier added.
+- **Read the Docs support**: `.readthedocs.yaml` added for versioned docs at
+  <https://opennms-api-wrapper.readthedocs.io>.
+- **Security policy**: `SECURITY.md` added with supported-versions table and
+  private disclosure instructions via GitHub Security Advisories.
+
+### Changed
+
+- Installation docs updated: `pip install opennms-api-wrapper` (PyPI) is now
+  the primary install method; stale GitHub tarball URLs removed.
+- Smoke test environment variables documented in the MkDocs site
+  (`docs/index.md`), not only in the script and README.
+- Test count removed from all locations except the README features list to
+  reduce maintenance burden.
+
 ## [0.4.0] - 2026-03-07
 
 ### Added
