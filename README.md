@@ -1,6 +1,7 @@
 # opennms-api-wrapper
 
 [![CI](https://github.com/cnewkirk/opennms-api-wrapper/actions/workflows/ci.yml/badge.svg)](https://github.com/cnewkirk/opennms-api-wrapper/actions/workflows/ci.yml)
+[![Coverage](https://codecov.io/gh/cnewkirk/opennms-api-wrapper/graph/badge.svg)](https://codecov.io/gh/cnewkirk/opennms-api-wrapper)
 [![PyPI](https://img.shields.io/pypi/v/opennms-api-wrapper)](https://pypi.org/project/opennms-api-wrapper/)
 [![Docs](https://readthedocs.org/projects/opennms-api-wrapper/badge/?version=stable)](https://opennms-api-wrapper.readthedocs.io/en/stable/)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/)

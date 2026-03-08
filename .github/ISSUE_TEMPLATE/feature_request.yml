@@ -1,0 +1,48 @@
+name: Feature request
+description: New endpoint, missing parameter, or other enhancement
+labels: [enhancement]
+body:
+  - type: checkboxes
+    attributes:
+      label: Pre-flight
+      options:
+        - label: I searched existing issues and this hasn't been requested yet
+          required: true
+
+  - type: textarea
+    id: missing
+    attributes:
+      label: What endpoint or feature is missing?
+      description: >
+        Link to the OpenNMS REST API docs if relevant:
+        https://docs.opennms.com/horizon/latest/development/rest/rest-api.html
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed method signature
+      description: What should the method look like and what should it return?
+      render: python
+      placeholder: |
+        # e.g.
+        client.get_thing(thing_id: int) -> dict
+    validations:
+      required: false
+
+  - type: input
+    id: opennms_version
+    attributes:
+      label: OpenNMS version where this endpoint exists
+      placeholder: "e.g. Horizon 35+, Meridian 2024.x"
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Use case, workaround you're using today, anything else helpful.
+    validations:
+      required: false
