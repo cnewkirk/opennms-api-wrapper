@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "opennms-api-wrapper"
-version = "0.4.2"
-description = "A thin Python wrapper for the OpenNMS REST API (Horizon 35)"
+version = "0.4.3"
+description = "An unofficial Python 3 client for the OpenNMS REST API (Horizon 35+)"
 readme = "README.md"
 requires-python = ">=3.8"
 authors = [
@@ -39,7 +39,7 @@ dependencies = [
 dev = ["pytest", "responses", "mkdocs-material", "mkdocstrings[python]", "ruff", "mypy"]
 
 [project.urls]
-Homepage = "https://github.com/cnewkirk/opennms-api-wrapper"
+Homepage = "https://opennms-api-wrapper.readthedocs.io/en/stable/"
 Documentation = "https://opennms-api-wrapper.readthedocs.io/en/stable/"
 "API Reference" = "https://opennms-api-wrapper.readthedocs.io/en/stable/api/"
 Repository = "https://github.com/cnewkirk/opennms-api-wrapper"
