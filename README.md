@@ -6,10 +6,13 @@
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A thin, dependency-minimal Python 3 wrapper for the
+An unofficial, dependency-minimal Python 3 client for the
 [OpenNMS](https://www.opennms.com/) REST API (Horizon 35+).
-Validated against OpenNMS Meridian 2024.3.0 with a live-server smoke test
-suite.
+Read-only smoke test validated against OpenNMS Meridian 2024.3.0.
+
+> **OpenNMS resources**: [Docs](https://docs.opennms.com/) ·
+> [REST API reference](https://docs.opennms.com/horizon/latest/development/rest/rest-api.html) ·
+> [Community forum](https://opennms.discourse.group/)
 
 **[Full API reference →](https://opennms-api-wrapper.readthedocs.io/en/stable/api/)**
 
@@ -23,7 +26,7 @@ suite.
 - Typed exception hierarchy — catch `NotFoundError`, `ForbiddenError`, etc. without importing `requests`
 - Pagination helper — `client.paginate()` yields all items from any list endpoint automatically
 - Full test suite with method coverage (mocked HTTP — no live server required)
-- Live-server smoke test validated against Meridian 2024.3.0
+- Read-only smoke test validated against Meridian 2024.3.0 (write mode untested live)
 
 ## Installation
 
@@ -209,6 +212,8 @@ python smoke_test.py
 categories, groups, requisitions, maps, etc.).  It will prompt for explicit
 confirmation and print the target URL before running a single write.
 **Only use write mode against a dev or staging instance — never production.**
+Write mode has not yet been validated against a live server — reports and
+contributions welcome.
 
 ```bash
 python smoke_test.py --write          # interactive prompt required
