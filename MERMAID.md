@@ -166,8 +166,8 @@ flowchart LR
 
     subgraph api_layer["OpenNMS Server - Horizon 30+"]
         direction TB
-        v1["/opennms/rest/<br/>v1 REST API<br/>29 resource groups"]
-        v2["/opennms/api/v2/<br/>v2 REST API<br/>6 resource groups"]
+        v1["/opennms/rest/<br/>v1 REST API<br/>~43 resource groups"]
+        v2["/opennms/api/v2/<br/>v2 REST API<br/>~12 resource groups"]
     end
 
     result(["Python object<br/>dict / list / int / None"])

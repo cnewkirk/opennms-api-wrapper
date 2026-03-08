@@ -18,7 +18,7 @@ pip install -e ".[dev]"
 pytest tests/ -v
 ```
 
-All 290 tests should pass. CI runs the suite against Python 3.8–3.13 on
+All 463 tests should pass. CI runs the suite against Python 3.8–3.13 on
 every push and pull request.
 
 ## Adding a new endpoint
@@ -27,9 +27,11 @@ every push and pull request.
    new one following the existing pattern).
 2. Add the method using `self._get`, `self._post`, `self._put`, or
    `self._delete`. Pass `v2=True` for `/api/v2/` endpoints.
-3. If you created a new mixin, import and add it to the inheritance list in
+3. If the method accepts a write payload (POST/PUT body), add a `TypedDict`
+   for it in `opennms_api_wrapper/types.py` and import it in the mixin.
+4. If you created a new mixin, import and add it to the inheritance list in
    `client.py`.
-4. Add a corresponding test in `tests/test_<mixin>.py`. Mock the HTTP call
+5. Add a corresponding test in `tests/test_<mixin>.py`. Mock the HTTP call
    with `@responses.activate` and add any new fixture shapes to
    `tests/fixtures.py`.
 
@@ -42,5 +44,10 @@ every push and pull request.
 ## Submitting a pull request
 
 1. Fork the repo and create a branch from `main`.
-2. Make your changes and ensure `pytest tests/ -v` passes locally.
-3. Open a pull request — CI will run automatically.
+2. Make your changes and ensure all local checks pass:
+   ```bash
+   pytest tests/ -v
+   ruff check opennms_api_wrapper/
+   mypy opennms_api_wrapper/types.py
+   ```
+3. Open a pull request — CI will run all checks automatically.

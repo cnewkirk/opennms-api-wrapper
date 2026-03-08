@@ -57,6 +57,7 @@ alarms = client.get_alarms_v2(fiql="severity==MAJOR")
 - JSON everywhere — no XML handling required
 - Single runtime dependency: [`requests`](https://docs.python-requests.org/)
 - Synchronous and straightforward — no async complexity
+- `TypedDict` schemas for all write payloads — field names, types, and docs in your IDE
 - 463-test suite with full method coverage (mocked HTTP)
 
 ## Authentication
@@ -74,4 +75,4 @@ client = opennms.OpenNMS(
 
 ## All methods
 
-See the [API Reference](api.md) for the complete list of 250+ methods.
+See the [API Reference](api.md) for the complete list of 413 methods and all TypedDict payload schemas.
