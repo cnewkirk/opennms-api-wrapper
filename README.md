@@ -11,7 +11,7 @@ A thin, dependency-minimal Python 3 wrapper for the
 Validated against OpenNMS Meridian 2024.3.0 with a live-server smoke test
 suite.
 
-**[Full API reference →](https://cnewkirk.github.io/opennms-api-wrapper/api/)**
+**[Full API reference →](https://opennms-api-wrapper.readthedocs.io/en/stable/api/)**
 **[Versioned docs →](https://opennms-api-wrapper.readthedocs.io/en/stable/)**
 
 ## Features
