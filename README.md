@@ -29,7 +29,7 @@ suite.
 **From the GitHub release** (no clone required — recommended for most users):
 
 ```bash
-pip install https://github.com/cnewkirk/opennms-api-wrapper/archive/refs/tags/v0.3.1.tar.gz
+pip install https://github.com/cnewkirk/opennms-api-wrapper/archive/refs/tags/v0.4.0.tar.gz
 ```
 
 **From source** (clone first, then install):
