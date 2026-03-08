@@ -106,3 +106,18 @@ python smoke_test.py --skip get_flow  # skip tests by label prefix
 ## All methods
 
 See the [API Reference](api.md) for all methods and TypedDict payload schemas.
+
+## Acknowledgements
+
+This library was designed and tested by a human, with implementation
+assistance from [Claude Code](https://claude.ai/code) (Anthropic). All API
+shapes are derived from the official [OpenNMS](https://www.opennms.com/)
+Horizon 35 REST API documentation.
+
+[requests](https://docs.python-requests.org/) handles all HTTP communication.
+[MkDocs Material](https://squidfunk.github.io/mkdocs-material/) renders this
+documentation site.
+
+[GitHub](https://github.com/), [Read the Docs](https://readthedocs.org/), and
+[PyPI](https://pypi.org/) generously provide source hosting, CI, versioned
+docs, and package distribution free of charge for open source projects.

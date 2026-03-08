@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.2] - 2026-03-08
+
+### Changed
+
+- Read the Docs is now the canonical `Documentation` URL in `pyproject.toml`;
+  GitHub Pages retained as `"API Reference"` pointing directly to the rendered
+  method docs.
+- All user-facing API reference links updated to `readthedocs.io` (no personal
+  username in URLs).
+- Acknowledgements added to `docs/index.md` so they appear on the RTD site as
+  well as on GitHub and PyPI.
+- RTD badge added to README.
+- `CLAUDE.md` removed from the source distribution — it is AI developer
+  tooling, not content for package consumers.
+
 ## [0.4.1] - 2026-03-08
 
 ### Added
