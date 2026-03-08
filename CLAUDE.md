@@ -71,11 +71,13 @@ opennms_api_wrapper/    # installable package
     _email_nbi.py             # EmailNbiMixin
     _syslog_nbi.py            # SyslogNbiMixin
     _javamail_config.py       # JavamailConfigMixin
+    _pagination.py            # PaginationMixin  (client.paginate())
+    _exceptions.py            # Exception hierarchy (OpenNMSError, NotFoundError, …)
 
 tests/
     conftest.py         # client fixture, V1/V2 URL constants, qs() helper
     fixtures.py         # all accurate OpenNMS Horizon 35 response shapes
-    test_*.py           # one file per mixin (58 files, 463 tests total)
+    test_*.py           # one file per mixin (60 files, 490 tests total)
 
 dist/                   # built artifacts (gitignored)
 pyproject.toml          # build config + project metadata

@@ -55,10 +55,12 @@ from ._snmptrap_nbi import SnmpTrapNbiMixin
 from ._email_nbi import EmailNbiMixin
 from ._syslog_nbi import SyslogNbiMixin
 from ._javamail_config import JavamailConfigMixin
+from ._pagination import PaginationMixin
 
 
 class OpenNMS(
     _OpenNMSBase,
+    PaginationMixin,
     InfoMixin,
     AlarmsMixin,
     AlarmStatsMixin,
