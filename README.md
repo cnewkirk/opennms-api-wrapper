@@ -1,7 +1,7 @@
 # opennms-api-wrapper
 
 [![CI](https://github.com/cnewkirk/opennms-api-wrapper/actions/workflows/ci.yml/badge.svg)](https://github.com/cnewkirk/opennms-api-wrapper/actions/workflows/ci.yml)
-[![GitHub release](https://img.shields.io/github/v/release/cnewkirk/opennms-api-wrapper)](https://github.com/cnewkirk/opennms-api-wrapper/releases)
+[![PyPI](https://img.shields.io/pypi/v/opennms-api-wrapper)](https://pypi.org/project/opennms-api-wrapper/)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -21,27 +21,22 @@ suite.
 - `TypedDict` schemas for all write payloads — field names, types, and docs in your IDE
 - Typed exception hierarchy — catch `NotFoundError`, `ForbiddenError`, etc. without importing `requests`
 - Pagination helper — `client.paginate()` yields all items from any list endpoint automatically
-- 478-test suite with full method coverage (mocked HTTP — no live server required)
+- 490-test suite with full method coverage (mocked HTTP — no live server required)
 - Live-server smoke test validated against Meridian 2024.3.0
 
 ## Installation
 
-**From the GitHub release** (no clone required — recommended for most users):
-
 ```bash
-pip install https://github.com/cnewkirk/opennms-api-wrapper/archive/refs/tags/v0.4.0.tar.gz
+pip install opennms-api-wrapper
 ```
 
-**From source** (clone first, then install):
+**From source** (latest development version):
 
 ```bash
 git clone https://github.com/cnewkirk/opennms-api-wrapper.git
 cd opennms-api-wrapper
 pip install .
 ```
-
-When the package is published to PyPI, installation will simplify to
-`pip install opennms-api-wrapper`.
 
 ## Quick start
 
@@ -190,7 +185,7 @@ client = opennms.OpenNMS(
 
 `smoke_test.py` exercises the wrapper against a real OpenNMS server.  It is
 intended for use against a dev or staging instance before each release — not
-as a substitute for the 463-test mocked unit suite.
+as a substitute for the mocked unit suite.
 
 Tests that depend on optional plugins or heavy endpoints are reported as
 **WARN** (non-fatal) rather than FAIL.  Each warning includes the specific

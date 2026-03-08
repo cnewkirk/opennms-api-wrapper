@@ -1,7 +1,7 @@
 # opennms-api-wrapper
 
 [![CI](https://github.com/cnewkirk/opennms-api-wrapper/actions/workflows/ci.yml/badge.svg)](https://github.com/cnewkirk/opennms-api-wrapper/actions/workflows/ci.yml)
-[![GitHub release](https://img.shields.io/github/v/release/cnewkirk/opennms-api-wrapper)](https://github.com/cnewkirk/opennms-api-wrapper/releases)
+[![PyPI](https://img.shields.io/pypi/v/opennms-api-wrapper)](https://pypi.org/project/opennms-api-wrapper/)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/cnewkirk/opennms-api-wrapper/blob/main/LICENSE)
 
@@ -10,13 +10,11 @@ Validated against OpenNMS Meridian 2024.3.0.
 
 ## Installation
 
-**From GitHub** (no clone required):
-
 ```bash
-pip install https://github.com/cnewkirk/opennms-api-wrapper/archive/refs/tags/v0.3.1.tar.gz
+pip install opennms-api-wrapper
 ```
 
-**From source:**
+**From source** (latest development version):
 
 ```bash
 git clone https://github.com/cnewkirk/opennms-api-wrapper.git
@@ -58,7 +56,9 @@ alarms = client.get_alarms_v2(fiql="severity==MAJOR")
 - Single runtime dependency: [`requests`](https://docs.python-requests.org/)
 - Synchronous and straightforward — no async complexity
 - `TypedDict` schemas for all write payloads — field names, types, and docs in your IDE
-- 463-test suite with full method coverage (mocked HTTP)
+- Typed exception hierarchy — catch `NotFoundError`, `ForbiddenError`, etc. without importing `requests`
+- Pagination helper — `client.paginate()` yields all items from any list endpoint automatically
+- Full test suite with mocked HTTP — no live server required
 
 ## Authentication
 
@@ -75,4 +75,4 @@ client = opennms.OpenNMS(
 
 ## All methods
 
-See the [API Reference](api.md) for the complete list of 413 methods and all TypedDict payload schemas.
+See the [API Reference](api.md) for all methods and TypedDict payload schemas.
