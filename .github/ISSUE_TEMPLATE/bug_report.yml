@@ -1,0 +1,86 @@
+name: Bug report
+description: Something is broken or returning unexpected results
+labels: [bug]
+body:
+  - type: checkboxes
+    attributes:
+      label: Pre-flight
+      options:
+        - label: I searched existing issues and this hasn't been reported yet
+          required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: A clear description of what is wrong.
+    validations:
+      required: true
+
+  - type: input
+    id: method
+    attributes:
+      label: Method called
+      description: Which client method triggered the issue?
+      placeholder: "e.g. client.get_alarms()"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: The smallest code snippet that reproduces the bug.
+      render: python
+      value: |
+        import opennms_api_wrapper as opennms
+        client = opennms.OpenNMS(url="...", username="...", password="...")
+        # ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+      description: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+      description: What happened instead? Include the full traceback if there is one.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: python
+    attributes:
+      label: Python version
+      options:
+        - "3.13"
+        - "3.12"
+        - "3.11"
+        - "3.10"
+        - "3.9"
+        - "3.8"
+    validations:
+      required: true
+
+  - type: input
+    id: wrapper_version
+    attributes:
+      label: opennms-api-wrapper version
+      placeholder: "e.g. 0.4.3  (pip show opennms-api-wrapper)"
+    validations:
+      required: true
+
+  - type: input
+    id: opennms_version
+    attributes:
+      label: OpenNMS version
+      placeholder: "e.g. Horizon 35.0.2 or Meridian 2024.3.0"
+    validations:
+      required: true
