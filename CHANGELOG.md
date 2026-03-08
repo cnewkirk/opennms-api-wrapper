@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.3] - 2026-03-08
+
+### Changed
+
+- Project homepage in `pyproject.toml` now points to the Read the Docs
+  documentation site instead of the GitHub repository.
+- PyPI package description updated to "unofficial Python 3 client" to
+  accurately reflect the project's relationship with OpenNMS.
+- `README.md` and `docs/index.md`: library described as an "unofficial client"
+  throughout; live-server validation qualified as read-only only; write mode
+  noted as untested live.
+- OpenNMS resources block added (Docs, REST API reference, Community forum).
+
 ## [0.4.2] - 2026-03-08
 
 ### Changed
