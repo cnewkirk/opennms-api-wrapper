@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Exception hierarchy**: HTTP errors now raise typed exceptions instead of
+  bare `requests.exceptions.HTTPError`.  All exceptions are exported from
+  the top-level package — no need to import `requests` in calling code.
+
+  ```
+  OpenNMSError
+  └── OpenNMSHTTPError  (.status_code, .response)
+      ├── BadRequestError      400
+      ├── AuthenticationError  401
+      ├── ForbiddenError       403
+      ├── NotFoundError        404
+      ├── ConflictError        409
+      └── ServerError          5xx
+  ```
+
+- **Pagination helper**: `client.paginate(method, key, page_size=100,
+  **kwargs)` — a generator that transparently handles `limit`/`offset`
+  pagination and yields individual items from any list endpoint.
+
 ## [0.3.1] - 2026-03-07
 
 ### Added
