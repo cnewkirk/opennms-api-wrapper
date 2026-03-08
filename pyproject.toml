@@ -40,8 +40,8 @@ dev = ["pytest", "responses", "mkdocs-material", "mkdocstrings[python]", "ruff",
 
 [project.urls]
 Homepage = "https://github.com/cnewkirk/opennms-api-wrapper"
-Documentation = "https://cnewkirk.github.io/opennms-api-wrapper/"
-"Docs (versioned)" = "https://opennms-api-wrapper.readthedocs.io/en/stable/"
+Documentation = "https://opennms-api-wrapper.readthedocs.io/en/stable/"
+"API Reference" = "https://cnewkirk.github.io/opennms-api-wrapper/api/"
 Repository = "https://github.com/cnewkirk/opennms-api-wrapper"
 "Bug Tracker" = "https://github.com/cnewkirk/opennms-api-wrapper/issues"
 Changelog = "https://github.com/cnewkirk/opennms-api-wrapper/blob/main/CHANGELOG.md"
