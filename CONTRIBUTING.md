@@ -12,6 +12,14 @@ source .venv/bin/activate
 pip install -e ".[dev]"
 ```
 
+Optionally install the pre-commit hook so ruff runs automatically before each
+commit:
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
 ## Running the tests
 
 ```bash
