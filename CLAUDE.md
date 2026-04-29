@@ -1,7 +1,6 @@
-# CLAUDE.md — opennms-api-wrapper
+# CLAUDE.md
 
-This file gives Claude Code the context needed to work on this project
-without prior conversation history.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project purpose
 
@@ -9,91 +8,63 @@ A thin, synchronous Python 3 wrapper for the OpenNMS REST API (Horizon 35).
 Users `import opennms_api_wrapper as opennms` and get a single `OpenNMS`
 client class with one method per API endpoint.
 
+## Development environment
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"        # installs requests + pytest + responses + ruff + mypy
+pytest tests/ -v               # run full suite (~0.4 s)
+pytest tests/test_alarms.py -v # run a single test file
+ruff check .                   # lint
+mypy opennms_api_wrapper/      # type-check
+mkdocs serve                   # preview docs at http://127.0.0.1:8000
+```
+
+Always activate the `.venv` before running any commands — never rely on the
+system Python or system pip.
+
 ## Repository layout
 
 ```
 opennms_api_wrapper/    # installable package
     __init__.py         # exports OpenNMS, __version__
-    client.py           # OpenNMS class (combines all mixins)
+    client.py           # OpenNMS class (combines all mixins via multiple inheritance)
     _base.py            # _OpenNMSBase: HTTP helpers (_get/_post/_put/_delete/_patch/_parse)
-    _alarms.py          # AlarmsMixin
-    _alarm_stats.py     # AlarmStatsMixin
-    _alarm_history.py   # AlarmHistoryMixin
-    _events.py          # EventsMixin
-    _nodes.py           # NodesMixin  (largest: nodes + sub-resources)
-    _outages.py         # OutagesMixin
-    _notifications.py   # NotificationsMixin
-    _acks.py            # AcksMixin
-    _requisitions.py    # RequisitionsMixin
-    _foreign_sources.py # ForeignSourcesMixin
-    _snmp_config.py     # SnmpConfigMixin
-    _groups.py          # GroupsMixin
-    _users.py           # UsersMixin
-    _categories.py      # CategoriesMixin
-    _sched_outages.py   # SchedOutagesMixin
-    _ksc_reports.py     # KscReportsMixin
-    _resources.py       # ResourcesMixin
-    _measurements.py    # MeasurementsMixin
-    _heatmap.py         # HeatmapMixin
-    _maps.py            # MapsMixin
-    _graphs.py          # GraphsMixin
-    _flows.py           # FlowsMixin
-    _device_config.py   # DeviceConfigMixin
-    _situations.py      # SituationsMixin  (v2)
-    _business_services.py  # BusinessServicesMixin  (v2)
-    _metadata.py        # MetadataMixin  (v2, largest: node/iface/service metadata)
-    _info.py            # InfoMixin
-    _discovery.py       # DiscoveryMixin  (v2)
-    _ipinterfaces_v2.py    # IpInterfacesV2Mixin
-    _snmpinterfaces_v2.py  # SnmpInterfacesV2Mixin
-    _enlinkd.py            # EnLinkdMixin  (v2)
-    _monitoring_locations.py  # MonitoringLocationsMixin
-    _minions.py               # MinionsMixin
-    _ifservices.py            # IfServicesMixin
-    _availability.py          # AvailabilityMixin
-    _health.py                # HealthMixin
-    _whoami.py                # WhoamiMixin
-    _classifications.py       # ClassificationsMixin
-    _situation_feedback.py    # SituationFeedbackMixin
-    _user_defined_links.py    # UserDefinedLinksMixin  (v2)
-    _applications.py          # ApplicationsMixin  (v2)
-    _perspective_poller.py    # PerspectivePollerMixin  (v2)
-    _foreign_sources_config.py  # ForeignSourcesConfigMixin
-    _requisition_names.py     # RequisitionNamesMixin
-    _snmp_metadata.py         # SnmpMetadataMixin  (v2)
-    _provisiond.py            # ProvisiondMixin  (v2)
-    _eventconf.py             # EventConfMixin  (v2)
-    _monitoring_systems.py    # MonitoringSystemsMixin
-    _asset_suggestions.py     # AssetSuggestionsMixin
-    _scv.py                   # ScvMixin
-    _config_mgmt.py           # ConfigMgmtMixin
-    _snmptrap_nbi.py          # SnmpTrapNbiMixin
-    _email_nbi.py             # EmailNbiMixin
-    _syslog_nbi.py            # SyslogNbiMixin
-    _javamail_config.py       # JavamailConfigMixin
-    _pagination.py            # PaginationMixin  (client.paginate())
-    _exceptions.py            # Exception hierarchy (OpenNMSError, NotFoundError, …)
+    _exceptions.py      # Exception hierarchy (see below)
+    _pagination.py      # PaginationMixin (client.paginate())
+    _<name>.py          # one mixin per resource group (see client.py for the full list)
 
 tests/
     conftest.py         # client fixture, V1/V2 URL constants, qs() helper
-    fixtures.py         # all accurate OpenNMS Horizon 35 response shapes
+    fixtures.py         # accurate OpenNMS Horizon 35 response shapes
     test_*.py           # one file per mixin
 
-dist/                   # built artifacts (gitignored)
-pyproject.toml          # build config + project metadata
+docs/                   # MkDocs source (mkdocs-material + mkdocstrings)
+pyproject.toml          # build config, project metadata, ruff/mypy/pytest config
 smoke_test.py           # live-server smoke test (read-only + --write mode)
-                        #   python smoke_test.py                 # read-only, safe for any server
-                        #   python smoke_test.py --write         # write ops, prompts for confirmation
-                        #   python smoke_test.py --write --yes   # skip prompt (CI only)
-                        #   python smoke_test.py --no-color      # plain output for log files
-                        #   python smoke_test.py --skip get_flow # skip by label prefix
-                        #   env vars: OPENNMS_URL, OPENNMS_USER, OPENNMS_PASSWORD,
-                        #            OPENNMS_VERIFY_SSL, OPENNMS_TIMEOUT
 ARCHITECTURE.md         # architecture decision records (ADRs)
-MERMAID.md              # Mermaid architecture diagrams
-CHANGELOG.md
-README.md
-CONTRIBUTING.md
+TODO.md                 # deferred items
+```
+
+## Adding a new endpoint group
+
+1. Create `opennms_api_wrapper/_<name>.py` with a `<Name>Mixin` class.
+2. Import it in `client.py` and add it to the `OpenNMS` base class list.
+3. Add response fixture(s) to `tests/fixtures.py`.
+4. Create `tests/test_<name>.py` with `@responses.activate` tests.
+
+## Exception hierarchy
+
+```
+OpenNMSError
+└── OpenNMSHTTPError          # base for all HTTP errors; has .status_code and .response
+    ├── BadRequestError       # 400
+    ├── AuthenticationError   # 401
+    ├── ForbiddenError        # 403
+    ├── NotFoundError         # 404
+    ├── ConflictError         # 409
+    └── ServerError           # 5xx
 ```
 
 ## Architecture decisions (do not change without good reason)
@@ -117,31 +88,16 @@ CONTRIBUTING.md
 - **Node count via v2**: `get_node_count()` uses `GET /api/v2/nodes?limit=1`
   and extracts `totalCount`. The v1 `/rest/nodes` endpoint does not have a
   `/count` sub-resource — it routes all sub-paths as node criteria.
-- **Timeout**: `_OpenNMSBase.__init__` accepts `timeout=30` (seconds). Passed
-  to every `_session.get/post/put/delete` call. `OpenNMS.__init__` exposes it
-  as a public parameter.
-- **Retries**: `_OpenNMSBase.__init__` mounts a urllib3 `Retry` adapter
-  on the session when `retries > 0` (default 3). Retries on connection
-  errors and HTTP 500/502/503/504 with 0.5s backoff factor. Pass
-  `retries=0` to disable.
+- **Timeout**: connect timeout is `min(timeout, 10)`, read timeout is the full
+  `timeout` value. `OpenNMS.__init__` accepts `timeout=30` (seconds).
+- **Retries**: mounts a urllib3 `Retry` adapter when `retries > 0` (default 3).
+  Retries on connection errors and HTTP 500/502/503/504 with 0.5s backoff
+  factor. Pass `retries=0` to disable.
 - **Smoke test warn level**: endpoints that depend on optional plugins or
   heavy server-side queries use `warn()` instead of `run()`. Warnings are
-  non-fatal and include the required plugin/feature name. Only hard `FAIL`s
-  cause a non-zero exit code.
+  non-fatal. Only hard `FAIL`s cause a non-zero exit code.
 - **Smoke test SSL**: always use `OPENNMS_VERIFY_SSL=true` — the live server
-  has a valid certificate.  Never disable SSL verification.
-
-## Development environment
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -e ".[dev]"   # installs requests + pytest + responses
-pytest tests/ -v          # run full suite (~0.4 s)
-```
-
-Always activate the `.venv` before running any commands — never rely on the
-system Python or system pip.
+  has a valid certificate. Never disable SSL verification.
 
 ## Test conventions
 
@@ -161,7 +117,7 @@ system Python or system pip.
 
 ## Build / release
 
-PyPI publishing is **automated** via `.github/workflows/publish.yml`.  It
+PyPI publishing is **automated** via `.github/workflows/publish.yml`. It
 triggers on every GitHub release (`on: release: [published]`) and uses OIDC
 trusted publishing — no API token or manual `twine upload` needed.
 
@@ -173,19 +129,19 @@ Release checklist:
 4. `gh release create vX.Y.Z` — the publish workflow builds and uploads
    to PyPI automatically.
 
-To build locally (e.g. for inspection):
+To build locally:
 
 ```bash
 pip install build
 python -m build          # produces dist/*.tar.gz and dist/*.whl
 ```
 
-The build backend is `setuptools.build_meta` (in `pyproject.toml`).
-The older path `setuptools.backends.legacy:build` does not work — do not use it.
+The build backend is `setuptools.build_meta`. Do not use
+`setuptools.backends.legacy:build`.
 
 ## Git workflow
 
-- **Never push directly to `main`.**  All changes go through a branch + PR.
+- **Never push directly to `main`.** All changes go through a branch + PR.
 - Branch naming: `feature/<topic>`, `fix/<topic>`, `docs/<topic>`, etc.
 - Commit on the branch, push, open a PR with `gh pr create`, and merge once
   CI is green.
