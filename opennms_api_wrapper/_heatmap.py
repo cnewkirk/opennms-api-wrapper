@@ -1,7 +1,8 @@
 """Heatmap REST API – /rest/heatmap (read-only)."""
+from ._base import _OpenNMSBase
 
 
-class HeatmapMixin:
+class HeatmapMixin(_OpenNMSBase):
     # ==================================================================
     # Outage-based heatmap
     # ==================================================================

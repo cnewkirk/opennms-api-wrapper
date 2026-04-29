@@ -1,9 +1,11 @@
 """Notifications REST API – /rest/notifications."""
+from ._base import _OpenNMSBase
+from typing import Any, Optional
 
 
-class NotificationsMixin:
+class NotificationsMixin(_OpenNMSBase):
     def get_notifications(self, limit: int = 10, offset: int = 0,
-                          order_by: str = None, order: str = None, **filters):
+                          order_by: Optional[str] = None, order: Optional[str] = None, **filters):
         """List notifications.
 
         Args:
@@ -13,7 +15,7 @@ class NotificationsMixin:
             order: Sort direction: ``"asc"`` or ``"desc"``.
             **filters: Additional Hibernate query filters passed directly as query parameters (e.g. ``severity="MAJOR"``).
         """
-        params = {"limit": limit, "offset": offset}
+        params: dict[str, Any] = {"limit": limit, "offset": offset}
         if order_by:
             params["orderBy"] = order_by
         if order:

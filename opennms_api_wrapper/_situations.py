@@ -1,7 +1,9 @@
 """Situations REST API v2 – /api/v2/situations."""
+from ._base import _OpenNMSBase
+from typing import Optional
 
 
-class SituationsMixin:
+class SituationsMixin(_OpenNMSBase):
     def get_situations(self, limit: int = 10, offset: int = 0):
         """List situations (v2).
 
@@ -12,8 +14,8 @@ class SituationsMixin:
         return self._get("situations", params={"limit": limit, "offset": offset},
                          v2=True)
 
-    def create_situation(self, alarm_ids: list, description: str = None,
-                         diagnostic_text: str = None):
+    def create_situation(self, alarm_ids: list, description: Optional[str] = None,
+                         diagnostic_text: Optional[str] = None):
         """Create a new situation from a list of alarm IDs.
 
         Args:
@@ -29,7 +31,7 @@ class SituationsMixin:
         return self._post("situations/create", json_data=body, v2=True)
 
     def add_alarms_to_situation(self, situation_id: int, alarm_ids: list,
-                                feedback: str = None):
+                                feedback: Optional[str] = None):
         """Link additional alarm IDs to an existing situation.
 
         Args:

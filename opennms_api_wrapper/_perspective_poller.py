@@ -1,10 +1,12 @@
 """Perspective Poller REST API v2 – /api/v2/perspectivepoller."""
+from ._base import _OpenNMSBase
+from typing import Optional
 
 
-class PerspectivePollerMixin:
+class PerspectivePollerMixin(_OpenNMSBase):
     def get_perspective_poller_status(self, app_id: int,
-                                     start: int = None,
-                                     end: int = None):
+                                     start: Optional[int] = None,
+                                     end: Optional[int] = None):
         """Get perspective poller status for an application.
 
         Args:
@@ -22,8 +24,8 @@ class PerspectivePollerMixin:
 
     def get_perspective_poller_service_status(self, app_id: int,
                                              service_id: int,
-                                             start: int = None,
-                                             end: int = None):
+                                             start: Optional[int] = None,
+                                             end: Optional[int] = None):
         """Get perspective poller status for a specific service.
 
         Args:

@@ -1,8 +1,9 @@
 """Categories REST API – /rest/categories."""
+from ._base import _OpenNMSBase
 from .types import Category
 
 
-class CategoriesMixin:
+class CategoriesMixin(_OpenNMSBase):
     # ==================================================================
     # Categories CRUD
     # ==================================================================

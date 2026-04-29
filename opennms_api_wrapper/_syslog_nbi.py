@@ -1,8 +1,9 @@
 """Syslog NBI Configuration REST API – /rest/config/syslog-nbi."""
+from ._base import _OpenNMSBase
 from .types import SyslogNbiDestination, SyslogNbiConfig
 
 
-class SyslogNbiMixin:
+class SyslogNbiMixin(_OpenNMSBase):
     _SYSLOG_NBI = "config/syslog-nbi"
 
     def get_syslog_nbi_config(self):

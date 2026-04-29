@@ -1,7 +1,8 @@
 """Availability REST API – /rest/availability."""
+from ._base import _OpenNMSBase
 
 
-class AvailabilityMixin:
+class AvailabilityMixin(_OpenNMSBase):
     def get_availability(self):
         """Get availability summary for all categories."""
         return self._get("availability")

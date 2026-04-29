@@ -1,8 +1,9 @@
 """Maps REST API – /rest/maps."""
+from ._base import _OpenNMSBase
 from .types import Map
 
 
-class MapsMixin:
+class MapsMixin(_OpenNMSBase):
     def get_maps(self):
         """List all maps."""
         return self._get("maps")

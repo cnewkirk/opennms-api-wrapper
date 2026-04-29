@@ -1,8 +1,10 @@
 """Flow Classification REST API – /rest/classifications."""
+from ._base import _OpenNMSBase
+from typing import Optional
 from .types import ClassificationRule, ClassificationGroup, ClassifyRequest
 
 
-class ClassificationsMixin:
+class ClassificationsMixin(_OpenNMSBase):
     # ------------------------------------------------------------------
     # Rules
     # ------------------------------------------------------------------
@@ -40,7 +42,7 @@ class ClassificationsMixin:
         """
         return self._put(f"classifications/{rule_id}", json_data=rule)
 
-    def delete_classification_rules(self, group_id: int = None):
+    def delete_classification_rules(self, group_id: Optional[int] = None):
         """Delete classification rules, optionally filtered by group.
 
         Args:

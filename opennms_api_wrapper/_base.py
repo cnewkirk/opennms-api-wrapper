@@ -1,4 +1,5 @@
 """Base HTTP client for the OpenNMS REST API."""
+from typing import Any, Optional
 import requests
 from requests.adapters import HTTPAdapter
 from requests.exceptions import HTTPError
@@ -106,14 +107,14 @@ class _OpenNMSBase:
         except Exception:
             return resp.text
 
-    def _get(self, path: str, params: dict = None, v2: bool = False):
+    def _get(self, path: str, params: Optional[dict[str, Any]] = None, v2: bool = False):
         """Send a GET request and return the parsed response."""
         resp = self._session.get(self._url(path, v2), params=params,
                                  timeout=self._timeout)
         return self._parse(resp)
 
-    def _post(self, path: str, json_data=None, form_data: dict = None,
-              params: dict = None, v2: bool = False):
+    def _post(self, path: str, json_data=None, form_data: Optional[Any] = None,
+              params: Optional[dict[str, Any]] = None, v2: bool = False):
         """Send a POST request and return the parsed response.
 
         Sends form-encoded data when *form_data* is provided, otherwise JSON.
@@ -128,8 +129,8 @@ class _OpenNMSBase:
                                       timeout=self._timeout)
         return self._parse(resp)
 
-    def _put(self, path: str, json_data=None, form_data: dict = None,
-             params: dict = None, v2: bool = False):
+    def _put(self, path: str, json_data=None, form_data: Optional[Any] = None,
+             params: Optional[dict[str, Any]] = None, v2: bool = False):
         """Send a PUT request and return the parsed response.
 
         Sends form-encoded data when *form_data* is provided, otherwise JSON.
@@ -144,14 +145,14 @@ class _OpenNMSBase:
                                      timeout=self._timeout)
         return self._parse(resp)
 
-    def _delete(self, path: str, params: dict = None, json_data=None,
+    def _delete(self, path: str, params: Optional[dict[str, Any]] = None, json_data=None,
                 v2: bool = False):
         """Send a DELETE request and return the parsed response."""
         resp = self._session.delete(self._url(path, v2), params=params,
                                     json=json_data, timeout=self._timeout)
         return self._parse(resp)
 
-    def _patch(self, path: str, json_data=None, params: dict = None,
+    def _patch(self, path: str, json_data=None, params: Optional[dict[str, Any]] = None,
                v2: bool = False):
         """Send a PATCH request and return the parsed response."""
         resp = self._session.patch(self._url(path, v2), json=json_data,

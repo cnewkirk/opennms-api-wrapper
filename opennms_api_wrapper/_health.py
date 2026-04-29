@@ -1,8 +1,10 @@
 """Health REST API – /rest/health."""
+from ._base import _OpenNMSBase
+from typing import Optional
 
 
-class HealthMixin:
-    def get_health(self, tag: str = None):
+class HealthMixin(_OpenNMSBase):
+    def get_health(self, tag: Optional[str] = None):
         """Get the health status of the OpenNMS instance.
 
         Args:

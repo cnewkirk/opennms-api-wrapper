@@ -1,8 +1,10 @@
 """IP Interfaces REST API v2 – /api/v2/ipinterfaces (read-only)."""
+from ._base import _OpenNMSBase
+from typing import Optional
 
 
-class IpInterfacesV2Mixin:
-    def get_ip_interfaces(self, fiql: str = None, limit: int = 10,
+class IpInterfacesV2Mixin(_OpenNMSBase):
+    def get_ip_interfaces(self, fiql: Optional[str] = None, limit: int = 10,
                           offset: int = 0):
         """List IP interfaces using the v2 API with optional FIQL filtering.
 

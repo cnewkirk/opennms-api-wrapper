@@ -1,9 +1,11 @@
 """SNMP Configuration REST API – /rest/snmpConfig."""
+from ._base import _OpenNMSBase
+from typing import Optional
 from .types import SnmpConfig
 
 
-class SnmpConfigMixin:
-    def get_snmp_config(self, ip_address: str, location: str = None):
+class SnmpConfigMixin(_OpenNMSBase):
+    def get_snmp_config(self, ip_address: str, location: Optional[str] = None):
         """Get the effective SNMP configuration for *ip_address*.
 
         Args:

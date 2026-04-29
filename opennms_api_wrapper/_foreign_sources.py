@@ -1,8 +1,9 @@
 """Foreign Sources REST API – /rest/foreignSources."""
+from ._base import _OpenNMSBase
 from .types import ForeignSource, ForeignSourceDetector, ForeignSourcePolicy
 
 
-class ForeignSourcesMixin:
+class ForeignSourcesMixin(_OpenNMSBase):
     # ==================================================================
     # Foreign Sources
     # ==================================================================

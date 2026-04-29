@@ -1,7 +1,8 @@
 """Discovery REST API v2 – /api/v2/discovery."""
+from ._base import _OpenNMSBase
 
 
-class DiscoveryMixin:
+class DiscoveryMixin(_OpenNMSBase):
     def discover(self, config: dict):
         """Submit a one-time discovery scan configuration (v2).
 

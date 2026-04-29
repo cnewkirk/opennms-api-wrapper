@@ -1,8 +1,9 @@
 """User Defined Links REST API v2 – /api/v2/userdefinedlinks."""
+from ._base import _OpenNMSBase
 from .types import UserDefinedLink
 
 
-class UserDefinedLinksMixin:
+class UserDefinedLinksMixin(_OpenNMSBase):
     def get_user_defined_links(self):
         """List all user-defined links."""
         return self._get("userdefinedlinks", v2=True)

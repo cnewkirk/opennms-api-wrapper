@@ -1,9 +1,11 @@
 """Outages REST API – /rest/outages (read-only)."""
+from ._base import _OpenNMSBase
+from typing import Any, Optional
 
 
-class OutagesMixin:
-    def get_outages(self, limit: int = 10, offset: int = 0, order_by: str = None,
-                    order: str = None, **filters):
+class OutagesMixin(_OpenNMSBase):
+    def get_outages(self, limit: int = 10, offset: int = 0, order_by: Optional[str] = None,
+                    order: Optional[str] = None, **filters):
         """List outages (read-only).
 
         Args:
@@ -14,7 +16,7 @@ class OutagesMixin:
             **filters: Additional Hibernate query filters passed directly as
                 query parameters (e.g. ``node.label="myrouter"``).
         """
-        params = {"limit": limit, "offset": offset}
+        params: dict[str, Any] = {"limit": limit, "offset": offset}
         if order_by:
             params["orderBy"] = order_by
         if order:

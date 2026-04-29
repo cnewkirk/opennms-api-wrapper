@@ -1,7 +1,9 @@
 """Alarm Statistics REST API – /rest/stats/alarms."""
+from ._base import _OpenNMSBase
+from typing import Optional
 
 
-class AlarmStatsMixin:
+class AlarmStatsMixin(_OpenNMSBase):
     def get_alarm_stats(self, **filters):
         """Return alarm statistics.
 
@@ -11,7 +13,7 @@ class AlarmStatsMixin:
         """
         return self._get("stats/alarms", params=filters)
 
-    def get_alarm_stats_by_severity(self, severities: list = None):
+    def get_alarm_stats_by_severity(self, severities: Optional[list] = None):
         """Return alarm statistics grouped by severity.
 
         Args:

@@ -1,7 +1,8 @@
 """Configuration Management REST API – /rest/cm."""
+from ._base import _OpenNMSBase
 
 
-class ConfigMgmtMixin:
+class ConfigMgmtMixin(_OpenNMSBase):
     def get_config_names(self):
         """List all configuration names."""
         return self._get("cm")

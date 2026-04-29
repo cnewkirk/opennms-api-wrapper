@@ -1,8 +1,9 @@
 """Monitoring Locations REST API – /rest/monitoringLocations."""
+from ._base import _OpenNMSBase
 from .types import MonitoringLocation
 
 
-class MonitoringLocationsMixin:
+class MonitoringLocationsMixin(_OpenNMSBase):
     def get_monitoring_locations(self, limit: int = 10, offset: int = 0):
         """List all monitoring locations.
 

@@ -1,5 +1,4 @@
 """Main OpenNMS client class."""
-from ._base import _OpenNMSBase
 from ._alarms import AlarmsMixin
 from ._alarm_stats import AlarmStatsMixin
 from ._alarm_history import AlarmHistoryMixin
@@ -59,7 +58,6 @@ from ._pagination import PaginationMixin
 
 
 class OpenNMS(
-    _OpenNMSBase,
     PaginationMixin,
     InfoMixin,
     AlarmsMixin,

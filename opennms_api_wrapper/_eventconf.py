@@ -1,13 +1,15 @@
 """Event Configuration REST API v2 – /api/v2/eventconf."""
+from ._base import _OpenNMSBase
+from typing import Optional
 from .types import EventConfEvent
 
 
-class EventConfMixin:
+class EventConfMixin(_OpenNMSBase):
     # ------------------------------------------------------------------
     # Filter
     # ------------------------------------------------------------------
 
-    def get_eventconf_filter(self, uei: str = None, vendor: str = None,
+    def get_eventconf_filter(self, uei: Optional[str] = None, vendor: Optional[str] = None,
                              **kwargs):
         """Get event configuration with optional filtering.
 
@@ -24,7 +26,7 @@ class EventConfMixin:
         return self._get("eventconf/filter", params=params,
                          v2=True)
 
-    def get_eventconf_filter_sources(self, filter: str = None,
+    def get_eventconf_filter_sources(self, filter: Optional[str] = None,
                                      **kwargs):
         """Get event configuration sources.
 

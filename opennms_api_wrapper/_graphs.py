@@ -1,7 +1,9 @@
 """Graph / Topology REST API – /rest/graphs."""
+from ._base import _OpenNMSBase
+from typing import Optional
 
 
-class GraphsMixin:
+class GraphsMixin(_OpenNMSBase):
     def get_graph_containers(self):
         """List all registered graph containers and their metadata."""
         return self._get("graphs")
@@ -16,7 +18,7 @@ class GraphsMixin:
 
     def get_graph_view(self, container_id: str, namespace: str,
                        semantic_zoom_level: int = 1,
-                       vertices_in_focus: list = None):
+                       vertices_in_focus: Optional[list] = None):
         """Get a focused graph view via POST.
 
         Args:
@@ -44,8 +46,8 @@ class GraphsMixin:
             params={"s": search_term},
         )
 
-    def get_graph_search_results(self, namespace: str, provider_id: str = None,
-                                 criteria: str = None, context: str = None):
+    def get_graph_search_results(self, namespace: str, provider_id: Optional[str] = None,
+                                 criteria: Optional[str] = None, context: Optional[str] = None):
         """Return search results for graph elements in *namespace*.
 
         Args:

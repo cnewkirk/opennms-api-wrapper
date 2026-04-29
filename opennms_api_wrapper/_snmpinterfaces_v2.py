@@ -1,8 +1,10 @@
 """SNMP Interfaces REST API v2 – /api/v2/snmpinterfaces (read-only)."""
+from ._base import _OpenNMSBase
+from typing import Optional
 
 
-class SnmpInterfacesV2Mixin:
-    def get_snmp_interfaces(self, fiql: str = None, limit: int = 10,
+class SnmpInterfacesV2Mixin(_OpenNMSBase):
+    def get_snmp_interfaces(self, fiql: Optional[str] = None, limit: int = 10,
                             offset: int = 0):
         """List SNMP interfaces using the v2 API with optional FIQL filtering.
 

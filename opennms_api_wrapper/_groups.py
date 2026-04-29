@@ -1,8 +1,9 @@
 """Groups REST API – /rest/groups."""
+from ._base import _OpenNMSBase
 from .types import Group
 
 
-class GroupsMixin:
+class GroupsMixin(_OpenNMSBase):
     # ==================================================================
     # Groups
     # ==================================================================

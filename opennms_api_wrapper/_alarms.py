@@ -1,9 +1,11 @@
 """Alarms REST API – /rest/alarms and /api/v2/alarms."""
+from ._base import _OpenNMSBase
+from typing import Any, Optional
 
 
-class AlarmsMixin:
+class AlarmsMixin(_OpenNMSBase):
     def get_alarms(self, limit: int = 10, offset: int = 0,
-                   order_by: str = None, order: str = None, **filters):
+                   order_by: Optional[str] = None, order: Optional[str] = None, **filters):
         """List alarms (v1).
 
         Args:
@@ -15,7 +17,7 @@ class AlarmsMixin:
                 query parameters (e.g. ``severity="MAJOR"``). Pass
                 ``comparator`` to change the match type (eq/ilike/…).
         """
-        params = {"limit": limit, "offset": offset}
+        params: dict[str, Any] = {"limit": limit, "offset": offset}
         if order_by:
             params["orderBy"] = order_by
         if order:
@@ -33,13 +35,13 @@ class AlarmsMixin:
 
     # Single-alarm actions (v1 PUT with query params)
 
-    def ack_alarm(self, alarm_id: int, ack_user: str = None):
+    def ack_alarm(self, alarm_id: int, ack_user: Optional[str] = None):
         """Acknowledge alarm *alarm_id*.
 
         Args:
             ack_user: Acknowledge on behalf of this user (requires admin role).
         """
-        params = {"ack": "true"}
+        params: dict[str, Any] = {"ack": "true"}
         if ack_user:
             params["ackUser"] = ack_user
         return self._put(f"alarms/{alarm_id}", params=params)
@@ -64,7 +66,7 @@ class AlarmsMixin:
         Args:
             **filters: Additional Hibernate query filters passed directly as query parameters (e.g. ``severity="MAJOR"``).
         """
-        params = {"ack": "true"}
+        params: dict[str, Any] = {"ack": "true"}
         params.update(filters)
         return self._put("alarms", params=params)
 
@@ -74,7 +76,7 @@ class AlarmsMixin:
         Args:
             **filters: Additional Hibernate query filters passed directly as query parameters (e.g. ``severity="MAJOR"``).
         """
-        params = {"ack": "false"}
+        params: dict[str, Any] = {"ack": "false"}
         params.update(filters)
         return self._put("alarms", params=params)
 
@@ -84,7 +86,7 @@ class AlarmsMixin:
         Args:
             **filters: Additional Hibernate query filters passed directly as query parameters (e.g. ``severity="MAJOR"``).
         """
-        params = {"clear": "true"}
+        params: dict[str, Any] = {"clear": "true"}
         params.update(filters)
         return self._put("alarms", params=params)
 
@@ -94,15 +96,15 @@ class AlarmsMixin:
         Args:
             **filters: Additional Hibernate query filters passed directly as query parameters (e.g. ``severity="MAJOR"``).
         """
-        params = {"escalate": "true"}
+        params: dict[str, Any] = {"escalate": "true"}
         params.update(filters)
         return self._put("alarms", params=params)
 
     # v2 alarms (FIQL filtering)
 
-    def get_alarms_v2(self, fiql: str = None, limit: int = 10,
-                      offset: int = 0, order_by: str = None,
-                      order: str = None):
+    def get_alarms_v2(self, fiql: Optional[str] = None, limit: int = 10,
+                      offset: int = 0, order_by: Optional[str] = None,
+                      order: Optional[str] = None):
         """List alarms using the v2 API with optional FIQL filter string.
 
         Args:
@@ -116,7 +118,7 @@ class AlarmsMixin:
 
             client.get_alarms_v2(fiql="alarm.severity==MAJOR")
         """
-        params = {"limit": limit, "offset": offset}
+        params: dict[str, Any] = {"limit": limit, "offset": offset}
         if fiql:
             params["_s"] = fiql
         if order_by:

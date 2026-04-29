@@ -1,13 +1,15 @@
 """Device Configuration REST API – /rest/device-config."""
+from ._base import _OpenNMSBase
+from typing import Optional
 
 
-class DeviceConfigMixin:
+class DeviceConfigMixin(_OpenNMSBase):
     def get_device_configs(self, limit: int = 10, offset: int = 0,
-                           order_by: str = None, order: str = None,
-                           device_name: str = None, ip_address: str = None,
-                           config_type: str = None,
-                           created_after: int = None,
-                           created_before: int = None):
+                           order_by: Optional[str] = None, order: Optional[str] = None,
+                           device_name: Optional[str] = None, ip_address: Optional[str] = None,
+                           config_type: Optional[str] = None,
+                           created_after: Optional[int] = None,
+                           created_before: Optional[int] = None):
         """List all device configurations (sorted by lastUpdated by default).
 
         Args:
@@ -47,8 +49,8 @@ class DeviceConfigMixin:
         return self._get(f"device-config/interface/{interface_id}")
 
     def get_latest_device_configs(self, limit: int = 10, offset: int = 0,
-                                  order_by: str = None, order: str = None,
-                                  search: str = None, status: str = None):
+                                  order_by: Optional[str] = None, order: Optional[str] = None,
+                                  search: Optional[str] = None, status: Optional[str] = None):
         """Return the latest config for all devices.
 
         Args:

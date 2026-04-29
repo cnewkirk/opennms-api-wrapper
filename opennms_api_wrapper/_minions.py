@@ -1,7 +1,8 @@
 """Minions REST API – /rest/minions."""
+from ._base import _OpenNMSBase
 
 
-class MinionsMixin:
+class MinionsMixin(_OpenNMSBase):
     def get_minions(self, limit: int = 10, offset: int = 0):
         """List all minions.
 

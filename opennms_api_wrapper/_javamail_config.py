@@ -1,8 +1,9 @@
 """Javamail Configuration REST API – /rest/config/javamail."""
+from ._base import _OpenNMSBase
 from .types import JavamailDefaultConfig, JavamailReadmail, JavamailSendmail, JavamailEnd2End
 
 
-class JavamailConfigMixin:
+class JavamailConfigMixin(_OpenNMSBase):
     _JM = "config/javamail"
 
     # ------------------------------------------------------------------

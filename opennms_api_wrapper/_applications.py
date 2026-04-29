@@ -1,8 +1,9 @@
 """Applications REST API v2 – /api/v2/applications."""
+from ._base import _OpenNMSBase
 from .types import Application
 
 
-class ApplicationsMixin:
+class ApplicationsMixin(_OpenNMSBase):
     def get_applications(self, limit: int = 10, offset: int = 0):
         """List all applications.
 
