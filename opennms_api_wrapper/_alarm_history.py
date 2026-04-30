@@ -1,8 +1,10 @@
 """Alarm History REST API – /rest/alarms/history."""
+from ._base import _OpenNMSBase
+from typing import Optional
 
 
-class AlarmHistoryMixin:
-    def get_alarm_history(self, at: int = None):
+class AlarmHistoryMixin(_OpenNMSBase):
+    def get_alarm_history(self, at: Optional[int] = None):
         """Return last known state of all active alarms.
 
         Args:
@@ -13,7 +15,7 @@ class AlarmHistoryMixin:
             params["at"] = at
         return self._get("alarms/history", params=params)
 
-    def get_alarm_history_at(self, alarm_id: int, at: int = None):
+    def get_alarm_history_at(self, alarm_id: int, at: Optional[int] = None):
         """Return final known state of *alarm_id* (optionally at a point in time).
 
         Args:

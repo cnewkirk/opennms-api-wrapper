@@ -1,10 +1,13 @@
 """Events REST API – /rest/events."""
+from __future__ import annotations
+from ._base import _OpenNMSBase
+from typing import Any, Optional
 from .types import Event
 
 
-class EventsMixin:
+class EventsMixin(_OpenNMSBase):
     def get_events(self, limit: int = 10, offset: int = 0,
-                   order_by: str = None, order: str = None, **filters):
+                   order_by: Optional[str] = None, order: Optional[str] = None, **filters):
         """List events.
 
         Args:
@@ -14,7 +17,7 @@ class EventsMixin:
             order: Sort direction: ``"asc"`` or ``"desc"``.
             **filters: Additional Hibernate query filters passed directly as query parameters (e.g. ``severity="MAJOR"``).
         """
-        params = {"limit": limit, "offset": offset}
+        params: dict[str, Any] = {"limit": limit, "offset": offset}
         if order_by:
             params["orderBy"] = order_by
         if order:
@@ -69,7 +72,7 @@ class EventsMixin:
         Args:
             **filters: Additional Hibernate query filters passed directly as query parameters (e.g. ``severity="MAJOR"``).
         """
-        params = {"ack": "true"}
+        params: dict[str, Any] = {"ack": "true"}
         params.update(filters)
         return self._put("events", params=params)
 
@@ -79,6 +82,6 @@ class EventsMixin:
         Args:
             **filters: Additional Hibernate query filters passed directly as query parameters (e.g. ``severity="MAJOR"``).
         """
-        params = {"ack": "false"}
+        params: dict[str, Any] = {"ack": "false"}
         params.update(filters)
         return self._put("events", params=params)

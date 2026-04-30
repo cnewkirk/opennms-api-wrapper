@@ -1,7 +1,10 @@
 """Acknowledgements REST API – /rest/acks."""
+from __future__ import annotations
+from ._base import _OpenNMSBase
+from typing import Any, Optional
 
 
-class AcksMixin:
+class AcksMixin(_OpenNMSBase):
     def get_acks(self, limit: int = 10, offset: int = 0, **filters):
         """List acknowledgements.
 
@@ -10,7 +13,7 @@ class AcksMixin:
             offset: Zero-based offset for pagination.
             **filters: Additional Hibernate query filters passed directly as query parameters (e.g. ``severity="MAJOR"``).
         """
-        params = {"limit": limit, "offset": offset}
+        params: dict[str, Any] = {"limit": limit, "offset": offset}
         params.update(filters)
         return self._get("acks", params=params)
 
@@ -24,8 +27,8 @@ class AcksMixin:
 
     # Write (form-encoded POST)
 
-    def create_ack(self, action: str, alarm_id: int = None,
-                   notification_id: int = None):
+    def create_ack(self, action: str, alarm_id: Optional[int] = None,
+                   notification_id: Optional[int] = None):
         """Create or modify an acknowledgement.
 
         Args:
@@ -34,7 +37,7 @@ class AcksMixin:
                 notification_id).
             notification_id: Target notification ID.
         """
-        data = {"action": action}
+        data: dict[str, Any] = {"action": action}
         if alarm_id is not None:
             data["alarmId"] = alarm_id
         if notification_id is not None:

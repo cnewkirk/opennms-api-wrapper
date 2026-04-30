@@ -1,8 +1,9 @@
 """Scheduled Outages REST API – /rest/sched-outages."""
+from ._base import _OpenNMSBase
 from .types import SchedOutage
 
 
-class SchedOutagesMixin:
+class SchedOutagesMixin(_OpenNMSBase):
     # ==================================================================
     # Scheduled Outages CRUD
     # ==================================================================

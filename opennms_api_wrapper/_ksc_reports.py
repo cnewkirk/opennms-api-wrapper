@@ -1,8 +1,9 @@
 """KSC Reports REST API – /rest/ksc."""
+from ._base import _OpenNMSBase
 from .types import KscReport
 
 
-class KscReportsMixin:
+class KscReportsMixin(_OpenNMSBase):
     def get_ksc_reports(self):
         """List all KSC reports (returns ID and label for each)."""
         return self._get("ksc")

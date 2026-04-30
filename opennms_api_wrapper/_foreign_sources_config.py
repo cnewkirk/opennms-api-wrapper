@@ -1,7 +1,8 @@
 """Foreign Sources Configuration REST API – /rest/foreignSourcesConfig."""
+from ._base import _OpenNMSBase
 
 
-class ForeignSourcesConfigMixin:
+class ForeignSourcesConfigMixin(_OpenNMSBase):
     def get_foreign_source_config_policies(self):
         """List available provisioning policies."""
         return self._get("foreignSourcesConfig/policies")

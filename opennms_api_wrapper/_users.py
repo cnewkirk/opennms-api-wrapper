@@ -1,8 +1,9 @@
 """Users REST API – /rest/users."""
+from ._base import _OpenNMSBase
 from .types import User
 
 
-class UsersMixin:
+class UsersMixin(_OpenNMSBase):
     def get_users(self):
         """List all users."""
         return self._get("users")

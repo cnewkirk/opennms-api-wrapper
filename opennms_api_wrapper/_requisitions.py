@@ -1,8 +1,9 @@
 """Requisitions (Provisioning) REST API – /rest/requisitions."""
+from ._base import _OpenNMSBase
 from .types import RequisitionNode, Requisition
 
 
-class RequisitionsMixin:
+class RequisitionsMixin(_OpenNMSBase):
     # ==================================================================
     # Requisitions
     # ==================================================================

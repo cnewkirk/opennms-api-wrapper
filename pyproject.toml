@@ -36,7 +36,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest", "pytest-cov", "responses", "mkdocs-material", "mkdocstrings[python]", "ruff", "mypy"]
+dev = ["pytest", "pytest-cov", "responses", "mkdocs-material", "mkdocstrings[python]", "ruff", "mypy", "types-requests"]
 
 [project.urls]
 Homepage = "https://opennms-api-wrapper.readthedocs.io/en/stable/"

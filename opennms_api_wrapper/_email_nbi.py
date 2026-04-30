@@ -1,8 +1,9 @@
 """Email NBI Configuration REST API – /rest/config/email-nbi."""
+from ._base import _OpenNMSBase
 from .types import EmailNbiDestination, EmailNbiConfig
 
 
-class EmailNbiMixin:
+class EmailNbiMixin(_OpenNMSBase):
     _EMAIL_NBI = "config/email-nbi"
 
     def get_email_nbi_config(self):

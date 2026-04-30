@@ -1,14 +1,17 @@
 """Nodes REST API – /rest/nodes and sub-resources."""
+from __future__ import annotations
+from ._base import _OpenNMSBase
+from typing import Any, Optional
 from .types import Node, NodeIpInterface, NodeSnmpInterface, NodeAssetRecord, HardwareEntity, Category
 
 
-class NodesMixin:
+class NodesMixin(_OpenNMSBase):
     # ==================================================================
     # Nodes
     # ==================================================================
 
-    def get_nodes(self, limit: int = 10, offset: int = 0, order_by: str = None,
-                  order: str = None, **filters):
+    def get_nodes(self, limit: int = 10, offset: int = 0, order_by: Optional[str] = None,
+                  order: Optional[str] = None, **filters):
         """List nodes.
 
         Args:
@@ -19,7 +22,7 @@ class NodesMixin:
             **filters: Additional Hibernate query filters passed directly as
                 query parameters (e.g. ``label="myrouter"``, ``category="Production"``).
         """
-        params = {"limit": limit, "offset": offset}
+        params: dict[str, Any] = {"limit": limit, "offset": offset}
         if order_by:
             params["orderBy"] = order_by
         if order:
@@ -95,7 +98,7 @@ class NodesMixin:
             offset: Zero-based offset for pagination.
             **filters: Additional Hibernate query filters passed directly as query parameters (e.g. ``severity="MAJOR"``).
         """
-        params = {"limit": limit, "offset": offset}
+        params: dict[str, Any] = {"limit": limit, "offset": offset}
         params.update(filters)
         return self._get(f"nodes/{node_id}/ipinterfaces", params=params)
 
@@ -174,7 +177,7 @@ class NodesMixin:
             offset: Zero-based offset for pagination.
             **filters: Additional Hibernate query filters passed directly as query parameters (e.g. ``severity="MAJOR"``).
         """
-        params = {"limit": limit, "offset": offset}
+        params: dict[str, Any] = {"limit": limit, "offset": offset}
         params.update(filters)
         return self._get(f"nodes/{node_id}/snmpinterfaces", params=params)
 

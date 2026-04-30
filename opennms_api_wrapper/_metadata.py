@@ -1,7 +1,8 @@
 """Metadata REST API v2 – /api/v2/nodes/{id}/metadata and sub-resources."""
+from ._base import _OpenNMSBase
 
 
-class MetadataMixin:
+class MetadataMixin(_OpenNMSBase):
     # ==================================================================
     # Node metadata
     # ==================================================================

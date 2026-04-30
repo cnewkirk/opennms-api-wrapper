@@ -1,8 +1,9 @@
 """SNMP Trap NBI Configuration REST API – /rest/config/snmptrap-nbi."""
+from ._base import _OpenNMSBase
 from .types import SnmpTrapNbiTrapSink, SnmpTrapNbiConfig
 
 
-class SnmpTrapNbiMixin:
+class SnmpTrapNbiMixin(_OpenNMSBase):
     _SNMPTRAP_NBI = "config/snmptrap-nbi"
 
     def get_snmptrap_nbi_config(self):

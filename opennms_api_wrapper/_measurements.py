@@ -1,8 +1,10 @@
 """Measurements REST API – /rest/measurements."""
+from ._base import _OpenNMSBase
+from typing import Optional
 from .types import MeasurementsQuery
 
 
-class MeasurementsMixin:
+class MeasurementsMixin(_OpenNMSBase):
     def get_measurements(
         self,
         resource_id: str,
@@ -12,7 +14,7 @@ class MeasurementsMixin:
         step: int = 300000,
         max_rows: int = 0,
         aggregation: str = "AVERAGE",
-        fallback_attribute: str = None,
+        fallback_attribute: Optional[str] = None,
     ):
         """Retrieve time-series values for a single attribute.
 

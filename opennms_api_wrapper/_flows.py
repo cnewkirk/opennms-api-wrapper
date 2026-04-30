@@ -1,7 +1,9 @@
 """Flow REST API – /rest/flows (read-only)."""
+from ._base import _OpenNMSBase
+from typing import Optional
 
 
-class FlowsMixin:
+class FlowsMixin(_OpenNMSBase):
     # ------------------------------------------------------------------
     # Overview
     # ------------------------------------------------------------------
@@ -31,8 +33,8 @@ class FlowsMixin:
     # ------------------------------------------------------------------
 
     def get_flow_applications(self, top_n: int = 10, start: int = -14400000,
-                              end: int = 0, if_index: int = None,
-                              exporter_node: str = None,
+                              end: int = 0, if_index: Optional[int] = None,
+                              exporter_node: Optional[str] = None,
                               include_other: bool = False):
         """Return traffic stats for the top *top_n* applications.
 
@@ -53,8 +55,8 @@ class FlowsMixin:
         return self._get("flows/applications", params=params)
 
     def get_flow_applications_enumerate(self, start: int = -14400000,
-                                        end: int = 0, if_index: int = None,
-                                        exporter_node: str = None,
+                                        end: int = 0, if_index: Optional[int] = None,
+                                        exporter_node: Optional[str] = None,
                                         limit: int = 10):
         """List application names that have flows in the given time range.
 
@@ -73,8 +75,8 @@ class FlowsMixin:
     def get_flow_applications_series(self, top_n: int = 10,
                                      start: int = -14400000, end: int = 0,
                                      step: int = 300000,
-                                     if_index: int = None,
-                                     exporter_node: str = None,
+                                     if_index: Optional[int] = None,
+                                     exporter_node: Optional[str] = None,
                                      include_other: bool = False):
         """Return time-series data for the top *top_n* applications.
 
@@ -98,8 +100,8 @@ class FlowsMixin:
     # ------------------------------------------------------------------
 
     def get_flow_conversations(self, top_n: int = 10, start: int = -14400000,
-                               end: int = 0, if_index: int = None,
-                               exporter_node: str = None,
+                               end: int = 0, if_index: Optional[int] = None,
+                               exporter_node: Optional[str] = None,
                                include_other: bool = False):
         """Return traffic stats for the top *top_n* conversations.
 
@@ -118,8 +120,8 @@ class FlowsMixin:
         return self._get("flows/conversations", params=params)
 
     def get_flow_conversations_enumerate(self, start: int = -14400000,
-                                         end: int = 0, if_index: int = None,
-                                         exporter_node: str = None,
+                                         end: int = 0, if_index: Optional[int] = None,
+                                         exporter_node: Optional[str] = None,
                                          limit: int = 10):
         """List conversations that have flows in the given time range.
 
@@ -138,8 +140,8 @@ class FlowsMixin:
     def get_flow_conversations_series(self, top_n: int = 10,
                                       start: int = -14400000, end: int = 0,
                                       step: int = 300000,
-                                      if_index: int = None,
-                                      exporter_node: str = None,
+                                      if_index: Optional[int] = None,
+                                      exporter_node: Optional[str] = None,
                                       include_other: bool = False):
         """Return time-series data for the top *top_n* conversations.
 
@@ -163,8 +165,8 @@ class FlowsMixin:
     # ------------------------------------------------------------------
 
     def get_flow_hosts(self, top_n: int = 10, start: int = -14400000,
-                       end: int = 0, if_index: int = None,
-                       exporter_node: str = None,
+                       end: int = 0, if_index: Optional[int] = None,
+                       exporter_node: Optional[str] = None,
                        include_other: bool = False):
         """Return traffic stats for the top *top_n* hosts.
 
@@ -183,8 +185,8 @@ class FlowsMixin:
         return self._get("flows/hosts", params=params)
 
     def get_flow_hosts_enumerate(self, start: int = -14400000, end: int = 0,
-                                 if_index: int = None,
-                                 exporter_node: str = None, limit: int = 10):
+                                 if_index: Optional[int] = None,
+                                 exporter_node: Optional[str] = None, limit: int = 10):
         """List hosts that have flows in the given time range.
 
         Args:
@@ -201,7 +203,7 @@ class FlowsMixin:
 
     def get_flow_hosts_series(self, top_n: int = 10, start: int = -14400000,
                               end: int = 0, step: int = 300000,
-                              if_index: int = None, exporter_node: str = None,
+                              if_index: Optional[int] = None, exporter_node: Optional[str] = None,
                               include_other: bool = False):
         """Return time-series data for the top *top_n* hosts.
 
@@ -225,8 +227,8 @@ class FlowsMixin:
     # ------------------------------------------------------------------
 
     def get_flow_dscp(self, top_n: int = 10, start: int = -14400000,
-                      end: int = 0, if_index: int = None,
-                      exporter_node: str = None,
+                      end: int = 0, if_index: Optional[int] = None,
+                      exporter_node: Optional[str] = None,
                       include_other: bool = False):
         """Return traffic stats for the top *top_n* DSCP values.
 
@@ -244,8 +246,8 @@ class FlowsMixin:
         return self._get("flows/dscp", params=params)
 
     def get_flow_dscp_enumerate(self, start: int = -14400000, end: int = 0,
-                                if_index: int = None,
-                                exporter_node: str = None,
+                                if_index: Optional[int] = None,
+                                exporter_node: Optional[str] = None,
                                 limit: int = 10):
         """List DSCP values that have flows in the given time range.
 
@@ -262,8 +264,8 @@ class FlowsMixin:
 
     def get_flow_dscp_series(self, top_n: int = 10, start: int = -14400000,
                              end: int = 0, step: int = 300000,
-                             if_index: int = None,
-                             exporter_node: str = None,
+                             if_index: Optional[int] = None,
+                             exporter_node: Optional[str] = None,
                              include_other: bool = False):
         """Return time-series data for the top *top_n* DSCP values.
 

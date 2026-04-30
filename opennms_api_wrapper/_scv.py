@@ -1,8 +1,9 @@
 """Secure Credentials Vault REST API – /rest/scv."""
+from ._base import _OpenNMSBase
 from .types import Credential
 
 
-class ScvMixin:
+class ScvMixin(_OpenNMSBase):
     def get_credentials(self):
         """List all stored credentials."""
         return self._get("scv")

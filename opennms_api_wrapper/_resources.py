@@ -1,7 +1,9 @@
 """Resources REST API – /rest/resources."""
+from ._base import _OpenNMSBase
+from typing import Optional
 
 
-class ResourcesMixin:
+class ResourcesMixin(_OpenNMSBase):
     def get_resources(self, depth: int = 1):
         """Return the full resource tree (can be expensive on large systems).
 
@@ -33,10 +35,10 @@ class ResourcesMixin:
 
     def get_resources_select(
         self,
-        nodes: list = None,
-        filter_rules: list = None,
-        node_subresources: list = None,
-        string_properties: list = None,
+        nodes: Optional[list] = None,
+        filter_rules: Optional[list] = None,
+        node_subresources: Optional[list] = None,
+        string_properties: Optional[list] = None,
     ):
         """Return a partial selection of the resource tree.
 

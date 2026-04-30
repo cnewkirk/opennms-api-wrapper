@@ -1,7 +1,8 @@
 """SNMP Metadata REST API v2 – /api/v2/snmpmetadata."""
+from ._base import _OpenNMSBase
 
 
-class SnmpMetadataMixin:
+class SnmpMetadataMixin(_OpenNMSBase):
     def get_snmp_metadata(self, node_id: int):
         """Get SNMP metadata collected for a node.
 

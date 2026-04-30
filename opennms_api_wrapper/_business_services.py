@@ -1,8 +1,9 @@
 """Business Service Monitoring REST API v2 – /api/v2/business-services."""
+from ._base import _OpenNMSBase
 from .types import BusinessService, BsIpServiceEdge, BsReductionKeyEdge, BsChildEdge
 
 
-class BusinessServicesMixin:
+class BusinessServicesMixin(_OpenNMSBase):
     def get_business_services(self):
         """List all business services."""
         return self._get("business-services", v2=True)

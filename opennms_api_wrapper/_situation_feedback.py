@@ -1,8 +1,10 @@
 """Situation Feedback REST API – /rest/situation-feedback."""
+from ._base import _OpenNMSBase
+from typing import Optional
 
 
-class SituationFeedbackMixin:
-    def get_situation_feedback_tags(self, prefix: str = None):
+class SituationFeedbackMixin(_OpenNMSBase):
+    def get_situation_feedback_tags(self, prefix: Optional[str] = None):
         """List situation feedback tags.
 
         Args:
