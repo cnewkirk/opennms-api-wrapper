@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Nodes REST API – /rest/nodes and sub-resources."""
 from ._base import _OpenNMSBase
 from typing import Any, Optional

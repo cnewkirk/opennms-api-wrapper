@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Acknowledgements REST API – /rest/acks."""
 from ._base import _OpenNMSBase
 from typing import Any, Optional

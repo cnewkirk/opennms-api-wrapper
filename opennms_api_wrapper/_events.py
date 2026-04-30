@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Events REST API – /rest/events."""
 from ._base import _OpenNMSBase
 from typing import Any, Optional

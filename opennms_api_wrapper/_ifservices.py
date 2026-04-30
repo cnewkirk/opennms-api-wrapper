@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Monitored Services (ifservices) REST API – /rest/ifservices + v2."""
 from ._base import _OpenNMSBase
 from typing import Any, Optional

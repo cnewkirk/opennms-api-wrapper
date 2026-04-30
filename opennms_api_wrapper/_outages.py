@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Outages REST API – /rest/outages (read-only)."""
 from ._base import _OpenNMSBase
 from typing import Any, Optional
