@@ -1,5 +1,5 @@
-from __future__ import annotations
 """Base HTTP client for the OpenNMS REST API."""
+from __future__ import annotations
 from typing import Any, Optional
 import requests
 from requests.adapters import HTTPAdapter

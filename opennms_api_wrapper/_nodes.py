@@ -1,5 +1,5 @@
-from __future__ import annotations
 """Nodes REST API – /rest/nodes and sub-resources."""
+from __future__ import annotations
 from ._base import _OpenNMSBase
 from typing import Any, Optional
 from .types import Node, NodeIpInterface, NodeSnmpInterface, NodeAssetRecord, HardwareEntity, Category

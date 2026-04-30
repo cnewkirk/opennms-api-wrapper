@@ -1,5 +1,5 @@
-from __future__ import annotations
 """Alarms REST API – /rest/alarms and /api/v2/alarms."""
+from __future__ import annotations
 from ._base import _OpenNMSBase
 from typing import Any, Optional
 
