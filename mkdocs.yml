@@ -8,23 +8,29 @@ theme:
   name: material
   palette:
     - scheme: default
-      primary: blue
-      accent: blue
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - scheme: slate
-      primary: blue
-      accent: blue
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
   features:
     - navigation.instant
     - navigation.top
+    - navigation.tabs
+    - navigation.sections
     - search.suggest
     - search.highlight
     - content.code.copy
+    - content.tooltips
+
+extra_css:
+  - stylesheets/extra.css
 
 plugins:
   - search
