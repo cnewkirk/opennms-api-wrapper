@@ -2,6 +2,33 @@
 
 Items deferred for a future session.
 
+## Meridian 2025 coverage gaps
+
+From the coverage audit in `COVERAGE.md`
+([#44](https://github.com/cnewkirk/opennms-api-wrapper/issues/44)).
+Each item is a candidate for a new mixin (see "Adding a new endpoint
+group" in `CLAUDE.md`), roughly in order of usefulness:
+
+- Status API (`/api/v2/status/...`) — severity summaries and
+  severity-filterable lists for nodes, applications, and business
+  services
+- Outage Timelines (`/rest/timeline`)
+- Reports API (database reports)
+- Realtime Console Data (`/rest/rtc`)
+- Search API
+- GraphML API (`/rest/graphml`)
+- Grafana Endpoints API
+- Geocoding + Geolocation APIs
+- Logs API
+- Filesystem API
+- Data Choices API
+- News Feed
+
+Also verify against a live modern server whether `/rest/availability`,
+`/rest/maps`, and `/rest/eventconf` still exist — they no longer appear
+in the Meridian 2025 docs; deprecate the corresponding mixins if
+removed upstream.
+
 ## Write-mode smoke tests
 
 `smoke_test.py --write` has not yet been validated against a live server.
