@@ -135,7 +135,7 @@ fetched per request.
 | Resources | list, get, get for node, select, delete |
 | Measurements | single attribute (GET), multi-source (POST) |
 | Heatmap | outages + alarms × categories / foreign sources / services / nodes |
-| Maps | full CRUD + map elements |
+| Maps | full CRUD + map elements (pre-Horizon 16 servers only — API removed upstream) |
 | Topology graphs | containers, graph, graph view (POST), search suggestions, search results |
 | Flows | count, exporters, applications, conversations, hosts |
 | Device configuration | list, get, get by interface, latest, download, backup |
@@ -171,6 +171,18 @@ fetched per request.
 | Email NBI config | config, status, destination CRUD |
 | Syslog NBI config | config, status, destination CRUD |
 | Javamail config | defaults, readmails/sendmails/end2ends CRUD |
+| Status (v2) | severity summaries + filterable lists for nodes/applications/business services |
+| Outage timelines | header, image, empty, HTML |
+| Reports | templates, run, persisted, scheduled, download |
+| Search (v2) | global context search |
+| GraphML | get, create, delete |
+| Grafana endpoints | CRUD, verify, dashboards |
+| Geocoding (v2) | config, geocoders, activate, configure |
+| Geolocation (v2) | tile-server config, node location query |
+| Logs | list files, file contents |
+| Filesystem | list, extensions, help, contents CRUD |
+| Data choices | usage stats report/status/meta, product update |
+| News feed (v2) | latest items |
 
 ## Authentication
 

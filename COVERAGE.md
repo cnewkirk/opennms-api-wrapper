@@ -6,6 +6,8 @@ index. Tracked in
 [#44](https://github.com/cnewkirk/opennms-api-wrapper/issues/44).
 
 Last audited: 2026-08-17 (Meridian 2025 docs, wrapper as of `main`).
+Gap closure implemented in
+[#46](https://github.com/cnewkirk/opennms-api-wrapper/issues/46).
 
 Method: every resource area listed in the docs index was mapped to the
 mixin whose methods call that area's root endpoint path. Node Links,
@@ -15,11 +17,12 @@ against their individual doc pages.
 ## Summary
 
 - 69 resource areas documented for Meridian 2025.
-- 53 covered by a wrapper mixin.
-- 13 not covered (candidates for new mixins — see `TODO.md`).
-- 3 intentionally out of scope (web-UI-internal APIs).
-- 3 wrapper mixins target endpoints absent from the Meridian 2025 docs
-  and need live verification or deprecation.
+- 66 covered by a wrapper mixin — every documented area except the
+  3 web-UI-internal APIs, which are intentionally out of scope.
+- 2 wrapper mixins target endpoints outside the Meridian 2025 docs:
+  `EventConfMixin` (verified still present upstream, just
+  undocumented) and `MapsMixin` (removed upstream in Horizon 16;
+  retained for backwards compatibility with annotated docstrings).
 
 ## Covered resource areas
 
@@ -63,6 +66,7 @@ against their individual doc pages.
 | Outages (`outages`) | `OutagesMixin` |
 | Perspective Poller (`perspectivepoller`) | `PerspectivePollerMixin` |
 | Provisiond Status (`provisiond_status`) | `ProvisiondMixin` |
+| Realtime Console Data (`rtc`) | `AvailabilityMixin` (the page documents `/rest/availability`) |
 | Requisition Names (`requisition_names`) | `RequisitionNamesMixin` |
 | Requisitions (`requisitions`) | `RequisitionsMixin` |
 | Resources (`resources`) | `ResourcesMixin` |
@@ -78,24 +82,18 @@ against their individual doc pages.
 | User-Defined Links (`user-defined-links`) | `UserDefinedLinksMixin` |
 | Users (`users`) | `UsersMixin` |
 | Whoami (`whoami`) | `WhoamiMixin` |
-
-## Not covered (candidates for new mixins)
-
-| Documented area (doc page) | Endpoint |
-| --- | --- |
-| Status API (`status`) | `/api/v2/status/...` |
-| Outage Timelines (`outage_timeline`) | `/rest/timeline` |
-| Reports API (`reports`) | database reports |
-| Realtime Console Data (`rtc`) | `/rest/rtc` |
-| Search API (`search`) | search service |
-| GraphML API (`graphml`) | `/rest/graphml` |
-| Grafana Endpoints API (`endpoints_grafana`) | Grafana endpoint config |
-| Geocoding API (`geocoding`) | geocoding config |
-| Geolocation API (`geolocation`) | node geolocation resolution |
-| Logs API (`logs`) | server log access |
-| Filesystem API (`filesystem`) | config filesystem access |
-| Data Choices API (`datachoices`) | usage-statistics opt-in |
-| News Feed (`newsfeed`) | news feed proxy |
+| Status API (`status`) | `StatusMixin` |
+| Outage Timelines (`outage_timeline`) | `TimelineMixin` (`/rest/timeline` — the upstream service path, verified in `TimelineRestService.java`) |
+| Reports API (`reports`) | `ReportsMixin` |
+| Search API (`search`) | `SearchMixin` |
+| GraphML API (`graphml`) | `GraphMlMixin` (XML bodies — GraphML is an XML format) |
+| Grafana Endpoints API (`endpoints_grafana`) | `GrafanaEndpointsMixin` |
+| Geocoding API (`geocoding`) | `GeocodingMixin` |
+| Geolocation API (`geolocation`) | `GeolocationMixin` |
+| Logs API (`logs`) | `LogsMixin` |
+| Filesystem API (`filesystem`) | `FilesystemMixin` |
+| Data Choices API (`datachoices`) | `DataChoicesMixin` |
+| News Feed (`newsfeed`) | `NewsFeedMixin` |
 
 ## Out of scope (web-UI-internal)
 
@@ -103,14 +101,17 @@ Menu API (`menu`), Web Assets API (`web_assets`), and UI Extension /
 Plugins API (`plugins`) exist to serve the OpenNMS web UI itself and
 offer no monitoring or automation value through a wrapper.
 
-## Wrapper endpoints absent from the Meridian 2025 docs
+## Wrapper endpoints outside the Meridian 2025 docs index
 
-These mixins wrap endpoints that no longer appear in the current docs
-index. Verify against a live modern server; deprecate if removed
-upstream.
+Resolved 2026-08-17 against the OpenNMS source on GitHub:
 
-| Mixin | Endpoint |
-| --- | --- |
-| `AvailabilityMixin` | `/rest/availability` |
-| `MapsMixin` | `/rest/maps` |
-| `EventConfMixin` | `/rest/eventconf` |
+- `AvailabilityMixin` (`/rest/availability`) — documented after all:
+  the Realtime Console Data page (`rtc`) covers exactly these
+  endpoints. Covered, nothing to do.
+- `EventConfMixin` (`/api/v2/eventconf`) — `EventConfRestService`
+  still exists on the upstream `develop` branch; the API is simply
+  absent from the Meridian docs index. Kept as-is.
+- `MapsMixin` (`/rest/maps`) — `OnmsMapRestService` last shipped in
+  Horizon 15 and was removed in Horizon 16 (2015). The mixin is
+  retained for backwards compatibility with pre-16 servers; every
+  method docstring notes that the call 404s on newer servers.

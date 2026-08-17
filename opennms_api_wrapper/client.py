@@ -54,6 +54,18 @@ from ._snmptrap_nbi import SnmpTrapNbiMixin
 from ._email_nbi import EmailNbiMixin
 from ._syslog_nbi import SyslogNbiMixin
 from ._javamail_config import JavamailConfigMixin
+from ._status import StatusMixin
+from ._timeline import TimelineMixin
+from ._reports import ReportsMixin
+from ._search import SearchMixin
+from ._graphml import GraphMlMixin
+from ._grafana_endpoints import GrafanaEndpointsMixin
+from ._geocoding import GeocodingMixin
+from ._geolocation import GeolocationMixin
+from ._logs import LogsMixin
+from ._filesystem import FilesystemMixin
+from ._datachoices import DataChoicesMixin
+from ._newsfeed import NewsFeedMixin
 from ._pagination import PaginationMixin
 
 
@@ -114,6 +126,18 @@ class OpenNMS(
     EmailNbiMixin,
     SyslogNbiMixin,
     JavamailConfigMixin,
+    StatusMixin,
+    TimelineMixin,
+    ReportsMixin,
+    SearchMixin,
+    GraphMlMixin,
+    GrafanaEndpointsMixin,
+    GeocodingMixin,
+    GeolocationMixin,
+    LogsMixin,
+    FilesystemMixin,
+    DataChoicesMixin,
+    NewsFeedMixin,
 ):
     """Thin Python wrapper for the OpenNMS REST API.
 

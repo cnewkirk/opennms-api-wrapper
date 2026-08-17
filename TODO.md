@@ -2,32 +2,15 @@
 
 Items deferred for a future session.
 
-## Meridian 2025 coverage gaps
+## Meridian 2025 coverage gaps — done
 
-From the coverage audit in `COVERAGE.md`
-([#44](https://github.com/cnewkirk/opennms-api-wrapper/issues/44)).
-Each item is a candidate for a new mixin (see "Adding a new endpoint
-group" in `CLAUDE.md`), roughly in order of usefulness:
-
-- Status API (`/api/v2/status/...`) — severity summaries and
-  severity-filterable lists for nodes, applications, and business
-  services
-- Outage Timelines (`/rest/timeline`)
-- Reports API (database reports)
-- Realtime Console Data (`/rest/rtc`)
-- Search API
-- GraphML API (`/rest/graphml`)
-- Grafana Endpoints API
-- Geocoding + Geolocation APIs
-- Logs API
-- Filesystem API
-- Data Choices API
-- News Feed
-
-Also verify against a live modern server whether `/rest/availability`,
-`/rest/maps`, and `/rest/eventconf` still exist — they no longer appear
-in the Meridian 2025 docs; deprecate the corresponding mixins if
-removed upstream.
+All gaps from the audit in `COVERAGE.md`
+([#44](https://github.com/cnewkirk/opennms-api-wrapper/issues/44))
+were implemented in
+[#46](https://github.com/cnewkirk/opennms-api-wrapper/issues/46):
+12 new mixins, plus backwards-compatibility annotations on
+`MapsMixin` (the maps API was removed upstream in Horizon 16).
+`COVERAGE.md` has the current matrix.
 
 ## Write-mode smoke tests
 

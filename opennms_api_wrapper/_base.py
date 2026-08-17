@@ -160,17 +160,42 @@ class _OpenNMSBase:
                                    params=params, timeout=self._timeout)
         return self._parse(resp)
 
-    def _get_text(self, path: str, v2: bool = False) -> str:
+    def _get_text(self, path: str, params: Optional[dict[str, Any]] = None,
+                  v2: bool = False) -> str:
         """Send a GET request and return the raw response text."""
-        resp = self._session.get(self._url(path, v2),
+        resp = self._session.get(self._url(path, v2), params=params,
                                  timeout=self._timeout)
         self._raise_for_status(resp)
         return resp.text
 
+    def _get_bytes(self, path: str, params: Optional[dict[str, Any]] = None,
+                   v2: bool = False) -> bytes:
+        """Send a GET request and return the raw response body."""
+        resp = self._session.get(self._url(path, v2), params=params,
+                                 timeout=self._timeout)
+        self._raise_for_status(resp)
+        return resp.content
+
+    def _post_bytes(self, path: str, json_data=None,
+                    params: Optional[dict[str, Any]] = None,
+                    v2: bool = False) -> bytes:
+        """Send a POST request and return the raw response body."""
+        resp = self._session.post(self._url(path, v2), json=json_data,
+                                  params=params, timeout=self._timeout)
+        self._raise_for_status(resp)
+        return resp.content
+
     def _post_files(self, path: str, files: dict,
+                    params: Optional[dict[str, Any]] = None,
                     v2: bool = False):
-        """Send a POST request with multipart file upload."""
+        """Send a POST request with multipart file upload.
+
+        The session-wide ``Content-Type: application/json`` header is
+        suppressed so ``requests`` can set the multipart boundary.
+        """
         resp = self._session.post(self._url(path, v2), files=files,
+                                  params=params,
+                                  headers={"Content-Type": None},
                                   timeout=self._timeout)
         return self._parse(resp)
 
