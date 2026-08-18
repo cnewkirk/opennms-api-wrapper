@@ -1,7 +1,7 @@
 """Tests for MonitoringLocationsMixin – /rest/monitoringLocations."""
 import json
 import responses
-from .conftest import V1, qs
+from .conftest import V1
 from .fixtures import MONITORING_LOCATION, MONITORING_LOCATION_LIST
 
 
@@ -41,7 +41,7 @@ def test_create_monitoring_location(client):
     responses.add(responses.POST, f"{V1}/monitoringLocations",
                   status=201)
     payload = {"location-name": "Remote", "monitoring-area": "remote"}
-    result = client.create_monitoring_location(payload)
+    client.create_monitoring_location(payload)
     body = json.loads(responses.calls[0].request.body)
     assert body["location-name"] == "Remote"
 

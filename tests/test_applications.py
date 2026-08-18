@@ -1,7 +1,7 @@
 """Tests for ApplicationsMixin – /api/v2/applications."""
 import json
 import responses
-from .conftest import V2, qs
+from .conftest import V2
 from .fixtures import APPLICATION, APPLICATION_LIST
 
 

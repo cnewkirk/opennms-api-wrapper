@@ -1,10 +1,8 @@
 """Tests for client.paginate()."""
 import json
 
-import pytest
 import responses as rsps
 
-import opennms_api_wrapper as opennms
 from tests.conftest import V1
 
 
