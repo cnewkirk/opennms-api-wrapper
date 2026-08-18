@@ -231,6 +231,15 @@ class _OpenNMSBase:
                                   timeout=self._timeout)
         return self._parse(resp)
 
+    def _put_text(self, path: str, data: str, content_type: str,
+                  v2: bool = False):
+        """Send a PUT request with a raw text body."""
+        resp = self._session.put(
+            self._url(path, v2), data=data,
+            headers={"Content-Type": content_type},
+            timeout=self._timeout)
+        return self._parse(resp)
+
     def _post_text(self, path: str, data: str, content_type: str,
                    v2: bool = False, accept: Optional[str] = None,
                    params: Optional[dict[str, Any]] = None):

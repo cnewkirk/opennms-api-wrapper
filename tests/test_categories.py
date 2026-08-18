@@ -1,7 +1,7 @@
 """Tests for CategoriesMixin – /rest/categories."""
 import json
 import responses
-from .conftest import V1
+from .conftest import FORM, V1, XML, add_contract
 from .fixtures import CATEGORY, CATEGORY_LIST
 
 
@@ -30,11 +30,18 @@ def test_create_category(client):
 
 @responses.activate
 def test_update_category(client):
-    responses.add(responses.PUT, f"{V1}/categories/Production", status=204)
-    client.update_category("Production", {"name": "Production",
-                                          "authorizedGroups": ["network-ops"]})
-    body = json.loads(responses.calls[0].request.body)
-    assert "network-ops" in body["authorizedGroups"]
+    add_contract(responses.PUT, f"{V1}/categories/Production", FORM)
+    client.update_category("Production", {"description": "Prod nodes"})
+    assert responses.calls[0].request.body == "description=Prod+nodes"
+
+
+@responses.activate
+def test_associate_category_with_node(client):
+    add_contract(responses.PUT, f"{V1}/categories/Production/nodes/1",
+                 XML, status=201)
+    client.associate_category_with_node("Production", 1)
+    request = responses.calls[0].request
+    assert request.body == '<category name="Production"/>'
 
 
 @responses.activate
@@ -62,14 +69,6 @@ def test_get_category_for_node(client):
 
 
 @responses.activate
-def test_associate_category_with_node(client):
-    responses.add(responses.PUT, f"{V1}/categories/Production/nodes/1",
-                  status=204)
-    result = client.associate_category_with_node("Production", 1)
-    assert result is None
-
-
-@responses.activate
 def test_dissociate_category_from_node(client):
     responses.add(responses.DELETE, f"{V1}/categories/Production/nodes/1",
                   status=204)
@@ -81,7 +80,7 @@ def test_dissociate_category_from_node(client):
 def test_get_categories_for_group(client):
     responses.add(responses.GET, f"{V1}/categories/groups/network-ops",
                   json=CATEGORY_LIST)
-    result = client.get_categories_for_group("network-ops")
+    client.get_categories_for_group("network-ops")
     assert "/categories/groups/network-ops" in responses.calls[0].request.url
 
 

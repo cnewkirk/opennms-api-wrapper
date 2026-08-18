@@ -61,7 +61,8 @@ class ForeignSourcesMixin(_OpenNMSBase):
             name: Foreign source name to update.
             foreign_source: Updated foreign source definition dict.
         """
-        return self._put(f"foreignSources/{name}", json_data=foreign_source)
+        return self._put(f"foreignSources/{name}",
+                         form_data=foreign_source)
 
     def delete_foreign_source(self, name: str):
         """Delete a foreign source."""

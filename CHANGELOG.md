@@ -25,20 +25,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   upstream in OpenNMS Horizon 16 — the methods remain for backwards
   compatibility with pre-16 servers.
 
-### Changed (breaking)
+### Changed
 
-- `create_group`, `create_user`, `update_group`, and `update_user` now
-  send the content types the server actually accepts (XML for the
-  creates, form encoding for the updates) — these endpoints reject
-  JSON on every OpenNMS version, so the previous JSON requests always
-  failed with 415. Callers still pass plain dicts; `update_user` keys
-  are now bean property names (e.g. ``fullName``).
-- `Event.parms` is a list of ``{"parmName", "value"}`` entries (the
-  server rejects the previous XML-style ``{"parm": [...]}`` wrapper).
-- `get_log_contents` returns the log text as a string.
 - Development status classifier raised to Production/Stable.
 
 ### Fixed
+
+- `create_group`, `create_user`, `update_group`, and `update_user`
+  now send the content types the server actually accepts (XML for
+  the creates, form encoding for the updates). These endpoints
+  reject JSON on every OpenNMS version, so the previous JSON
+  requests always failed with 415 — no working call changes
+  behavior. Callers still pass plain dicts; `update_user` keys are
+  bean property names (e.g. ``fullName``).
+- `Event.parms` is documented and typed as a list of
+  ``{"parmName", "value"}`` entries. The wrapper always passed
+  `parms` through verbatim; the previously documented XML-style
+  ``{"parm": [...]}`` wrapper was rejected by the server with 500.
 
 - Multipart uploads (`upload_eventconf`, `upload_filesystem_contents`)
   no longer send `Content-Type: application/json` from the session

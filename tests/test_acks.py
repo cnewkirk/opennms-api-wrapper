@@ -1,7 +1,7 @@
 """Tests for AcksMixin – /rest/acks."""
 import responses
 from urllib.parse import parse_qs
-from .conftest import V1, qs
+from .conftest import FORM, V1, add_contract, qs
 from .fixtures import ACKNOWLEDGEMENT, ACKNOWLEDGEMENT_LIST
 
 
@@ -41,7 +41,8 @@ def test_get_ack_count(client):
 
 @responses.activate
 def test_create_ack_alarm(client):
-    responses.add(responses.POST, f"{V1}/acks", json=ACKNOWLEDGEMENT, status=200)
+    add_contract(responses.POST, f"{V1}/acks", FORM, status=200,
+                 json_body=ACKNOWLEDGEMENT)
     client.create_ack("ack", alarm_id=42)
     req = responses.calls[0].request
     # acks POST uses form-encoded data per API docs
@@ -52,7 +53,8 @@ def test_create_ack_alarm(client):
 
 @responses.activate
 def test_create_ack_notification(client):
-    responses.add(responses.POST, f"{V1}/acks", json=ACKNOWLEDGEMENT, status=200)
+    add_contract(responses.POST, f"{V1}/acks", FORM, status=200,
+                 json_body=ACKNOWLEDGEMENT)
     client.create_ack("ack", notification_id=601)
     body = parse_qs(responses.calls[0].request.body)
     assert body["action"] == ["ack"]
@@ -61,7 +63,8 @@ def test_create_ack_notification(client):
 
 @responses.activate
 def test_create_ack_escalate(client):
-    responses.add(responses.POST, f"{V1}/acks", json=ACKNOWLEDGEMENT, status=200)
+    add_contract(responses.POST, f"{V1}/acks", FORM, status=200,
+                 json_body=ACKNOWLEDGEMENT)
     client.create_ack("esc", alarm_id=42)
     body = parse_qs(responses.calls[0].request.body)
     assert body["action"] == ["esc"]
@@ -70,7 +73,8 @@ def test_create_ack_escalate(client):
 
 @responses.activate
 def test_ack_notification(client):
-    responses.add(responses.POST, f"{V1}/acks", json=ACKNOWLEDGEMENT, status=200)
+    add_contract(responses.POST, f"{V1}/acks", FORM, status=200,
+                 json_body=ACKNOWLEDGEMENT)
     client.ack_notification(601)
     body = parse_qs(responses.calls[0].request.body)
     assert body["action"] == ["ack"]
@@ -79,7 +83,8 @@ def test_ack_notification(client):
 
 @responses.activate
 def test_unack_notification(client):
-    responses.add(responses.POST, f"{V1}/acks", json=ACKNOWLEDGEMENT, status=200)
+    add_contract(responses.POST, f"{V1}/acks", FORM, status=200,
+                 json_body=ACKNOWLEDGEMENT)
     client.unack_notification(601)
     body = parse_qs(responses.calls[0].request.body)
     assert body["action"] == ["unack"]

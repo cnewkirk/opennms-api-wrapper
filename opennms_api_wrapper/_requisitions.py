@@ -55,7 +55,7 @@ class RequisitionsMixin(_OpenNMSBase):
             name: Foreign source name of the requisition.
             data: Dict of requisition fields to change.
         """
-        return self._put(f"requisitions/{name}", json_data=data)
+        return self._put(f"requisitions/{name}", form_data=data)
 
     def delete_requisition(self, name: str):
         """Delete a pending (not yet deployed) requisition."""
@@ -94,10 +94,12 @@ class RequisitionsMixin(_OpenNMSBase):
         Args:
             name: Foreign source name of the requisition.
             foreign_id: Foreign ID of the node to update.
-            node: Dict of node fields to change.
+            node: Dict of node fields to change. Sent form-encoded —
+                the requisitions API documents "PUT requests expect
+                form-urlencoded data".
         """
         return self._put(f"requisitions/{name}/nodes/{foreign_id}",
-                         json_data=node)
+                         form_data=node)
 
     def delete_requisition_node(self, name: str, foreign_id: str):
         """Delete a node from requisition *name* (async – returns 202)."""
@@ -134,11 +136,13 @@ class RequisitionsMixin(_OpenNMSBase):
             name: Foreign source name of the requisition.
             foreign_id: Foreign ID of the node.
             ip_address: IP address of the interface to update.
-            interface: Dict of interface fields to change.
+            interface: Dict of interface fields to change. Sent
+                form-encoded — the requisitions API documents "PUT
+                requests expect form-urlencoded data".
         """
         return self._put(
             f"requisitions/{name}/nodes/{foreign_id}/interfaces/{ip_address}",
-            json_data=interface,
+            form_data=interface,
         )
 
     def delete_requisition_node_interface(self, name: str, foreign_id: str,

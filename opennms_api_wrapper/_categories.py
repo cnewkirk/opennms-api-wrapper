@@ -1,4 +1,6 @@
 """Categories REST API – /rest/categories."""
+from xml.sax.saxutils import quoteattr
+
 from ._base import _OpenNMSBase
 from .types import Category
 
@@ -32,7 +34,7 @@ class CategoriesMixin(_OpenNMSBase):
             category: Category name to update.
             data: Dict of category fields to change.
         """
-        return self._put(f"categories/{category}", json_data=data)
+        return self._put(f"categories/{category}", form_data=data)
 
     def delete_category(self, category: str):
         """Delete a category."""
@@ -51,8 +53,14 @@ class CategoriesMixin(_OpenNMSBase):
         return self._get(f"categories/{category}/nodes/{node_id}")
 
     def associate_category_with_node(self, category: str, node_id):
-        """Associate *category* with *node_id*."""
-        return self._put(f"categories/{category}/nodes/{node_id}")
+        """Associate *category* with *node_id*.
+
+        The endpoint consumes only XML; the category element is
+        built from the *category* name.
+        """
+        xml = f"<category name={quoteattr(category)}/>"
+        return self._put_text(f"categories/{category}/nodes/{node_id}",
+                              xml, "application/xml")
 
     def dissociate_category_from_node(self, category: str, node_id):
         """Remove *category* from *node_id*."""
