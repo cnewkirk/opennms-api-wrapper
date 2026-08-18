@@ -30,12 +30,13 @@ class LogsMixin(_OpenNMSBase):
                 default ``True``).
 
         Returns:
-            The log contents, or ``None`` when the file does not
-            exist (204 No Content).
+            The log contents as raw text (the server labels the
+            response ``application/json`` but sends plain log lines).
+            Empty string when the file does not exist (204).
         """
         params: dict[str, Any] = {"f": filename}
         if lines is not None:
             params["n"] = lines
         if reverse is not None:
             params["reverse"] = reverse
-        return self._get("logs/contents", params=params)
+        return self._get_text("logs/contents", params=params)

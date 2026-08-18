@@ -72,4 +72,4 @@ class TimelineMixin(_OpenNMSBase):
         """
         return self._get_text(
             f"timeline/html/{node_id}/{ip_address}/{service_id}"
-            f"/{start}/{end}/{width}")
+            f"/{start}/{end}/{width}", accept="text/html")

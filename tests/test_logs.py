@@ -14,10 +14,11 @@ def test_get_log_files(client):
 @responses.activate
 def test_get_log_contents(client):
     responses.add(responses.GET, f"{V1}/logs/contents",
-                  json=LOG_CONTENTS)
+                  body=LOG_CONTENTS,
+                  content_type="application/json")
     result = client.get_log_contents("manager.log", lines=100,
                                      reverse=False)
-    assert "Manager started" in result[0]
+    assert "Manager started" in result
     params = qs(responses.calls[0].request.url)
     assert params["f"] == ["manager.log"]
     assert params["n"] == ["100"]
@@ -27,4 +28,4 @@ def test_get_log_contents(client):
 @responses.activate
 def test_get_log_contents_missing_file(client):
     responses.add(responses.GET, f"{V1}/logs/contents", status=204)
-    assert client.get_log_contents("nope.log") is None
+    assert client.get_log_contents("nope.log") == ""

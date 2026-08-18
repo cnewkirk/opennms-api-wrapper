@@ -99,6 +99,28 @@ OpenNMSError
 - **Smoke test SSL**: always use `OPENNMS_VERIFY_SSL=true` — the live server
   has a valid certificate. Never disable SSL verification.
 
+## Live validation against a local Horizon container
+
+To test against a real, current OpenNMS instead of mocks, run the
+throwaway stack in `tests/live/compose.yaml` **on the local machine**
+(never on shared infrastructure):
+
+```bash
+colima start --cpu 2 --memory 4     # or any local Docker engine
+docker compose -f tests/live/compose.yaml up -d
+# ready when this returns 200 (first boot takes a few minutes):
+curl -s -o /dev/null -w '%{http_code}' -u admin:admin \
+  http://localhost:8980/opennms/rest/info
+OPENNMS_URL=http://localhost:8980 OPENNMS_USER=admin \
+  OPENNMS_PASSWORD=admin python smoke_test.py
+docker compose -f tests/live/compose.yaml down -v   # always tear down
+```
+
+The `foundation-2025` image tag tracks the Meridian 2025 foundation
+(the docs baseline for `COVERAGE.md`); numbered tags pin Horizon
+releases. The throwaway instance uses plain HTTP with admin/admin —
+the smoke-test SSL rule above applies to real servers, not this one.
+
 ## Test conventions
 
 - HTTP mocking: `responses` library with `@responses.activate` decorator.

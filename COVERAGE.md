@@ -12,7 +12,11 @@ Gap closure implemented in
 Method: every resource area listed in the docs index was mapped to the
 mixin whose methods call that area's root endpoint path. Node Links,
 Status, and Graph API were additionally verified endpoint-by-endpoint
-against their individual doc pages.
+against their individual doc pages. All 12 new endpoint groups were
+then live-validated against a Meridian 2025 foundation instance
+(Horizon 34.0.1, `tests/live/compose.yaml`) — 37/37 checks passing,
+with the Filesystem API exercised to its expected 403 (the
+`FILESYSTEM EDITOR` role is not granted to admin by default).
 
 ## Summary
 
@@ -109,8 +113,9 @@ Resolved 2026-08-17 against the OpenNMS source on GitHub:
   the Realtime Console Data page (`rtc`) covers exactly these
   endpoints. Covered, nothing to do.
 - `EventConfMixin` (`/api/v2/eventconf`) — `EventConfRestService`
-  still exists on the upstream `develop` branch; the API is simply
-  absent from the Meridian docs index. Kept as-is.
+  exists upstream from Horizon 35; live-verified 404 on Horizon 34
+  (the Meridian 2025 foundation), which is why the API is absent
+  from the Meridian 2025 docs. Kept as-is for Horizon 35+ servers.
 - `MapsMixin` (`/rest/maps`) — `OnmsMapRestService` last shipped in
   Horizon 15 and was removed in Horizon 16 (2015). The mixin is
   retained for backwards compatibility with pre-16 servers; every

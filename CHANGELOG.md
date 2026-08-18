@@ -27,11 +27,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+All three fixes below were found by validating against a live
+Meridian 2025 foundation instance (Horizon 34.0.1 via
+`tests/live/compose.yaml`):
+
 - Multipart uploads (`upload_eventconf`, new
   `upload_filesystem_contents`) no longer send
   `Content-Type: application/json` from the session defaults, which
   suppressed the multipart boundary and broke uploads against live
   servers.
+- Binary and non-JSON endpoints (timeline PNGs, rendered reports,
+  GraphML, timeline HTML) now send an appropriate `Accept` header —
+  the session-wide JSON Accept caused live 406s.
+- GraphML requests no longer carry the session
+  `Content-Type: application/json` — the live server returns 500 for
+  any GraphML request bearing it, even bodyless GET/DELETE.
 
 ## [0.4.5] - 2026-03-08
 

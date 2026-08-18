@@ -1798,10 +1798,10 @@ GEOLOCATION_LIST = [
 
 LOG_FILE_LIST = ["manager.log", "web.log", "provisiond.log"]
 
-LOG_CONTENTS = [
-    "2026-08-17 06:00:01 INFO  [Main] Manager started",
-    "2026-08-17 06:00:02 INFO  [Main] Startup complete",
-]
+LOG_CONTENTS = (
+    "2026-08-17 06:00:01 INFO  [Main] Manager started\n"
+    "2026-08-17 06:00:02 INFO  [Main] Startup complete"
+)
 
 # ---------------------------------------------------------------------------
 # Filesystem API

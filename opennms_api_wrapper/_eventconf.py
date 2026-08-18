@@ -1,4 +1,10 @@
-"""Event Configuration REST API v2 – /api/v2/eventconf."""
+"""Event Configuration REST API v2 – /api/v2/eventconf.
+
+Note:
+    This API exists in OpenNMS Horizon 35+ only. It is absent from
+    Horizon 34 / the Meridian 2025 foundation (verified live: 404),
+    which is why it does not appear in the Meridian 2025 docs.
+"""
 from ._base import _OpenNMSBase
 from typing import Optional
 from .types import EventConfEvent
