@@ -34,7 +34,8 @@ class AlarmsMixin(_OpenNMSBase):
         """Return the total number of alarms."""
         return self._get("alarms/count")
 
-    # Single-alarm actions (v1 PUT with query params)
+    # Single-alarm actions (v1 PUT; the API requires the flags as
+    # form-encoded body data, not query parameters)
 
     def ack_alarm(self, alarm_id: int, ack_user: Optional[str] = None):
         """Acknowledge alarm *alarm_id*.
@@ -42,22 +43,23 @@ class AlarmsMixin(_OpenNMSBase):
         Args:
             ack_user: Acknowledge on behalf of this user (requires admin role).
         """
-        params: dict[str, Any] = {"ack": "true"}
+        data: dict[str, Any] = {"ack": "true"}
         if ack_user:
-            params["ackUser"] = ack_user
-        return self._put(f"alarms/{alarm_id}", params=params)
+            data["ackUser"] = ack_user
+        return self._put(f"alarms/{alarm_id}", form_data=data)
 
     def unack_alarm(self, alarm_id: int):
         """Remove acknowledgement from alarm *alarm_id*."""
-        return self._put(f"alarms/{alarm_id}", params={"ack": "false"})
+        return self._put(f"alarms/{alarm_id}", form_data={"ack": "false"})
 
     def clear_alarm(self, alarm_id: int):
         """Clear alarm *alarm_id* (sets severity to CLEARED)."""
-        return self._put(f"alarms/{alarm_id}", params={"clear": "true"})
+        return self._put(f"alarms/{alarm_id}", form_data={"clear": "true"})
 
     def escalate_alarm(self, alarm_id: int):
         """Escalate the severity of alarm *alarm_id* by one step."""
-        return self._put(f"alarms/{alarm_id}", params={"escalate": "true"})
+        return self._put(f"alarms/{alarm_id}",
+                         form_data={"escalate": "true"})
 
     # Bulk alarm actions
 
@@ -67,9 +69,9 @@ class AlarmsMixin(_OpenNMSBase):
         Args:
             **filters: Additional Hibernate query filters passed directly as query parameters (e.g. ``severity="MAJOR"``).
         """
-        params: dict[str, Any] = {"ack": "true"}
-        params.update(filters)
-        return self._put("alarms", params=params)
+        data: dict[str, Any] = {"ack": "true"}
+        data.update(filters)
+        return self._put("alarms", form_data=data)
 
     def bulk_unack_alarms(self, **filters):
         """Remove acknowledgement from all alarms matching the given filters.
@@ -77,9 +79,9 @@ class AlarmsMixin(_OpenNMSBase):
         Args:
             **filters: Additional Hibernate query filters passed directly as query parameters (e.g. ``severity="MAJOR"``).
         """
-        params: dict[str, Any] = {"ack": "false"}
-        params.update(filters)
-        return self._put("alarms", params=params)
+        data: dict[str, Any] = {"ack": "false"}
+        data.update(filters)
+        return self._put("alarms", form_data=data)
 
     def bulk_clear_alarms(self, **filters):
         """Clear all alarms matching the given filters.
@@ -87,9 +89,9 @@ class AlarmsMixin(_OpenNMSBase):
         Args:
             **filters: Additional Hibernate query filters passed directly as query parameters (e.g. ``severity="MAJOR"``).
         """
-        params: dict[str, Any] = {"clear": "true"}
-        params.update(filters)
-        return self._put("alarms", params=params)
+        data: dict[str, Any] = {"clear": "true"}
+        data.update(filters)
+        return self._put("alarms", form_data=data)
 
     def bulk_escalate_alarms(self, **filters):
         """Escalate all alarms matching the given filters.
@@ -97,9 +99,9 @@ class AlarmsMixin(_OpenNMSBase):
         Args:
             **filters: Additional Hibernate query filters passed directly as query parameters (e.g. ``severity="MAJOR"``).
         """
-        params: dict[str, Any] = {"escalate": "true"}
-        params.update(filters)
-        return self._put("alarms", params=params)
+        data: dict[str, Any] = {"escalate": "true"}
+        data.update(filters)
+        return self._put("alarms", form_data=data)
 
     # v2 alarms (FIQL filtering)
 

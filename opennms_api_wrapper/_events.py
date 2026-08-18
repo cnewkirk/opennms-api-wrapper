@@ -57,11 +57,12 @@ class EventsMixin(_OpenNMSBase):
 
     def ack_event(self, event_id: int):
         """Acknowledge event *event_id*."""
-        return self._put(f"events/{event_id}", params={"ack": "true"})
+        return self._put(f"events/{event_id}", form_data={"ack": "true"})
 
     def unack_event(self, event_id: int):
         """Remove acknowledgement from event *event_id*."""
-        return self._put(f"events/{event_id}", params={"ack": "false"})
+        return self._put(f"events/{event_id}",
+                         form_data={"ack": "false"})
 
     def bulk_ack_events(self, **filters):
         """Acknowledge all events matching the given filters.
@@ -69,9 +70,9 @@ class EventsMixin(_OpenNMSBase):
         Args:
             **filters: Additional Hibernate query filters passed directly as query parameters (e.g. ``severity="MAJOR"``).
         """
-        params: dict[str, Any] = {"ack": "true"}
-        params.update(filters)
-        return self._put("events", params=params)
+        data: dict[str, Any] = {"ack": "true"}
+        data.update(filters)
+        return self._put("events", form_data=data)
 
     def bulk_unack_events(self, **filters):
         """Remove acknowledgement from all events matching the given filters.
@@ -79,6 +80,6 @@ class EventsMixin(_OpenNMSBase):
         Args:
             **filters: Additional Hibernate query filters passed directly as query parameters (e.g. ``severity="MAJOR"``).
         """
-        params: dict[str, Any] = {"ack": "false"}
-        params.update(filters)
-        return self._put("events", params=params)
+        data: dict[str, Any] = {"ack": "false"}
+        data.update(filters)
+        return self._put("events", form_data=data)

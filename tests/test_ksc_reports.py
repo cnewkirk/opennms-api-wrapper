@@ -1,7 +1,6 @@
 """Tests for KscReportsMixin – /rest/ksc."""
-import json
 import responses
-from .conftest import V1
+from .conftest import V1, XML, add_contract, qs
 from .fixtures import KSC_REPORT, KSC_REPORT_LIST
 
 
@@ -32,17 +31,25 @@ def test_get_ksc_report_count(client):
 
 @responses.activate
 def test_create_ksc_report(client):
-    responses.add(responses.POST, f"{V1}/ksc", json=KSC_REPORT, status=201)
+    add_contract(responses.POST, f"{V1}/ksc", XML, status=303)
     client.create_ksc_report(KSC_REPORT)
-    body = json.loads(responses.calls[0].request.body)
-    assert body["label"] == "Core Bandwidth Report"
-    assert body["graphs"][0]["graphtype"] == "mib2.bits"
-    assert responses.calls[0].request.headers["Content-Type"] == "application/json"
+    body = responses.calls[0].request.body
+    assert body.startswith(
+        '<kscReport id="1" label="Core Bandwidth Report"'
+        ' show_timespan_button="true" show_graphtype_button="false"'
+        ' graphs_per_line="2">')
+    assert '<kscGraph title="Core Switch Bandwidth"' in body
+    assert 'graphtype="mib2.bits"' in body
 
 
 @responses.activate
-def test_update_ksc_report(client):
-    responses.add(responses.PUT, f"{V1}/ksc/1", status=204)
-    client.update_ksc_report(1, {**KSC_REPORT, "label": "Updated Report"})
-    body = json.loads(responses.calls[0].request.body)
-    assert body["label"] == "Updated Report"
+def test_add_graph_to_ksc_report(client):
+    responses.add(responses.PUT, f"{V1}/ksc/1", status=303)
+    client.add_graph_to_ksc_report(
+        1, "mib2.bits", "node[1].interfaceSnmp[eth0]",
+        title="Bandwidth", timespan="7_day")
+    params = qs(responses.calls[0].request.url)
+    assert params["reportName"] == ["mib2.bits"]
+    assert params["resourceId"] == ["node[1].interfaceSnmp[eth0]"]
+    assert params["title"] == ["Bandwidth"]
+    assert params["timespan"] == ["7_day"]

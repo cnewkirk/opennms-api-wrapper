@@ -1,6 +1,6 @@
 """Tests for UsersMixin – /rest/users."""
 import responses
-from .conftest import V1, qs
+from .conftest import FORM, V1, XML, add_contract, qs
 from .fixtures import USER, USER_LIST
 
 NEW_USER = {
@@ -28,10 +28,10 @@ def test_get_user(client):
 
 @responses.activate
 def test_create_user(client):
-    responses.add(responses.POST, f"{V1}/users", json=USER, status=201)
+    add_contract(responses.POST, f"{V1}/users", XML, status=201,
+                 json_body=USER)
     client.create_user(NEW_USER)
     request = responses.calls[0].request
-    assert request.headers["Content-Type"] == "application/xml"
     assert request.body == (
         "<user><user-id>newuser</user-id>"
         "<full-name>New User</full-name>"
@@ -41,14 +41,15 @@ def test_create_user(client):
 
 @responses.activate
 def test_create_user_hash_password(client):
-    responses.add(responses.POST, f"{V1}/users", json=USER, status=201)
+    add_contract(responses.POST, f"{V1}/users", XML, status=201,
+                 json_body=USER)
     client.create_user(NEW_USER, hash_password=True)
     assert qs(responses.calls[0].request.url)["hashPassword"] == ["true"]
 
 
 @responses.activate
 def test_create_user_roles_and_salt(client):
-    responses.add(responses.POST, f"{V1}/users", status=201)
+    add_contract(responses.POST, f"{V1}/users", XML, status=201)
     client.create_user({
         "user-id": "oncall",
         "password": "hashed",
@@ -64,12 +65,9 @@ def test_create_user_roles_and_salt(client):
 
 @responses.activate
 def test_update_user(client):
-    responses.add(responses.PUT, f"{V1}/users/jsmith", status=204)
+    add_contract(responses.PUT, f"{V1}/users/jsmith", FORM)
     client.update_user("jsmith", {"fullName": "Jane A. Smith"})
-    request = responses.calls[0].request
-    assert request.headers["Content-Type"] == (
-        "application/x-www-form-urlencoded")
-    assert request.body == "fullName=Jane+A.+Smith"
+    assert responses.calls[0].request.body == "fullName=Jane+A.+Smith"
 
 
 @responses.activate

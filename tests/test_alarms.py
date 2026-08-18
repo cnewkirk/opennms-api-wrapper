@@ -1,6 +1,6 @@
 """Tests for AlarmsMixin – /rest/alarms and /api/v2/alarms."""
 import responses
-from .conftest import V1, V2, qs
+from .conftest import FORM, V1, V2, add_contract, qs
 from .fixtures import ALARM, ALARM_LIST
 
 
@@ -48,76 +48,75 @@ def test_get_alarm_count(client):
 
 @responses.activate
 def test_ack_alarm(client):
-    responses.add(responses.PUT, f"{V1}/alarms/42", status=204)
+    add_contract(responses.PUT, f"{V1}/alarms/42", FORM)
     result = client.ack_alarm(42)
     assert result is None
-    params = qs(responses.calls[0].request.url)
-    assert params["ack"] == ["true"]
+    assert responses.calls[0].request.body == "ack=true"
 
 
 @responses.activate
 def test_ack_alarm_with_user(client):
-    responses.add(responses.PUT, f"{V1}/alarms/42", status=204)
+    add_contract(responses.PUT, f"{V1}/alarms/42", FORM)
     client.ack_alarm(42, ack_user="jsmith")
-    params = qs(responses.calls[0].request.url)
-    assert params["ack"] == ["true"]
-    assert params["ackUser"] == ["jsmith"]
+    body = responses.calls[0].request.body
+    assert "ack=true" in body
+    assert "ackUser=jsmith" in body
 
 
 @responses.activate
 def test_unack_alarm(client):
-    responses.add(responses.PUT, f"{V1}/alarms/42", status=204)
+    add_contract(responses.PUT, f"{V1}/alarms/42", FORM)
     result = client.unack_alarm(42)
     assert result is None
-    assert qs(responses.calls[0].request.url)["ack"] == ["false"]
+    assert responses.calls[0].request.body == "ack=false"
 
 
 @responses.activate
 def test_clear_alarm(client):
-    responses.add(responses.PUT, f"{V1}/alarms/42", status=204)
+    add_contract(responses.PUT, f"{V1}/alarms/42", FORM)
     result = client.clear_alarm(42)
     assert result is None
-    assert qs(responses.calls[0].request.url)["clear"] == ["true"]
+    assert responses.calls[0].request.body == "clear=true"
 
 
 @responses.activate
 def test_escalate_alarm(client):
-    responses.add(responses.PUT, f"{V1}/alarms/42", status=204)
+    add_contract(responses.PUT, f"{V1}/alarms/42", FORM)
     result = client.escalate_alarm(42)
     assert result is None
-    assert qs(responses.calls[0].request.url)["escalate"] == ["true"]
+    assert responses.calls[0].request.body == "escalate=true"
 
 
 @responses.activate
 def test_bulk_ack_alarms(client):
-    responses.add(responses.PUT, f"{V1}/alarms", status=204)
+    add_contract(responses.PUT, f"{V1}/alarms", FORM)
     client.bulk_ack_alarms(severity="MAJOR")
-    params = qs(responses.calls[0].request.url)
-    assert params["ack"] == ["true"]
-    assert params["severity"] == ["MAJOR"]
+    body = responses.calls[0].request.body
+    assert "ack=true" in body
+    assert "severity=MAJOR" in body
 
 
 @responses.activate
 def test_bulk_unack_alarms(client):
-    responses.add(responses.PUT, f"{V1}/alarms", status=204)
+    add_contract(responses.PUT, f"{V1}/alarms", FORM)
     client.bulk_unack_alarms(nodeLabel="router01.example.com")
-    params = qs(responses.calls[0].request.url)
-    assert params["ack"] == ["false"]
-    assert params["nodeLabel"] == ["router01.example.com"]
+    body = responses.calls[0].request.body
+    assert "ack=false" in body
+    assert "nodeLabel=router01.example.com" in body
 
 
 @responses.activate
 def test_bulk_clear_alarms(client):
-    responses.add(responses.PUT, f"{V1}/alarms", status=204)
+    add_contract(responses.PUT, f"{V1}/alarms", FORM)
     client.bulk_clear_alarms(severity="CLEARED")
-    assert qs(responses.calls[0].request.url)["clear"] == ["true"]
+    assert "clear=true" in responses.calls[0].request.body
 
 
 @responses.activate
 def test_bulk_escalate_alarms(client):
-    responses.add(responses.PUT, f"{V1}/alarms", status=204)
+    add_contract(responses.PUT, f"{V1}/alarms", FORM)
     client.bulk_escalate_alarms()
-    assert qs(responses.calls[0].request.url)["escalate"] == ["true"]
+    assert "escalate=true" in responses.calls[0].request.body
 
 
 @responses.activate

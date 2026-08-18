@@ -1,7 +1,7 @@
 """Tests for EventsMixin – /rest/events."""
 import json
 import responses
-from .conftest import V1, qs
+from .conftest import FORM, V1, add_contract, qs
 from .fixtures import EVENT, EVENT_LIST
 
 NEW_EVENT = {
@@ -63,30 +63,30 @@ def test_create_event(client):
 
 @responses.activate
 def test_ack_event(client):
-    responses.add(responses.PUT, f"{V1}/events/1001", status=204)
+    add_contract(responses.PUT, f"{V1}/events/1001", FORM)
     result = client.ack_event(1001)
     assert result is None
-    assert qs(responses.calls[0].request.url)["ack"] == ["true"]
+    assert responses.calls[0].request.body == "ack=true"
 
 
 @responses.activate
 def test_unack_event(client):
-    responses.add(responses.PUT, f"{V1}/events/1001", status=204)
+    add_contract(responses.PUT, f"{V1}/events/1001", FORM)
     client.unack_event(1001)
-    assert qs(responses.calls[0].request.url)["ack"] == ["false"]
+    assert responses.calls[0].request.body == "ack=false"
 
 
 @responses.activate
 def test_bulk_ack_events(client):
-    responses.add(responses.PUT, f"{V1}/events", status=204)
+    add_contract(responses.PUT, f"{V1}/events", FORM)
     client.bulk_ack_events(nodeId=1)
-    params = qs(responses.calls[0].request.url)
-    assert params["ack"] == ["true"]
-    assert params["nodeId"] == ["1"]
+    body = responses.calls[0].request.body
+    assert "ack=true" in body
+    assert "nodeId=1" in body
 
 
 @responses.activate
 def test_bulk_unack_events(client):
-    responses.add(responses.PUT, f"{V1}/events", status=204)
+    add_contract(responses.PUT, f"{V1}/events", FORM)
     client.bulk_unack_events()
-    assert qs(responses.calls[0].request.url)["ack"] == ["false"]
+    assert responses.calls[0].request.body == "ack=false"

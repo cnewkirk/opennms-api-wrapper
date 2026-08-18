@@ -1,7 +1,7 @@
 """Tests for RequisitionsMixin – /rest/requisitions."""
 import json
 import responses
-from .conftest import V1, qs
+from .conftest import FORM, V1, add_contract, qs
 from .fixtures import (
     REQUISITION, REQUISITION_LIST, REQUISITION_NODE, REQUISITION_NODE_LIST,
     REQUISITION_INTERFACE, REQUISITION_SERVICE,
@@ -74,10 +74,10 @@ def test_import_requisition_no_rescan(client):
 
 @responses.activate
 def test_update_requisition(client):
-    responses.add(responses.PUT, f"{V1}/requisitions/Routers", status=204)
+    add_contract(responses.PUT, f"{V1}/requisitions/Routers", FORM,
+                 status=202)
     client.update_requisition("Routers", {"date-stamp": "2024-06-01"})
-    body = json.loads(responses.calls[0].request.body)
-    assert "date-stamp" in body
+    assert responses.calls[0].request.body == "date-stamp=2024-06-01"
 
 
 @responses.activate
@@ -127,11 +127,10 @@ def test_create_requisition_node(client):
 
 @responses.activate
 def test_update_requisition_node(client):
-    responses.add(responses.PUT, f"{V1}/requisitions/Routers/nodes/router01",
-                  status=204)
+    add_contract(responses.PUT, f"{V1}/requisitions/Routers/nodes/router01",
+                 FORM, status=202)
     client.update_requisition_node("Routers", "router01", {"node-label": "updated"})
-    body = json.loads(responses.calls[0].request.body)
-    assert body["node-label"] == "updated"
+    assert responses.calls[0].request.body == "node-label=updated"
 
 
 @responses.activate
@@ -168,13 +167,12 @@ def test_create_requisition_node_interface(client):
 
 @responses.activate
 def test_update_requisition_node_interface(client):
-    responses.add(responses.PUT,
-                  f"{V1}/requisitions/Routers/nodes/router01/interfaces/192.168.1.1",
-                  status=204)
+    add_contract(responses.PUT,
+                 f"{V1}/requisitions/Routers/nodes/router01/interfaces/192.168.1.1",
+                 FORM, status=202)
     client.update_requisition_node_interface("Routers", "router01",
                                              "192.168.1.1", {"snmp-primary": "S"})
-    body = json.loads(responses.calls[0].request.body)
-    assert body["snmp-primary"] == "S"
+    assert responses.calls[0].request.body == "snmp-primary=S"
 
 
 @responses.activate
