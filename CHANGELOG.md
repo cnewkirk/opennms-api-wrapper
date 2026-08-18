@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-08-17
+
+### Added
+
+- **Full Meridian 2025 endpoint coverage** (see `COVERAGE.md`) —
+  12 new endpoint groups: Status (v2), Outage Timelines, Reports,
+  Search (v2), GraphML, Grafana Endpoints, Geocoding (v2),
+  Geolocation (v2), Logs, Filesystem, Data Choices, and
+  News Feed (v2).
+- New payload types: `GrafanaEndpoint`, `ReportParameter`,
+  `ReportDeliveryOptions`, `ProductUpdateEnrollment`.
+- Binary-safe HTTP helpers (`_get_bytes`, `_post_bytes`) for
+  endpoints that stream PNG images and rendered reports.
+
+### Changed
+
+- `MapsMixin` docstrings now note that the maps REST API was removed
+  upstream in OpenNMS Horizon 16 — the methods remain for backwards
+  compatibility with pre-16 servers.
+
+### Fixed
+
+- Multipart uploads (`upload_eventconf`, `upload_filesystem_contents`)
+  no longer send `Content-Type: application/json` from the session
+  defaults, which suppressed the multipart boundary and broke
+  uploads.
+- Binary and non-JSON endpoints (timeline PNGs, rendered reports,
+  GraphML, timeline HTML) send an appropriate `Accept` header; the
+  session-wide JSON Accept caused 406 responses.
+- GraphML requests no longer carry the session
+  `Content-Type: application/json`, which the server rejects with
+  500 even on bodyless GET/DELETE.
+
 ## [0.4.5] - 2026-03-08
 
 ### Changed

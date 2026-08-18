@@ -1604,3 +1604,263 @@ JAVAMAIL_END2END = {
 }
 
 JAVAMAIL_END2END_LIST = {"end2end": [JAVAMAIL_END2END]}
+
+# ---------------------------------------------------------------------------
+# Status API (v2)
+# ---------------------------------------------------------------------------
+
+STATUS_SUMMARY = [["Normal", 42], ["Warning", 3], ["Critical", 1]]
+
+STATUS_NODE_LIST = {
+    "count": 1,
+    "offset": 0,
+    "totalCount": 1,
+    "nodes": [
+        {"id": 1, "label": "router-01", "severity": "CRITICAL"},
+    ],
+}
+
+STATUS_APPLICATION_LIST = {
+    "count": 1,
+    "offset": 0,
+    "totalCount": 1,
+    "applications": [
+        {"id": 7, "name": "Customer Portal", "severity": "WARNING"},
+    ],
+}
+
+STATUS_BUSINESS_SERVICE_LIST = {
+    "count": 1,
+    "offset": 0,
+    "totalCount": 1,
+    "business-services": [
+        {"id": 3, "name": "Email", "severity": "NORMAL"},
+    ],
+}
+
+# ---------------------------------------------------------------------------
+# Outage Timelines
+# ---------------------------------------------------------------------------
+
+TIMELINE_PNG = (
+    b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR"
+    b"\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00"
+)
+
+TIMELINE_HTML = (
+    '<img src="/opennms/rest/timeline/image/1/10.0.0.1/4'
+    '/1700000000/1700086400/500" usemap="#timeline">'
+)
+
+# ---------------------------------------------------------------------------
+# Reports API
+# ---------------------------------------------------------------------------
+
+REPORT_TEMPLATE = {
+    "id": "local_Early-Morning-Report",
+    "name": "Early morning report",
+    "description": "Global overview of outages, notifications, events",
+    "allowAccess": False,
+    "online": True,
+}
+
+REPORT_TEMPLATE_LIST = [REPORT_TEMPLATE]
+
+REPORT_TEMPLATE_DETAILS = {
+    "id": "local_Early-Morning-Report",
+    "name": "Early morning report",
+    "formats": [{"name": "PDF"}, {"name": "CSV"}],
+    "parameters": [
+        {"name": "range", "type": "date", "value": "2026-08-01"},
+    ],
+    "categories": [],
+    "timezones": ["US/Eastern", "UTC"],
+}
+
+REPORT_PDF = b"%PDF-1.4 fake report body"
+
+PERSISTED_REPORT_LIST = [
+    {
+        "id": 1,
+        "reportId": "local_Early-Morning-Report",
+        "title": "Early morning report",
+        "location": "/opt/opennms/share/reports/report.pdf",
+    },
+]
+
+SCHEDULED_REPORT = {
+    "triggerName": "report_trigger_1",
+    "reportId": "local_Early-Morning-Report",
+    "cronExpression": "0 0 6 * * ?",
+}
+
+SCHEDULED_REPORT_LIST = [SCHEDULED_REPORT]
+
+# ---------------------------------------------------------------------------
+# Search API (v2)
+# ---------------------------------------------------------------------------
+
+SEARCH_RESULTS = [
+    {
+        "context": "Node",
+        "results": [
+            {
+                "identifier": "1",
+                "label": "router-01",
+                "url": "element/node.jsp?node=1",
+                "matches": [
+                    {
+                        "id": "label",
+                        "label": "Label",
+                        "value": "router-01",
+                    },
+                ],
+                "weight": 0,
+            },
+        ],
+        "more": False,
+    },
+]
+
+# ---------------------------------------------------------------------------
+# GraphML API
+# ---------------------------------------------------------------------------
+
+GRAPHML_XML = (
+    '<?xml version="1.0" encoding="UTF-8"?>'
+    '<graphml xmlns="http://graphml.graphdrawing.org/xmlns">'
+    '<graph id="my-graph" edgedefault="undirected">'
+    '<node id="n0"/></graph></graphml>'
+)
+
+# ---------------------------------------------------------------------------
+# Grafana Endpoints API
+# ---------------------------------------------------------------------------
+
+GRAFANA_ENDPOINT = {
+    "id": 1,
+    "uid": "e2c9dc32-7c8f-4d9e-9b0a-2f0d3c1a4b5c",
+    "url": "https://grafana.example.com",
+    "apiKey": "eyJrIjoi...",
+    "description": "Production Grafana",
+    "connectTimeout": 3000,
+    "readTimeout": 3000,
+}
+
+GRAFANA_ENDPOINT_LIST = [GRAFANA_ENDPOINT]
+
+GRAFANA_DASHBOARD = {
+    "id": 25,
+    "uid": "b0d92dk4z",
+    "title": "Node performance",
+}
+
+GRAFANA_DASHBOARD_LIST = [GRAFANA_DASHBOARD]
+
+# ---------------------------------------------------------------------------
+# Geocoding API (v2)
+# ---------------------------------------------------------------------------
+
+GEOCODING_CONFIG = {"activeGeocoderId": "nominatim"}
+
+GEOCODER_LIST = [
+    {
+        "id": "nominatim",
+        "active": True,
+        "config": {"userAgent": "OpenNMS-Meridian/2025"},
+    },
+    {"id": "google", "active": False, "config": {}},
+]
+
+# ---------------------------------------------------------------------------
+# Geolocation API (v2)
+# ---------------------------------------------------------------------------
+
+GEOLOCATION_CONFIG = {
+    "tileServerName": "OpenStreetMap",
+    "tileServerUrl":
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    "options": {"attribution": "© OpenStreetMap contributors"},
+}
+
+GEOLOCATION_LIST = [
+    {
+        "nodeInfo": {"nodeId": 1, "nodeLabel": "router-01"},
+        "coordinates": {"longitude": -79.06, "latitude": 35.72},
+        "severityInfo": {"id": 5, "label": "Major"},
+        "alarmUnackedCount": 3,
+    },
+]
+
+# ---------------------------------------------------------------------------
+# Logs API
+# ---------------------------------------------------------------------------
+
+LOG_FILE_LIST = ["manager.log", "web.log", "provisiond.log"]
+
+LOG_CONTENTS = (
+    "2026-08-17 06:00:01 INFO  [Main] Manager started\n"
+    "2026-08-17 06:00:02 INFO  [Main] Startup complete"
+)
+
+# ---------------------------------------------------------------------------
+# Filesystem API
+# ---------------------------------------------------------------------------
+
+FILESYSTEM_FILE_LIST = [
+    "discovery-configuration.xml",
+    "eventconf.xml",
+    "snmp-config.xml",
+]
+
+FILESYSTEM_EXTENSIONS = ["cfg", "drl", "properties", "xml"]
+
+FILESYSTEM_HELP_MD = "# discovery-configuration.xml\n\nControls ..."
+
+FILESYSTEM_CONTENTS_XML = (
+    '<?xml version="1.0"?><discovery-configuration '
+    'packets-per-second="1"/>'
+)
+
+# ---------------------------------------------------------------------------
+# Data Choices API
+# ---------------------------------------------------------------------------
+
+USAGE_STATISTICS_REPORT = {
+    "systemId": "e0f0c9d8-1234-5678-9abc-def012345678",
+    "version": "2025.1.0",
+    "nodes": 42,
+    "alarms": 7,
+}
+
+USAGE_STATISTICS_STATUS = {
+    "enabled": True,
+    "initialNoticeAcknowledged": True,
+}
+
+USAGE_STATISTICS_META = {
+    "systemId": "Unique identifier of this OpenNMS instance",
+    "nodes": "Number of nodes in the database",
+}
+
+PRODUCT_UPDATE_STATUS = {
+    "optedIn": False,
+    "noticeAcknowledged": True,
+}
+
+# ---------------------------------------------------------------------------
+# News Feed (v2)
+# ---------------------------------------------------------------------------
+
+NEWSFEED = {
+    "items": [
+        {
+            "title": "OpenNMS Meridian 2025 released",
+            "link": "https://www.opennms.com/news/meridian-2025",
+            "categories": ["Releases"],
+            "tags": ["meridian"],
+            "description": "Meridian 2025 is now available.",
+            "shortDescription": "Meridian 2025 is out.",
+        },
+    ],
+}

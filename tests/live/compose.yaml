@@ -1,0 +1,43 @@
+# Throwaway OpenNMS Horizon instance for live-validating the wrapper.
+#
+#   colima start --cpu 2 --memory 4        # or any Docker engine
+#   docker compose -f tests/live/compose.yaml up -d
+#   # ready when this returns 200 (first boot takes a few minutes):
+#   curl -s -o /dev/null -w '%{http_code}' -u admin:admin \
+#     http://localhost:8980/opennms/rest/info
+#   OPENNMS_URL=http://localhost:8980 OPENNMS_USER=admin \
+#     OPENNMS_PASSWORD=admin python smoke_test.py
+#   docker compose -f tests/live/compose.yaml down -v
+#
+# Image tags: `foundation-2025` tracks the Meridian 2025 foundation;
+# use a numbered tag (e.g. `35.0.5`) to pin a Horizon release. Note
+# that `latest` requires an x86-64-v3 CPU on amd64 hosts.
+
+services:
+  database:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  horizon:
+    image: opennms/horizon:foundation-2025
+    depends_on:
+      database:
+        condition: service_healthy
+    command: ["-s"]
+    environment:
+      POSTGRES_HOST: database
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      OPENNMS_DBNAME: opennms
+      OPENNMS_DBUSER: opennms
+      OPENNMS_DBPASS: opennms
+    ports:
+      - "8980:8980"

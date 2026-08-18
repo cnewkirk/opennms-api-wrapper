@@ -1097,3 +1097,104 @@ class JavamailEnd2End(TypedDict, total=False):
     name: str
     readMailConfigName: str
     sendMailConfigName: str
+
+
+# ---------------------------------------------------------------------------
+# Grafana Endpoints API  (keys are camelCase)
+# ---------------------------------------------------------------------------
+
+
+class GrafanaEndpoint(TypedDict, total=False):
+    """Grafana endpoint payload for
+    :meth:`~opennms_api_wrapper.OpenNMS.create_grafana_endpoint`,
+    :meth:`~opennms_api_wrapper.OpenNMS.update_grafana_endpoint`, and
+    :meth:`~opennms_api_wrapper.OpenNMS.verify_grafana_endpoint`.
+
+    Attributes:
+        id: Numeric identifier (required when updating).
+        uid: *Required.* Unique identifier of the endpoint.
+        url: *Required.* Base URL of the Grafana instance.
+        apiKey: *Required.* Grafana API key.
+        description: Optional description.
+        connectTimeout: Connect timeout in milliseconds.
+        readTimeout: Read timeout in milliseconds.
+    """
+
+    id: int
+    uid: str
+    url: str
+    apiKey: str
+    description: str
+    connectTimeout: int
+    readTimeout: int
+
+
+# ---------------------------------------------------------------------------
+# Reports API  (keys are camelCase)
+# ---------------------------------------------------------------------------
+
+
+class ReportParameter(TypedDict, total=False):
+    """Report parameter payload for
+    :meth:`~opennms_api_wrapper.OpenNMS.run_report`,
+    :meth:`~opennms_api_wrapper.OpenNMS.deliver_report`, and
+    :meth:`~opennms_api_wrapper.OpenNMS.schedule_report`.
+
+    Attributes:
+        name: *Required.* Parameter name from the report template.
+        type: *Required.* Parameter type: ``"string"``, ``"integer"``,
+            ``"float"``, ``"double"``, ``"timezone"``, or ``"date"``.
+        value: Parameter value; shape depends on ``type``.
+    """
+
+    name: str
+    type: str
+    value: Any
+
+
+class ReportDeliveryOptions(TypedDict, total=False):
+    """Report delivery options payload for
+    :meth:`~opennms_api_wrapper.OpenNMS.deliver_report` and
+    :meth:`~opennms_api_wrapper.OpenNMS.schedule_report`.
+
+    Attributes:
+        instanceId: *Required.* Identifier for the report instance.
+        sendMail: Deliver the report via email.
+        mailTo: Recipient address (required if ``sendMail``).
+        webhook: Deliver the report via HTTP POST.
+        webhookUrl: Webhook target URL (required if ``webhook``).
+        persist: Store the report on the server.
+        format: Delivery format override.
+    """
+
+    instanceId: str
+    sendMail: bool
+    mailTo: str
+    webhook: bool
+    webhookUrl: str
+    persist: bool
+    format: str
+
+
+# ---------------------------------------------------------------------------
+# Data Choices API  (keys are camelCase)
+# ---------------------------------------------------------------------------
+
+
+class ProductUpdateEnrollment(TypedDict, total=False):
+    """Product-update enrollment form payload for
+    :meth:`~opennms_api_wrapper.OpenNMS.submit_product_update_enrollment`.
+
+    Attributes:
+        consent: *Required.* Consent to the enrollment.
+        firstName: First name.
+        lastName: Last name.
+        email: Contact email address.
+        company: Company name.
+    """
+
+    consent: bool
+    firstName: str
+    lastName: str
+    email: str
+    company: str
