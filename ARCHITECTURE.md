@@ -56,7 +56,7 @@ inheritance, exposing a single flat namespace to callers.
 **Mitigations in place**
 - Method names are prefixed by resource group, making accidental collision
   very unlikely.
-- `CLAUDE.md` documents the convention explicitly for future contributors.
+- `AGENTS.md` documents the convention explicitly for future contributors.
 
 ---
 
