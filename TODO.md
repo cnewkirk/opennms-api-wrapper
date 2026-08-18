@@ -1,25 +1,15 @@
 # TODO
 
-Items deferred for a future session.
-
-## Meridian 2025 coverage gaps — done
-
-All gaps from the audit in `COVERAGE.md`
-([#44](https://github.com/cnewkirk/opennms-api-wrapper/issues/44))
-were implemented in
-[#46](https://github.com/cnewkirk/opennms-api-wrapper/issues/46):
-12 new mixins, plus backwards-compatibility annotations on
-`MapsMixin` (the maps API was removed upstream in Horizon 16).
-`COVERAGE.md` has the current matrix.
+Deferred items.
 
 ## Write-mode smoke tests
 
 `smoke_test.py --write` has not yet been validated against a live server.
-The read-only path is validated against Meridian 2024.3.0; write mode
-creates and deletes objects (events, categories, groups, requisitions, maps,
-etc.) and needs a dedicated dev or staging instance to run safely.
+Write mode creates and deletes objects (events, categories, groups,
+requisitions, etc.), so use the throwaway instance from
+`tests/live/compose.yaml`, never a production server.
 
-- Run `python smoke_test.py --write --yes` against a non-production server
+- Run `python smoke_test.py --write --yes` against the compose instance
 - Fix any failures, then update the README/docs validation note from
   "write mode untested live" to the confirmed version
 

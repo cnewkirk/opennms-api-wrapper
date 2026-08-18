@@ -9,11 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Full Meridian 2025 endpoint coverage** — 12 new endpoint groups,
-  closing every gap found in the coverage audit (`COVERAGE.md`):
-  Status (v2), Outage Timelines, Reports, Search (v2), GraphML,
-  Grafana Endpoints, Geocoding (v2), Geolocation (v2), Logs,
-  Filesystem, Data Choices, and News Feed (v2).
+- **Full Meridian 2025 endpoint coverage** (see `COVERAGE.md`) —
+  12 new endpoint groups: Status (v2), Outage Timelines, Reports,
+  Search (v2), GraphML, Grafana Endpoints, Geocoding (v2),
+  Geolocation (v2), Logs, Filesystem, Data Choices, and
+  News Feed (v2).
 - New payload types: `GrafanaEndpoint`, `ReportParameter`,
   `ReportDeliveryOptions`, `ProductUpdateEnrollment`.
 - Binary-safe HTTP helpers (`_get_bytes`, `_post_bytes`) for
@@ -27,21 +27,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-All three fixes below were found by validating against a live
-Meridian 2025 foundation instance (Horizon 34.0.1 via
-`tests/live/compose.yaml`):
-
-- Multipart uploads (`upload_eventconf`, new
-  `upload_filesystem_contents`) no longer send
-  `Content-Type: application/json` from the session defaults, which
-  suppressed the multipart boundary and broke uploads against live
-  servers.
+- Multipart uploads (`upload_eventconf`, `upload_filesystem_contents`)
+  no longer send `Content-Type: application/json` from the session
+  defaults, which suppressed the multipart boundary and broke
+  uploads.
 - Binary and non-JSON endpoints (timeline PNGs, rendered reports,
-  GraphML, timeline HTML) now send an appropriate `Accept` header —
-  the session-wide JSON Accept caused live 406s.
+  GraphML, timeline HTML) send an appropriate `Accept` header; the
+  session-wide JSON Accept caused 406 responses.
 - GraphML requests no longer carry the session
-  `Content-Type: application/json` — the live server returns 500 for
-  any GraphML request bearing it, even bodyless GET/DELETE.
+  `Content-Type: application/json`, which the server rejects with
+  500 even on bodyless GET/DELETE.
 
 ## [0.4.5] - 2026-03-08
 
