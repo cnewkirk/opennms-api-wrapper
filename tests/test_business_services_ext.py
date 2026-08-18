@@ -4,7 +4,7 @@ import responses
 from .conftest import V2
 from .fixtures import (
     BS_EDGE, BS_MAP_FUNCTION, BS_MAP_FUNCTIONS,
-    BS_REDUCE_FUNCTION, BS_REDUCE_FUNCTIONS, BUSINESS_SERVICE,
+    BS_REDUCE_FUNCTION, BS_REDUCE_FUNCTIONS,
 )
 
 

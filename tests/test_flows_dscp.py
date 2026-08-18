@@ -2,7 +2,7 @@
 import responses
 from .conftest import V1, qs
 from .fixtures import (
-    FLOW_DSCP, FLOW_DSCP_ENUMERATE, FLOW_DSCP_SERIES, FLOW_GRAPH_URL,
+    FLOW_DSCP, FLOW_DSCP_ENUMERATE, FLOW_DSCP_SERIES,
 )
 
 

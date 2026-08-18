@@ -1,7 +1,7 @@
 """Tests for ResourcesMixin – /rest/resources."""
 import responses
 from .conftest import V1, qs
-from .fixtures import RESOURCE, RESOURCE_TREE
+from .fixtures import RESOURCE_TREE
 
 
 @responses.activate
