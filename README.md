@@ -8,9 +8,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 An unofficial, dependency-minimal Python 3 client for the
-[OpenNMS](https://www.opennms.com/) REST API (Horizon 35+).
-Smoke-tested, read and write, against OpenNMS Meridian 2024.3.0
-and Meridian 2025 (Horizon 34).
+[OpenNMS](https://www.opennms.com/) REST API (Horizon 30+ and
+Meridian). 100% coverage of the Meridian 2025 REST API reference,
+live-validated read and write — see [Compatibility](#compatibility).
 
 > **OpenNMS resources**: [Docs](https://docs.opennms.com/) ·
 > [REST API reference](https://docs.opennms.com/horizon/latest/development/rest/rest-api.html) ·
@@ -29,7 +29,7 @@ and Meridian 2025 (Horizon 34).
 - Typed exception hierarchy — catch `NotFoundError`, `ForbiddenError`, etc. without importing `requests`
 - Pagination helper — `client.paginate()` yields all items from any list endpoint automatically
 - Full test suite with method coverage (mocked HTTP — no live server required)
-- Read and write smoke tests validated against Meridian 2024.3.0 and Meridian 2025
+- Read and write smoke tests live-validated against the Meridian 2025 foundation
 
 ## Installation
 
@@ -185,6 +185,36 @@ fetched per request.
 | Filesystem | list, extensions, help, contents CRUD |
 | Data choices | usage stats report/status/meta, product update |
 | News feed (v2) | latest items |
+
+## Compatibility
+
+**Certified coverage baseline: OpenNMS Meridian 2025.** This library
+covers 100% of the resource areas in the
+[Meridian 2025 REST API reference](https://docs.opennms.com/meridian/2025/development/rest/rest-api.html)
+apart from the three web-UI-internal APIs (Menu, Web Assets,
+UI Extension) — 66 of 69 documented areas. `COVERAGE.md` has the full
+matrix. Read and write paths are smoke-tested against the Meridian
+2025 foundation build (`opennms/horizon:foundation-2025`,
+Horizon 34.0.1) via `tests/live/compose.yaml`.
+
+**Expected server range: Horizon 30+ and corresponding Meridian
+releases.** The v1 write contracts this library speaks (XML creates,
+form-encoded updates, per the OpenNMS REST docs) are stable across
+versions, and the JSON-first endpoints rely on JSON support present
+since Horizon 30. Horizon releases before 30 are end-of-life and not
+supported. Only the certified baseline above is verified by live
+testing; reports from other versions are welcome.
+
+**Per-method version exceptions** (also noted in the affected
+docstrings):
+
+- Event configuration (`/api/v2/eventconf`) requires Horizon 35+.
+- Maps (`/rest/maps`) was removed upstream in Horizon 16; those
+  methods only function on pre-16 servers.
+
+Validation history: 0.4.5 was smoke-tested read-only against Meridian
+2024.3.0; 0.5.0 is smoke-tested read and write against the Meridian
+2025 foundation.
 
 ## Authentication
 

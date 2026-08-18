@@ -6,7 +6,9 @@ picks it up automatically.
 
 ## Project purpose
 
-A thin, synchronous Python 3 wrapper for the OpenNMS REST API (Horizon 35).
+A thin, synchronous Python 3 wrapper for the OpenNMS REST API
+(Horizon 30+ and Meridian; coverage baseline is Meridian 2025 — see
+COVERAGE.md and the README Compatibility section).
 Users `import opennms_api_wrapper as opennms` and get a single `OpenNMS`
 client class with one method per API endpoint.
 
@@ -39,7 +41,7 @@ opennms_api_wrapper/    # installable package
 
 tests/
     conftest.py         # client fixture, V1/V2 URL constants, qs() helper
-    fixtures.py         # accurate OpenNMS Horizon 35 response shapes
+    fixtures.py         # response shapes mirroring real OpenNMS output
     test_*.py           # one file per mixin
 
 docs/                   # MkDocs source (mkdocs-material + mkdocstrings)
@@ -151,8 +153,8 @@ the smoke-test SSL rule above applies to real servers, not this one.
   - `V1 = "http://opennms:8980/opennms/rest"`
   - `V2 = "http://opennms:8980/opennms/api/v2"`
   - `qs(url)` parses query params from a URL into a dict of lists.
-- Fixture shapes in `tests/fixtures.py` mirror real OpenNMS Horizon 35
-  responses (singular resource name as list wrapper key, plus `totalCount`,
+- Fixture shapes in `tests/fixtures.py` mirror real OpenNMS
+  responses (validated against the Meridian 2025 foundation) (singular resource name as list wrapper key, plus `totalCount`,
   `count`, `offset`).
 - **URL encoding gotcha**: `requests` percent-encodes spaces in URL path
   segments as `%20`, not `+`. Mock URLs for paths with spaces must use `%20`

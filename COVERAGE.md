@@ -2,7 +2,9 @@
 
 What the wrapper covers, measured against the OpenNMS
 [Meridian 2025 REST API documentation](https://docs.opennms.com/meridian/2025/development/rest/rest-api.html)
-index.
+index — the certified coverage baseline. Read and write paths are
+live-validated against the Meridian 2025 foundation build
+(`opennms/horizon:foundation-2025`, Horizon 34.0.1).
 
 ## Summary
 
