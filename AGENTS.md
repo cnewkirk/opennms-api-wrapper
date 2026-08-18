@@ -118,9 +118,11 @@ throwaway stack in `tests/live/compose.yaml` **on the local machine**
 ```bash
 colima start --cpu 2 --memory 4     # or any local Docker engine
 docker compose -f tests/live/compose.yaml up -d
-# ready when this returns 200 (first boot takes a few minutes):
+# ready when this returns 200 (first boot takes a few minutes;
+# /rest/health, not /rest/info — Karaf features register after Jetty
+# is up, and /rest/info answers before endpoints like health/cm exist):
 curl -s -o /dev/null -w '%{http_code}' -u admin:admin \
-  http://localhost:8980/opennms/rest/info
+  http://localhost:8980/opennms/rest/health
 OPENNMS_URL=http://localhost:8980 OPENNMS_USER=admin \
   OPENNMS_PASSWORD=admin python smoke_test.py
 docker compose -f tests/live/compose.yaml down -v   # always tear down
