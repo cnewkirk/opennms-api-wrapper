@@ -2,16 +2,13 @@
 
 Deferred items.
 
-## Write-mode smoke tests
+## Extend write-mode smoke coverage to every write method
 
-`smoke_test.py --write` has not yet been validated against a live server.
-Write mode creates and deletes objects (events, categories, groups,
-requisitions, etc.), so use the throwaway instance from
-`tests/live/compose.yaml`, never a production server.
-
-- Run `python smoke_test.py --write --yes` against the compose instance
-- Fix any failures, then update the README/docs validation note from
-  "write mode untested live" to the confirmed version
+`smoke_test.py --write` exercises a representative subset. Mocked
+tests cannot prove server compatibility, so each write method not yet
+in the smoke run (chiefly v2 writes and the node/interface/KSC
+lifecycle) should be added so the compose-instance run covers the
+full write surface.
 
 ## Pre-commit config
 
@@ -28,12 +25,6 @@ repos:
 
 Update `CONTRIBUTING.md` to mention `pre-commit install` as an optional
 setup step.
-
-## Development Status classifier
-
-`pyproject.toml` currently declares `Development Status :: 4 - Beta`.
-Consider upgrading to `5 - Production/Stable` once write-mode smoke tests
-pass against a live server.
 
 ## OpenNMS Discourse announcement
 

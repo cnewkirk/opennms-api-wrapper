@@ -60,22 +60,29 @@ inheritance, exposing a single flat namespace to callers.
 
 ---
 
-## ADR-002 · JSON-only I/O; no XML support
+## ADR-002 · JSON-first I/O; no XML parsing
 
 ### Status
 Accepted
 
 ### Context
 The OpenNMS v1 REST API historically required XML for many write operations
-(create node, create foreign source, create user, …) and returned XML by
-default.  The v2 API is JSON-first.  Modern Horizon releases (30+) accept
-JSON on all endpoints via `Accept: application/json` /
-`Content-Type: application/json`.
+and returned XML by default.  The v2 API is JSON-first, and most v1
+endpoints accept JSON via `Accept: application/json` /
+`Content-Type: application/json`.  A handful of v1 endpoints reject JSON
+on every OpenNMS version: `POST /rest/groups` and `POST /rest/users`
+consume only `application/xml`, their `PUT` counterparts consume only
+form-encoded bodies, `POST /rest/acks` consumes only form-encoded bodies,
+and `/rest/graphml` speaks GraphML (an XML format) exclusively.
 
 ### Decision
 Set `Accept: application/json` and `Content-Type: application/json` as
-session-level defaults.  Emit and parse JSON exclusively.  No XML handling
-code anywhere in the library.
+session-level defaults.  Emit and parse JSON everywhere the server allows
+it.  For the endpoints that reject JSON, the affected mixins send the
+required content type internally (tiny generated XML for group/user
+creation, form encoding for the others, opaque XML pass-through for
+GraphML) — callers always pass and receive plain Python values.  No XML
+parsing code anywhere in the library.
 
 ### Consequences
 
@@ -89,14 +96,14 @@ code anywhere in the library.
 
 **Cons**
 - Callers on Horizon < 30 may receive HTTP 415 (Unsupported Media Type) on
-  certain write endpoints.  This is documented in the affected method
+  some JSON write endpoints.  This is documented in the affected method
   docstrings with a suggested workaround.
-- No fallback path: there is no way to opt into XML without forking the
-  library.
+- No general XML path: an endpoint newly discovered to reject JSON needs
+  its mixin updated to one of the internal non-JSON body mechanisms.
 
 **Risk level**
-Low.  All Horizon 30+ instances (released 2022) support JSON fully.
-Horizon < 30 is end-of-life.
+Low.  Horizon < 30 is end-of-life, and the known JSON-rejecting endpoints
+are handled internally.
 
 ---
 

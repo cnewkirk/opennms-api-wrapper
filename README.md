@@ -9,7 +9,8 @@
 
 An unofficial, dependency-minimal Python 3 client for the
 [OpenNMS](https://www.opennms.com/) REST API (Horizon 35+).
-Read-only smoke test validated against OpenNMS Meridian 2024.3.0.
+Smoke-tested, read and write, against OpenNMS Meridian 2024.3.0
+and Meridian 2025 (Horizon 34).
 
 > **OpenNMS resources**: [Docs](https://docs.opennms.com/) ·
 > [REST API reference](https://docs.opennms.com/horizon/latest/development/rest/rest-api.html) ·
@@ -20,14 +21,15 @@ Read-only smoke test validated against OpenNMS Meridian 2024.3.0.
 ## Features
 
 - Covers every v1 (`/opennms/rest/`) and v2 (`/opennms/api/v2/`) endpoint
-- JSON everywhere — no XML handling required
+- Plain dicts in, plain dicts out — the few endpoints that require XML
+  or form-encoded bodies are handled internally
 - Single runtime dependency: [`requests`](https://docs.python-requests.org/)
 - Synchronous and straightforward — no async complexity
 - `TypedDict` schemas for all write payloads — field names, types, and docs in your IDE
 - Typed exception hierarchy — catch `NotFoundError`, `ForbiddenError`, etc. without importing `requests`
 - Pagination helper — `client.paginate()` yields all items from any list endpoint automatically
 - Full test suite with method coverage (mocked HTTP — no live server required)
-- Read-only smoke test validated against Meridian 2024.3.0 (write mode untested live)
+- Read and write smoke tests validated against Meridian 2024.3.0 and Meridian 2025
 
 ## Installation
 
@@ -222,11 +224,11 @@ python smoke_test.py
 ```
 
 **Write mode** creates and then deletes objects on the server (events,
-categories, groups, requisitions, maps, etc.).  It will prompt for explicit
+categories, groups, requisitions, etc.).  It will prompt for explicit
 confirmation and print the target URL before running a single write.
-**Only use write mode against a dev or staging instance — never production.**
-Write mode has not yet been validated against a live server — reports and
-contributions welcome.
+**Only use write mode against a dev or staging instance — never
+production.** The throwaway instance in `tests/live/compose.yaml` is a
+safe target.
 
 ```bash
 python smoke_test.py --write          # interactive prompt required

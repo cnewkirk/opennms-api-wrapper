@@ -25,7 +25,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   upstream in OpenNMS Horizon 16 — the methods remain for backwards
   compatibility with pre-16 servers.
 
+### Changed
+
+- Development status classifier raised to Production/Stable.
+
 ### Fixed
+
+- **All v1 write endpoints now send the media types the OpenNMS
+  REST API documents**, instead of JSON the server rejects with 415:
+  XML for creates (`create_node`, `create_node_ip_interface`,
+  `create_node_snmp_interface`, `add_node_category`,
+  `create_ksc_report`, `create_group`, `create_user`,
+  `associate_category_with_node`), form encoding for updates
+  (`update_node`, `update_node_ip_interface`,
+  `update_node_snmp_interface`, `update_node_category`,
+  `update_node_asset_record`, `update_node_hardware_entity`,
+  `update_category`, `update_requisition`, `update_requisition_node`,
+  `update_requisition_node_interface`, `update_foreign_source`,
+  `update_group`, `update_user`), and form-encoded flags for
+  alarm/event operations (`ack_alarm`, `unack_alarm`, `clear_alarm`,
+  `escalate_alarm`, the bulk variants, `ack_event`, `unack_event`,
+  bulk event acks). None of these calls could previously succeed
+  against any OpenNMS version, so no working behavior changes.
+  Callers still pass plain dicts; update keys are bean property
+  names (e.g. ``fullName`` for `update_user`).
+- `rescan_node` uses `PUT` as the API defines (it sent `POST`,
+  which the server rejects with 405).
+- `update_ksc_report` is replaced by `add_graph_to_ksc_report` —
+  `PUT /rest/ksc/{id}` is documented as "add a graph to the existing
+  report" via query parameters; a whole-report update operation does
+  not exist upstream, so the old method could never function.
+- Mocked tests for these endpoints now enforce the documented
+  Content-Type via `add_contract()` (415 on anything else, as the
+  live server responds), so this defect class fails unit tests
+  instead of passing silently.
+- `Event.parms` is documented and typed as a list of
+  ``{"parmName", "value"}`` entries. The wrapper always passed
+  `parms` through verbatim; the previously documented XML-style
+  ``{"parm": [...]}`` wrapper was rejected by the server with 500.
 
 - Multipart uploads (`upload_eventconf`, `upload_filesystem_contents`)
   no longer send `Content-Type: application/json` from the session

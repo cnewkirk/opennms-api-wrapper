@@ -1,7 +1,6 @@
 """Tests for GroupsMixin – /rest/groups."""
-import json
 import responses
-from .conftest import V1
+from .conftest import FORM, V1, XML, add_contract
 from .fixtures import GROUP, GROUP_LIST, GROUP_USER_LIST, GROUP_CATEGORY_LIST
 
 
@@ -22,19 +21,29 @@ def test_get_group(client):
 
 @responses.activate
 def test_create_group(client):
-    responses.add(responses.POST, f"{V1}/groups", json=GROUP, status=201)
+    add_contract(responses.POST, f"{V1}/groups", XML, status=201,
+                 json_body=GROUP)
     client.create_group({"name": "network-ops", "comments": "Network operations team"})
-    body = json.loads(responses.calls[0].request.body)
-    assert body["name"] == "network-ops"
-    assert responses.calls[0].request.headers["Content-Type"] == "application/json"
+    request = responses.calls[0].request
+    assert request.body == (
+        "<group><name>network-ops</name>"
+        "<comments>Network operations team</comments></group>")
+
+
+@responses.activate
+def test_create_group_with_members(client):
+    add_contract(responses.POST, f"{V1}/groups", XML, status=201)
+    client.create_group({"name": "ops", "user": ["alice", "bob"]})
+    assert responses.calls[0].request.body == (
+        "<group><name>ops</name>"
+        "<user>alice</user><user>bob</user></group>")
 
 
 @responses.activate
 def test_update_group(client):
-    responses.add(responses.PUT, f"{V1}/groups/network-ops", status=204)
+    add_contract(responses.PUT, f"{V1}/groups/network-ops", FORM)
     client.update_group("network-ops", {"comments": "Updated comment"})
-    body = json.loads(responses.calls[0].request.body)
-    assert body["comments"] == "Updated comment"
+    assert responses.calls[0].request.body == "comments=Updated+comment"
 
 
 @responses.activate

@@ -1,8 +1,19 @@
 """Nodes REST API – /rest/nodes and sub-resources."""
 from __future__ import annotations
+from xml.sax.saxutils import escape, quoteattr
+
 from ._base import _OpenNMSBase
 from typing import Any, Optional
 from .types import Node, NodeIpInterface, NodeSnmpInterface, NodeAssetRecord, HardwareEntity, Category
+
+
+def _xml(tag, data, attr_keys, elem_keys):
+    """Serialize *data* into a flat JAXB-shaped XML element."""
+    attrs = "".join(f" {k}={quoteattr(str(data[k]))}"
+                    for k in attr_keys if k in data)
+    elems = "".join(f"<{k}>{escape(str(data[k]))}</{k}>"
+                    for k in elem_keys if k in data)
+    return f"<{tag}{attrs}>{elems}</{tag}>"
 
 
 class NodesMixin(_OpenNMSBase):
@@ -61,20 +72,27 @@ class NodesMixin(_OpenNMSBase):
                         "sysContact": "ops@example.com",
                     }
 
-        Note: The OpenNMS v1 nodes endpoint traditionally required XML.
-        Modern Horizon releases (30+) accept JSON. If your server returns
-        415, use the requisitions API instead (``create_requisition_node()``).
+        The body is sent as XML — the nodes API documents "POST
+        requires XML using application/xml as its Content-Type".
+        For provisioning, prefer the requisitions API
+        (``create_requisition_node()``).
         """
-        return self._post("nodes", json_data=node)
+        xml = _xml("node", node,
+                   ("label", "type", "foreignSource", "foreignId"),
+                   ("labelSource", "sysObjectId", "sysName",
+                    "sysDescription", "sysLocation", "sysContact",
+                    "location"))
+        return self._post_text("nodes", xml, "application/xml")
 
     def update_node(self, node_id, node: Node):
         """Update node properties (PUT /rest/nodes/{id}).
 
         Args:
             node_id: Node database ID or ``"foreignSource:foreignId"``.
-            node: Dict of node fields to change.
+            node: Dict of node fields to change. Sent form-encoded —
+                the nodes API documents "PUT requires form data".
         """
-        return self._put(f"nodes/{node_id}", json_data=node)
+        return self._put(f"nodes/{node_id}", form_data=node)
 
     def delete_node(self, node_id):
         """Delete a node (async – returns 202 Accepted)."""
@@ -82,7 +100,7 @@ class NodesMixin(_OpenNMSBase):
 
     def rescan_node(self, node_id):
         """Trigger a capability scan of *node_id* for new interfaces/services."""
-        return self._post(f"nodes/{node_id}/rescan")
+        return self._put(f"nodes/{node_id}/rescan", form_data={})
 
     # ==================================================================
     # IP Interfaces
@@ -114,8 +132,14 @@ class NodesMixin(_OpenNMSBase):
             interface: Interface dict. Example::
 
                 {"ipAddress": "192.168.0.1", "snmpPrimary": "P", "isManaged": "M"}
+
+        The body is sent as XML (required by the v1 nodes API).
         """
-        return self._post(f"nodes/{node_id}/ipinterfaces", json_data=interface)
+        xml = _xml("ipInterface", interface,
+                   ("ifIndex", "isManaged", "snmpPrimary"),
+                   ("ipAddress", "hostName"))
+        return self._post_text(f"nodes/{node_id}/ipinterfaces", xml,
+                               "application/xml")
 
     def update_node_ip_interface(self, node_id, ip_address: str, interface: NodeIpInterface):
         """Update an IP interface.
@@ -123,10 +147,11 @@ class NodesMixin(_OpenNMSBase):
         Args:
             node_id: Node database ID or ``"foreignSource:foreignId"``.
             ip_address: IP address of the interface to update.
-            interface: Dict of interface fields to change.
+            interface: Dict of interface fields to change. Sent
+                form-encoded (required by the v1 nodes API).
         """
         return self._put(f"nodes/{node_id}/ipinterfaces/{ip_address}",
-                         json_data=interface)
+                         form_data=interface)
 
     def delete_node_ip_interface(self, node_id, ip_address: str):
         """Delete an IP interface (async – returns 202 Accepted)."""
@@ -191,8 +216,23 @@ class NodesMixin(_OpenNMSBase):
         Args:
             node_id: Node database ID or ``"foreignSource:foreignId"``.
             interface: SNMP interface attribute dict.
+
+        The body is sent as XML (required by the v1 nodes API).
+        The ``collect`` and ``poll`` keys map to the ``collectFlag``
+        and ``pollFlag`` XML attributes.
         """
-        return self._post(f"nodes/{node_id}/snmpinterfaces", json_data=interface)
+        payload = dict(interface)
+        if "collect" in payload:
+            payload["collectFlag"] = payload.pop("collect")
+        if "poll" in payload:
+            payload["pollFlag"] = payload.pop("poll")
+        xml = _xml("snmpInterface", payload,
+                   ("ifIndex", "collectFlag", "pollFlag"),
+                   ("ifDescr", "ifName", "ifAlias", "ifType",
+                    "ifSpeed", "ifAdminStatus", "ifOperStatus",
+                    "netMask", "physAddr"))
+        return self._post_text(f"nodes/{node_id}/snmpinterfaces", xml,
+                               "application/xml")
 
     def update_node_snmp_interface(self, node_id, ifindex: int, interface: NodeSnmpInterface):
         """Update an SNMP interface.
@@ -200,10 +240,11 @@ class NodesMixin(_OpenNMSBase):
         Args:
             node_id: Node database ID or ``"foreignSource:foreignId"``.
             ifindex: SNMP ifIndex of the interface to update.
-            interface: Dict of interface fields to change.
+            interface: Dict of interface fields to change. Sent
+                form-encoded (required by the v1 nodes API).
         """
         return self._put(f"nodes/{node_id}/snmpinterfaces/{ifindex}",
-                         json_data=interface)
+                         form_data=interface)
 
     def delete_node_snmp_interface(self, node_id, ifindex: int):
         """Delete an SNMP interface (sync – returns 204)."""
@@ -227,8 +268,12 @@ class NodesMixin(_OpenNMSBase):
         Args:
             node_id: Node database ID or ``"foreignSource:foreignId"``.
             category: Category dict. Example: ``{"name": "Production"}``
+
+        The body is sent as XML (required by the v1 nodes API).
         """
-        return self._post(f"nodes/{node_id}/categories", json_data=category)
+        xml = _xml("category", category, ("name",), ("description",))
+        return self._post_text(f"nodes/{node_id}/categories", xml,
+                               "application/xml")
 
     def update_node_category(self, node_id, category: str, data: Category):
         """Update a category association for *node_id*.
@@ -236,9 +281,11 @@ class NodesMixin(_OpenNMSBase):
         Args:
             node_id: Node database ID or ``"foreignSource:foreignId"``.
             category: Category name to update.
-            data: Dict of category fields to change.
+            data: Dict of category fields to change. Sent
+                form-encoded (required by the v1 nodes API).
         """
-        return self._put(f"nodes/{node_id}/categories/{category}", json_data=data)
+        return self._put(f"nodes/{node_id}/categories/{category}",
+                         form_data=data)
 
     def delete_node_category(self, node_id, category: str):
         """Remove a category from *node_id* (sync – returns 204)."""
@@ -260,9 +307,10 @@ class NodesMixin(_OpenNMSBase):
             asset: Dict of asset fields to change. Common fields:
                 ``description``, ``building``, ``floor``, ``room``, ``rack``,
                 ``vendor``, ``modelNumber``, ``serialNumber``,
-                ``operatingSystem``, etc.
+                ``operatingSystem``, etc. Sent form-encoded
+                (required by the v1 nodes API).
         """
-        return self._put(f"nodes/{node_id}/assetRecord", json_data=asset)
+        return self._put(f"nodes/{node_id}/assetRecord", form_data=asset)
 
     # ==================================================================
     # Hardware Inventory
@@ -292,11 +340,12 @@ class NodesMixin(_OpenNMSBase):
         Args:
             node_id: Node database ID or ``"foreignSource:foreignId"``.
             ent_physical_index: ENTITY-MIB entPhysicalIndex of the entity.
-            data: Dict of entity fields to change.
+            data: Dict of entity fields to change. Sent form-encoded
+                (required by the v1 nodes API).
         """
         return self._put(
             f"nodes/{node_id}/hardwareInventory/{ent_physical_index}",
-            json_data=data,
+            form_data=data,
         )
 
     def delete_node_hardware_entity(self, node_id, ent_physical_index: int):

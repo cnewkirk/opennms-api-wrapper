@@ -1,6 +1,26 @@
 """KSC Reports REST API – /rest/ksc."""
+from __future__ import annotations
+from xml.sax.saxutils import quoteattr
+
 from ._base import _OpenNMSBase
+from typing import Any, Optional
 from .types import KscReport
+
+_GRAPH_ATTRS = ("title", "timespan", "graphtype", "resourceId",
+                "nodeId", "nodeSource", "domain", "interfaceId",
+                "extlink")
+
+
+def _attrs(data, keys) -> str:
+    """Serialize *keys* of *data* as XML attributes."""
+    parts = []
+    for key in keys:
+        if key in data:
+            value = data[key]
+            if isinstance(value, bool):
+                value = str(value).lower()
+            parts.append(f" {key}={quoteattr(str(value))}")
+    return "".join(parts)
 
 
 class KscReportsMixin(_OpenNMSBase):
@@ -18,6 +38,9 @@ class KscReportsMixin(_OpenNMSBase):
 
     def create_ksc_report(self, report: KscReport):
         """Create a new KSC report.
+
+        The body is sent as XML — the KSC API documents "Create a
+        report from an XML payload" with ``application/xml``.
 
         Args:
             report: KSC report definition dict. Example::
@@ -38,14 +61,39 @@ class KscReportsMixin(_OpenNMSBase):
                     ],
                 }
         """
-        return self._post("ksc", json_data=report)
+        attrs = _attrs(report, ("id", "label", "show_timespan_button",
+                                "show_graphtype_button",
+                                "graphs_per_line"))
+        graphs = "".join(
+            f"<kscGraph{_attrs(graph, _GRAPH_ATTRS)}/>"
+            for graph in report.get("graphs", []))
+        xml = f"<kscReport{attrs}>{graphs}</kscReport>"
+        return self._post_text("ksc", xml, "application/xml")
 
-    def update_ksc_report(self, report_id: int, report: KscReport):
-        """Modify an existing KSC report.
+    def add_graph_to_ksc_report(self, report_id: int, report_name: str,
+                                resource_id: str,
+                                title: Optional[str] = None,
+                                timespan: Optional[str] = None):
+        """Add a graph to an existing KSC report.
+
+        Mirrors ``PUT /rest/ksc/{reportid}``, which the KSC API
+        documents as "Add a graph to the existing report with the
+        given ID", built from query parameters.
 
         Args:
-            report_id: Database ID of the KSC report to update.
-            report: Updated report definition dict (same structure as
-                ``create_ksc_report()``).
+            report_id: Database ID of the KSC report.
+            report_name: The graph definition's ``report.name`` from
+                ``snmp-graph.properties.d``.
+            resource_id: The time-series resource ID to graph.
+            title: Optional graph title.
+            timespan: Optional timespan (server default ``7_day``).
         """
-        return self._put(f"ksc/{report_id}", json_data=report)
+        params: dict[str, Any] = {
+            "reportName": report_name,
+            "resourceId": resource_id,
+        }
+        if title is not None:
+            params["title"] = title
+        if timespan is not None:
+            params["timespan"] = timespan
+        return self._put(f"ksc/{report_id}", params=params)

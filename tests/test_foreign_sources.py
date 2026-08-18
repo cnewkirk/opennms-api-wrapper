@@ -1,7 +1,7 @@
 """Tests for ForeignSourcesMixin – /rest/foreignSources."""
 import json
 import responses
-from .conftest import V1
+from .conftest import FORM, V1, add_contract
 from .fixtures import (
     FOREIGN_SOURCE, FOREIGN_SOURCE_LIST,
     FOREIGN_SOURCE_DETECTOR, FOREIGN_SOURCE_POLICY,
@@ -61,11 +61,9 @@ def test_create_foreign_source(client):
 
 @responses.activate
 def test_update_foreign_source(client):
-    responses.add(responses.PUT, f"{V1}/foreignSources/Routers",
-                  status=204)
-    client.update_foreign_source("Routers", {**FOREIGN_SOURCE, "scan-interval": "12h"})
-    body = json.loads(responses.calls[0].request.body)
-    assert body["scan-interval"] == "12h"
+    add_contract(responses.PUT, f"{V1}/foreignSources/Routers", FORM)
+    client.update_foreign_source("Routers", {"scan-interval": "12h"})
+    assert responses.calls[0].request.body == "scan-interval=12h"
 
 
 @responses.activate

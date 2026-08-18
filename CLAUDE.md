@@ -71,11 +71,17 @@ OpenNMSError
 
 - **Mixin pattern**: each resource group lives in its own `_<name>.py` mixin.
   `client.py` combines them all via multiple inheritance into `OpenNMS`.
-- **JSON only**: all request bodies are JSON. No XML parsing or
-  building anywhere. Two exceptions the OpenNMS API forces:
-  `POST /rest/acks` uses `application/x-www-form-urlencoded`
-  (via `form_data=` in `_post`), and `/rest/graphml` passes GraphML
-  documents through as opaque XML strings (via `_post_text`/`_get_text`).
+- **JSON first**: request bodies are JSON wherever the server accepts
+  it. No XML parsing anywhere. Exceptions the OpenNMS API forces
+  (v1 endpoints that reject JSON on every version):
+  - `POST /rest/acks` — form-encoded (`form_data=` in `_post`).
+  - `POST /rest/groups` and `POST /rest/users` — XML only; the
+    mixins build the small XML documents internally, callers still
+    pass plain dicts.
+  - `PUT /rest/groups/{name}` and `PUT /rest/users/{name}` —
+    form-encoded (`form_data=` in `_put`).
+  - `/rest/graphml` — GraphML documents pass through as opaque XML
+    strings (`_post_text`/`_get_text`).
 - **Synchronous only**: no async. `requests.Session` is used throughout.
   One runtime dependency: `requests>=2.28`.
 - **v1 vs v2**: v1 endpoints live at `/opennms/rest/`, v2 at
@@ -126,6 +132,17 @@ the smoke-test SSL rule above applies to real servers, not this one.
 ## Test conventions
 
 - HTTP mocking: `responses` library with `@responses.activate` decorator.
+- **Request-shape assertions must come from the REST docs or live
+  verification, never from the implementation** — a mock that mirrors
+  what the wrapper sends proves nothing. For write endpoints whose
+  documented Content-Type is not JSON (XML-only creates, form-encoded
+  updates), use `add_contract()` from `conftest.py`: it returns 415
+  for any other Content-Type, exactly as the server does, so a
+  wrapper regression fails mocked tests the same way it fails live.
+- Mocked tests verify URL construction, request bodies, and response
+  parsing. Server compatibility is only proven by the live smoke test
+  against `tests/live/compose.yaml` — run `smoke_test.py` (read) and
+  `smoke_test.py --write --yes` (write) there before a release.
 - `conftest.py` constants:
   - `V1 = "http://opennms:8980/opennms/rest"`
   - `V2 = "http://opennms:8980/opennms/api/v2"`

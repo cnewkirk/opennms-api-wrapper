@@ -1,7 +1,7 @@
 """Tests for NodesMixin – /rest/nodes and sub-resources."""
 import json
 import responses
-from .conftest import V1, V2, qs
+from .conftest import FORM, V1, V2, XML, add_contract, qs
 from .fixtures import (
     NODE, NODE_LIST,
     IP_INTERFACE, IP_INTERFACE_LIST,
@@ -72,22 +72,22 @@ def test_get_node_count(client):
 
 @responses.activate
 def test_create_node(client):
-    responses.add(responses.POST, f"{V1}/nodes", json=NODE, status=201)
+    add_contract(responses.POST, f"{V1}/nodes", XML, status=201,
+                 json_body=NODE)
     result = client.create_node(NEW_NODE)
     assert result["id"] == 1
-    body = json.loads(responses.calls[0].request.body)
-    assert body["label"] == "newnode.example.com"
-    assert body["foreignSource"] == "Test"
-    assert responses.calls[0].request.headers["Content-Type"] == "application/json"
+    assert responses.calls[0].request.body == (
+        '<node label="newnode.example.com" type="A"'
+        ' foreignSource="Test" foreignId="newnode01">'
+        "<location>Default</location></node>")
 
 
 @responses.activate
 def test_update_node(client):
-    responses.add(responses.PUT, f"{V1}/nodes/1", status=204)
+    add_contract(responses.PUT, f"{V1}/nodes/1", FORM)
     result = client.update_node(1, {"label": "updated-label"})
     assert result is None
-    body = json.loads(responses.calls[0].request.body)
-    assert body["label"] == "updated-label"
+    assert responses.calls[0].request.body == "label=updated-label"
 
 
 @responses.activate
@@ -99,7 +99,7 @@ def test_delete_node(client):
 
 @responses.activate
 def test_rescan_node(client):
-    responses.add(responses.POST, f"{V1}/nodes/1/rescan", status=204)
+    add_contract(responses.PUT, f"{V1}/nodes/1/rescan", FORM)
     result = client.rescan_node(1)
     assert result is None
 
@@ -130,22 +130,21 @@ def test_get_node_ip_interface(client):
 
 @responses.activate
 def test_create_node_ip_interface(client):
-    responses.add(responses.POST, f"{V1}/nodes/1/ipinterfaces",
-                  json=IP_INTERFACE, status=201)
+    add_contract(responses.POST, f"{V1}/nodes/1/ipinterfaces", XML,
+                 status=201, json_body=IP_INTERFACE)
     result = client.create_node_ip_interface(1, NEW_IFACE)
     assert result["ipAddress"] == "192.168.1.1"
-    body = json.loads(responses.calls[0].request.body)
-    assert body["ipAddress"] == "10.0.0.1"
-    assert body["snmpPrimary"] == "P"
+    assert responses.calls[0].request.body == (
+        '<ipInterface isManaged="M" snmpPrimary="P">'
+        "<ipAddress>10.0.0.1</ipAddress></ipInterface>")
 
 
 @responses.activate
 def test_update_node_ip_interface(client):
-    responses.add(responses.PUT, f"{V1}/nodes/1/ipinterfaces/192.168.1.1",
-                  status=204)
+    add_contract(responses.PUT, f"{V1}/nodes/1/ipinterfaces/192.168.1.1",
+                 FORM)
     client.update_node_ip_interface(1, "192.168.1.1", {"isManaged": "U"})
-    body = json.loads(responses.calls[0].request.body)
-    assert body["isManaged"] == "U"
+    assert responses.calls[0].request.body == "isManaged=U"
 
 
 @responses.activate
@@ -184,7 +183,7 @@ def test_create_node_ip_service(client):
     responses.add(responses.POST,
                   f"{V1}/nodes/1/ipinterfaces/192.168.1.1/services",
                   json=MONITORED_SERVICE, status=201)
-    result = client.create_node_ip_service(1, "192.168.1.1", NEW_SERVICE)
+    client.create_node_ip_service(1, "192.168.1.1", NEW_SERVICE)
     body = json.loads(responses.calls[0].request.body)
     assert body["serviceType"]["name"] == "HTTP"
 
@@ -221,19 +220,19 @@ def test_get_node_snmp_interface(client):
 
 @responses.activate
 def test_create_node_snmp_interface(client):
-    responses.add(responses.POST, f"{V1}/nodes/1/snmpinterfaces",
-                  json=SNMP_INTERFACE, status=201)
+    add_contract(responses.POST, f"{V1}/nodes/1/snmpinterfaces", XML,
+                 status=201, json_body=SNMP_INTERFACE)
     client.create_node_snmp_interface(1, NEW_SNMP)
-    body = json.loads(responses.calls[0].request.body)
-    assert body["ifIndex"] == 1
+    assert responses.calls[0].request.body == (
+        '<snmpInterface ifIndex="1" collectFlag="C">'
+        "<ifName>lo</ifName><ifType>24</ifType></snmpInterface>")
 
 
 @responses.activate
 def test_update_node_snmp_interface(client):
-    responses.add(responses.PUT, f"{V1}/nodes/1/snmpinterfaces/6", status=204)
+    add_contract(responses.PUT, f"{V1}/nodes/1/snmpinterfaces/6", FORM)
     client.update_node_snmp_interface(1, 6, {"ifAlias": "new-alias"})
-    body = json.loads(responses.calls[0].request.body)
-    assert body["ifAlias"] == "new-alias"
+    assert responses.calls[0].request.body == "ifAlias=new-alias"
 
 
 @responses.activate
@@ -265,19 +264,19 @@ def test_get_node_category(client):
 
 @responses.activate
 def test_add_node_category(client):
-    responses.add(responses.POST, f"{V1}/nodes/1/categories",
-                  json=CATEGORY, status=201)
+    add_contract(responses.POST, f"{V1}/nodes/1/categories", XML,
+                 status=201, json_body=CATEGORY)
     client.add_node_category(1, NEW_CATEGORY)
-    body = json.loads(responses.calls[0].request.body)
-    assert body["name"] == "Production"
+    assert responses.calls[0].request.body == (
+        '<category name="Production"></category>')
 
 
 @responses.activate
 def test_update_node_category(client):
-    responses.add(responses.PUT, f"{V1}/nodes/1/categories/Production",
-                  status=204)
+    add_contract(responses.PUT, f"{V1}/nodes/1/categories/Production",
+                 FORM)
     client.update_node_category(1, "Production", {"name": "Production"})
-    assert responses.calls[0].request.method == "PUT"
+    assert responses.calls[0].request.body == "name=Production"
 
 
 @responses.activate
@@ -302,11 +301,11 @@ def test_get_node_asset_record(client):
 
 @responses.activate
 def test_update_node_asset_record(client):
-    responses.add(responses.PUT, f"{V1}/nodes/1/assetRecord", status=204)
+    add_contract(responses.PUT, f"{V1}/nodes/1/assetRecord", FORM)
     client.update_node_asset_record(1, NEW_ASSET)
-    body = json.loads(responses.calls[0].request.body)
-    assert body["manufacturer"] == "Cisco"
-    assert body["modelNumber"] == "ISR4331"
+    body = responses.calls[0].request.body
+    assert "manufacturer=Cisco" in body
+    assert "modelNumber=ISR4331" in body
 
 
 # ============================================================
@@ -341,10 +340,9 @@ def test_add_node_hardware_inventory(client):
 
 @responses.activate
 def test_update_node_hardware_entity(client):
-    responses.add(responses.PUT, f"{V1}/nodes/1/hardwareInventory/1", status=204)
+    add_contract(responses.PUT, f"{V1}/nodes/1/hardwareInventory/1", FORM)
     client.update_node_hardware_entity(1, 1, {"entPhysicalAlias": "chassis"})
-    body = json.loads(responses.calls[0].request.body)
-    assert body["entPhysicalAlias"] == "chassis"
+    assert responses.calls[0].request.body == "entPhysicalAlias=chassis"
 
 
 @responses.activate

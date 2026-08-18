@@ -1,7 +1,6 @@
 """Tests for UsersMixin – /rest/users."""
-import json
 import responses
-from .conftest import V1, qs
+from .conftest import FORM, V1, XML, add_contract, qs
 from .fixtures import USER, USER_LIST
 
 NEW_USER = {
@@ -29,27 +28,46 @@ def test_get_user(client):
 
 @responses.activate
 def test_create_user(client):
-    responses.add(responses.POST, f"{V1}/users", json=USER, status=201)
+    add_contract(responses.POST, f"{V1}/users", XML, status=201,
+                 json_body=USER)
     client.create_user(NEW_USER)
-    body = json.loads(responses.calls[0].request.body)
-    assert body["user-id"] == "newuser"
-    assert body["password"] == "s3cret"
-    assert responses.calls[0].request.headers["Content-Type"] == "application/json"
+    request = responses.calls[0].request
+    assert request.body == (
+        "<user><user-id>newuser</user-id>"
+        "<full-name>New User</full-name>"
+        "<email>newuser@example.com</email>"
+        "<password>s3cret</password></user>")
 
 
 @responses.activate
 def test_create_user_hash_password(client):
-    responses.add(responses.POST, f"{V1}/users", json=USER, status=201)
+    add_contract(responses.POST, f"{V1}/users", XML, status=201,
+                 json_body=USER)
     client.create_user(NEW_USER, hash_password=True)
     assert qs(responses.calls[0].request.url)["hashPassword"] == ["true"]
 
 
 @responses.activate
+def test_create_user_roles_and_salt(client):
+    add_contract(responses.POST, f"{V1}/users", XML, status=201)
+    client.create_user({
+        "user-id": "oncall",
+        "password": "hashed",
+        "passwordSalt": True,
+        "role": ["ROLE_ADMIN"],
+    })
+    assert responses.calls[0].request.body == (
+        "<user><user-id>oncall</user-id>"
+        "<password>hashed</password>"
+        "<passwordSalt>true</passwordSalt>"
+        "<role>ROLE_ADMIN</role></user>")
+
+
+@responses.activate
 def test_update_user(client):
-    responses.add(responses.PUT, f"{V1}/users/jsmith", status=204)
-    client.update_user("jsmith", {"full-name": "Jane A. Smith"})
-    body = json.loads(responses.calls[0].request.body)
-    assert body["full-name"] == "Jane A. Smith"
+    add_contract(responses.PUT, f"{V1}/users/jsmith", FORM)
+    client.update_user("jsmith", {"fullName": "Jane A. Smith"})
+    assert responses.calls[0].request.body == "fullName=Jane+A.+Smith"
 
 
 @responses.activate
