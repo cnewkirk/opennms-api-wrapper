@@ -1015,7 +1015,7 @@ def test_pagination(c):
                 items.append(node)
                 if len(items) >= cap:
                     break
-            _ok(f"paginate(get_nodes, page_size=5)",
+            _ok("paginate(get_nodes, page_size=5)",
                 f"{len(items)} items (cap {cap})")
         except Exception as exc:
             _fail("paginate(get_nodes, page_size=5)", exc)
@@ -1049,9 +1049,9 @@ def test_write_ops(c):
         "uei": "uei.opennms.org/internal/test",
         "source": "smoke_test.py",
         "severity": "Normal",
-        "parms": {"parm": [
-            {"parmName": "smoke-tag", "value": {"content": tag}},
-        ]},
+        "parms": [
+            {"parmName": "smoke-tag", "value": tag},
+        ],
     })
 
     # Alarms ── ack then immediately unack; only if an unacked alarm exists
@@ -1113,18 +1113,18 @@ def test_write_ops(c):
     else:
         _skip(f"get_requisition / delete_requisition  ({req_name})", "create failed")
 
-    # Maps ── create / update / delete
-    r = run("create_map", c.create_map,
-            {"name": f"Smoke Test {tag}", "mapWidth": 1920, "mapHeight": 1080})
+    # Maps ── create / update / delete (removed in OpenNMS Horizon 16;
+    # only works on pre-16 servers)
+    r = warn("create_map", c.create_map,
+             {"name": f"Smoke Test {tag}", "mapWidth": 1920, "mapHeight": 1080},
+             note="maps REST API removed in OpenNMS Horizon 16")
     mid = r.get("id") if isinstance(r, dict) else None
     if mid:
         run(f"update_map  id={mid}", c.update_map, mid,
             {"name": f"Smoke Test {tag} (updated)", "mapWidth": 1920, "mapHeight": 1080})
         run(f"delete_map  id={mid}", c.delete_map, mid)
-    elif r is not _FAILED:
-        _skip("update_map / delete_map", "create_map returned no id")
     else:
-        _skip("update_map / delete_map", "create_map failed")
+        _skip("update_map / delete_map", "maps API unavailable")
 
 
 # ── Entry point ────────────────────────────────────────────────────────────────

@@ -71,11 +71,17 @@ OpenNMSError
 
 - **Mixin pattern**: each resource group lives in its own `_<name>.py` mixin.
   `client.py` combines them all via multiple inheritance into `OpenNMS`.
-- **JSON only**: all request bodies are JSON. No XML parsing or
-  building anywhere. Two exceptions the OpenNMS API forces:
-  `POST /rest/acks` uses `application/x-www-form-urlencoded`
-  (via `form_data=` in `_post`), and `/rest/graphml` passes GraphML
-  documents through as opaque XML strings (via `_post_text`/`_get_text`).
+- **JSON first**: request bodies are JSON wherever the server accepts
+  it. No XML parsing anywhere. Exceptions the OpenNMS API forces
+  (v1 endpoints that reject JSON on every version):
+  - `POST /rest/acks` — form-encoded (`form_data=` in `_post`).
+  - `POST /rest/groups` and `POST /rest/users` — XML only; the
+    mixins build the small XML documents internally, callers still
+    pass plain dicts.
+  - `PUT /rest/groups/{name}` and `PUT /rest/users/{name}` —
+    form-encoded (`form_data=` in `_put`).
+  - `/rest/graphml` — GraphML documents pass through as opaque XML
+    strings (`_post_text`/`_get_text`).
 - **Synchronous only**: no async. `requests.Session` is used throughout.
   One runtime dependency: `requests>=2.28`.
 - **v1 vs v2**: v1 endpoints live at `/opennms/rest/`, v2 at

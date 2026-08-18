@@ -48,12 +48,9 @@ class EventsMixin(_OpenNMSBase):
                 "severity": "Normal",
                 "nodeId": 1,
                 "interface": "192.168.0.1",
-                "parms": {
-                    "parm": [
-                        {"parmName": "key",
-                         "value": {"content": "val"}}
-                    ]
-                }
+                "parms": [
+                    {"parmName": "key", "value": "val"}
+                ]
             })
         """
         return self._post("events", json_data=event)

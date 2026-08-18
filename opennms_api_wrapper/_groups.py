@@ -1,4 +1,6 @@
 """Groups REST API – /rest/groups."""
+from xml.sax.saxutils import escape
+
 from ._base import _OpenNMSBase
 from .types import Group
 
@@ -19,20 +21,36 @@ class GroupsMixin(_OpenNMSBase):
     def create_group(self, group: Group):
         """Create a new user group.
 
+        The body is sent as XML — ``POST /rest/groups`` does not
+        accept JSON on any OpenNMS version.
+
         Args:
-            group: Group definition dict. Example:
+            group: Group definition dict. Keys: ``name`` (required),
+                ``comments``, ``user`` (list of member usernames).
+                Example:
                 ``{"name": "network-ops", "comments": "Network operations team"}``
         """
-        return self._post("groups", json_data=group)
+        parts = [f"<name>{escape(str(group['name']))}</name>"]
+        if "comments" in group:
+            parts.append(
+                f"<comments>{escape(str(group['comments']))}</comments>")
+        for member in group.get("user", []):
+            parts.append(f"<user>{escape(str(member))}</user>")
+        xml = f"<group>{''.join(parts)}</group>"
+        return self._post_text("groups", xml, "application/xml")
 
     def update_group(self, group_name: str, group: Group):
         """Update group metadata (e.g. comments field).
 
+        The body is sent form-encoded — ``PUT /rest/groups/{name}``
+        does not accept JSON on any OpenNMS version.
+
         Args:
             group_name: Name of the group to update.
-            group: Dict of group fields to change.
+            group: Dict of group fields to change,
+                e.g. ``{"comments": "..."}``.
         """
-        return self._put(f"groups/{group_name}", json_data=group)
+        return self._put(f"groups/{group_name}", form_data=group)
 
     def delete_group(self, group_name: str):
         """Delete a user group."""

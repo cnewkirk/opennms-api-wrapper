@@ -14,7 +14,7 @@ authors = [
 license = { file = "LICENSE" }
 keywords = ["opennms", "network-management", "rest", "api", "wrapper", "nms"]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Intended Audience :: System Administrators",
     "Intended Audience :: Telecommunications Industry",
