@@ -2,6 +2,14 @@
 
 Deferred items.
 
+## Extend write-mode smoke coverage to every write method
+
+`smoke_test.py --write` exercises a representative subset. Mocked
+tests cannot prove server compatibility, so each write method not yet
+in the smoke run (chiefly v2 writes and the node/interface/KSC
+lifecycle) should be added so the compose-instance run covers the
+full write surface.
+
 ## Pre-commit config
 
 Add `.pre-commit-config.yaml` so contributors get ruff feedback before

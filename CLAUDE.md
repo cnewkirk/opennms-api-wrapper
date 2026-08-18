@@ -132,6 +132,17 @@ the smoke-test SSL rule above applies to real servers, not this one.
 ## Test conventions
 
 - HTTP mocking: `responses` library with `@responses.activate` decorator.
+- **Request-shape assertions must come from the REST docs or live
+  verification, never from the implementation** — a mock that mirrors
+  what the wrapper sends proves nothing. For write endpoints whose
+  documented Content-Type is not JSON (XML-only creates, form-encoded
+  updates), use `add_contract()` from `conftest.py`: it returns 415
+  for any other Content-Type, exactly as the server does, so a
+  wrapper regression fails mocked tests the same way it fails live.
+- Mocked tests verify URL construction, request bodies, and response
+  parsing. Server compatibility is only proven by the live smoke test
+  against `tests/live/compose.yaml` — run `smoke_test.py` (read) and
+  `smoke_test.py --write --yes` (write) there before a release.
 - `conftest.py` constants:
   - `V1 = "http://opennms:8980/opennms/rest"`
   - `V2 = "http://opennms:8980/opennms/api/v2"`
