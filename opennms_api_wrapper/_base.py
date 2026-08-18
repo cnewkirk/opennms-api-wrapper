@@ -232,7 +232,8 @@ class _OpenNMSBase:
         return self._parse(resp)
 
     def _post_text(self, path: str, data: str, content_type: str,
-                   v2: bool = False, accept: Optional[str] = None):
+                   v2: bool = False, accept: Optional[str] = None,
+                   params: Optional[dict[str, Any]] = None):
         """Send a POST request with a raw text body.
 
         Pass *accept* for endpoints that cannot produce JSON — some
@@ -243,5 +244,5 @@ class _OpenNMSBase:
             headers["Accept"] = accept
         resp = self._session.post(
             self._url(path, v2), data=data, headers=headers,
-            timeout=self._timeout)
+            params=params, timeout=self._timeout)
         return self._parse(resp)

@@ -1,5 +1,4 @@
 """Tests for UsersMixin – /rest/users."""
-import json
 import responses
 from .conftest import V1, qs
 from .fixtures import USER, USER_LIST
@@ -31,10 +30,13 @@ def test_get_user(client):
 def test_create_user(client):
     responses.add(responses.POST, f"{V1}/users", json=USER, status=201)
     client.create_user(NEW_USER)
-    body = json.loads(responses.calls[0].request.body)
-    assert body["user-id"] == "newuser"
-    assert body["password"] == "s3cret"
-    assert responses.calls[0].request.headers["Content-Type"] == "application/json"
+    request = responses.calls[0].request
+    assert request.headers["Content-Type"] == "application/xml"
+    assert request.body == (
+        "<user><user-id>newuser</user-id>"
+        "<full-name>New User</full-name>"
+        "<email>newuser@example.com</email>"
+        "<password>s3cret</password></user>")
 
 
 @responses.activate
@@ -45,11 +47,29 @@ def test_create_user_hash_password(client):
 
 
 @responses.activate
+def test_create_user_roles_and_salt(client):
+    responses.add(responses.POST, f"{V1}/users", status=201)
+    client.create_user({
+        "user-id": "oncall",
+        "password": "hashed",
+        "passwordSalt": True,
+        "role": ["ROLE_ADMIN"],
+    })
+    assert responses.calls[0].request.body == (
+        "<user><user-id>oncall</user-id>"
+        "<password>hashed</password>"
+        "<passwordSalt>true</passwordSalt>"
+        "<role>ROLE_ADMIN</role></user>")
+
+
+@responses.activate
 def test_update_user(client):
     responses.add(responses.PUT, f"{V1}/users/jsmith", status=204)
-    client.update_user("jsmith", {"full-name": "Jane A. Smith"})
-    body = json.loads(responses.calls[0].request.body)
-    assert body["full-name"] == "Jane A. Smith"
+    client.update_user("jsmith", {"fullName": "Jane A. Smith"})
+    request = responses.calls[0].request
+    assert request.headers["Content-Type"] == (
+        "application/x-www-form-urlencoded")
+    assert request.body == "fullName=Jane+A.+Smith"
 
 
 @responses.activate

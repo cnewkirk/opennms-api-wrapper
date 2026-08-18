@@ -340,10 +340,12 @@ class Group(TypedDict, total=False):
     Attributes:
         name: *Required for create.* Unique group name.
         comments: Free-text description of the group.
+        user: Member usernames.
     """
 
     name: str
     comments: str
+    user: List[str]
 
 
 User = TypedDict(
@@ -354,7 +356,9 @@ User = TypedDict(
         "user-comments": str,
         "email": str,
         "password": str,
+        "passwordSalt": bool,
         "duty-schedule": List[str],  # e.g. ["MoTuWeThFrSaSu800-2300"]
+        "role": List[str],           # e.g. ["ROLE_ADMIN"]
     },
     total=False,
 )
@@ -368,8 +372,10 @@ Keys:
     email (str): Email address.
     password (str): Plain-text password (pass ``hash_password=True`` to
         have OpenNMS hash it on receipt).
+    passwordSalt (bool): ``True`` when ``password`` is already salted.
     duty-schedule (list[str]): Duty schedule strings,
         e.g. ``["MoTuWeThFrSaSu800-2300"]``.
+    role (list[str]): Security roles, e.g. ``["ROLE_ADMIN"]``.
 """
 
 
@@ -525,8 +531,10 @@ class Event(TypedDict, total=False):
         description: HTML-formatted description.
         logMsg: Short log message text.
         operInstruct: Operator instructions.
-        parms: Event parameters as
-            ``{"parm": [{"parmName": str, "value": {"content": str}}]}``.
+        parms: Event parameters as a list of
+            ``{"parmName": str, "value": str}`` entries. The value
+            may also be a dict:
+            ``{"value": str, "type": "string", "encoding": "text"}``.
     """
 
     uei: str
@@ -539,7 +547,7 @@ class Event(TypedDict, total=False):
     description: str
     logMsg: str
     operInstruct: str
-    parms: Dict[str, Any]
+    parms: List[Dict[str, Any]]
 
 
 class EventConfLogmsg(TypedDict, total=False):

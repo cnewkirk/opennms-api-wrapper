@@ -1,5 +1,4 @@
 """Tests for GroupsMixin – /rest/groups."""
-import json
 import responses
 from .conftest import V1
 from .fixtures import GROUP, GROUP_LIST, GROUP_USER_LIST, GROUP_CATEGORY_LIST
@@ -24,17 +23,30 @@ def test_get_group(client):
 def test_create_group(client):
     responses.add(responses.POST, f"{V1}/groups", json=GROUP, status=201)
     client.create_group({"name": "network-ops", "comments": "Network operations team"})
-    body = json.loads(responses.calls[0].request.body)
-    assert body["name"] == "network-ops"
-    assert responses.calls[0].request.headers["Content-Type"] == "application/json"
+    request = responses.calls[0].request
+    assert request.headers["Content-Type"] == "application/xml"
+    assert request.body == (
+        "<group><name>network-ops</name>"
+        "<comments>Network operations team</comments></group>")
+
+
+@responses.activate
+def test_create_group_with_members(client):
+    responses.add(responses.POST, f"{V1}/groups", status=201)
+    client.create_group({"name": "ops", "user": ["alice", "bob"]})
+    assert responses.calls[0].request.body == (
+        "<group><name>ops</name>"
+        "<user>alice</user><user>bob</user></group>")
 
 
 @responses.activate
 def test_update_group(client):
     responses.add(responses.PUT, f"{V1}/groups/network-ops", status=204)
     client.update_group("network-ops", {"comments": "Updated comment"})
-    body = json.loads(responses.calls[0].request.body)
-    assert body["comments"] == "Updated comment"
+    request = responses.calls[0].request
+    assert request.headers["Content-Type"] == (
+        "application/x-www-form-urlencoded")
+    assert request.body == "comments=Updated+comment"
 
 
 @responses.activate

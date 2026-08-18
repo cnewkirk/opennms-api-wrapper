@@ -7,7 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/cnewkirk/opennms-api-wrapper/blob/main/LICENSE)
 
 An unofficial, dependency-minimal Python 3 client for the [OpenNMS](https://www.opennms.com/) REST API (Horizon 35+).
-Read-only smoke test validated against OpenNMS Meridian 2024.3.0.
+Smoke-tested, read and write, against OpenNMS Meridian 2024.3.0 and Meridian 2025 (Horizon 34).
 
 **OpenNMS resources**: [Docs](https://docs.opennms.com/) · [REST API reference](https://docs.opennms.com/horizon/latest/development/rest/rest-api.html) · [Community forum](https://opennms.discourse.group/)
 
@@ -98,8 +98,8 @@ export OPENNMS_PASSWORD="secret"
 python smoke_test.py
 ```
 
-**Write mode** creates and then deletes objects. Only use against a dev or staging instance.
-Write mode has not yet been validated against a live server — reports and contributions welcome.
+**Write mode** creates and then deletes objects. Only use against a dev or staging instance,
+such as the throwaway Docker instance in `tests/live/compose.yaml`.
 
 ```bash
 python smoke_test.py --write          # interactive prompt required
