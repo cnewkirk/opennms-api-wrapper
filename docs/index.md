@@ -113,10 +113,8 @@ See the [API Reference](api.md) for all methods and TypedDict payload schemas.
 
 ## Acknowledgements
 
-This library was designed and tested by a human, with implementation
-assistance from [Claude Code](https://claude.ai/code) (Anthropic). All API
-shapes are derived from the official [OpenNMS](https://www.opennms.com/)
-Horizon 35 REST API documentation.
+All API shapes are derived from the official
+[OpenNMS](https://www.opennms.com/) REST API documentation.
 
 [requests](https://docs.python-requests.org/) handles all HTTP communication.
 [MkDocs Material](https://squidfunk.github.io/mkdocs-material/) renders this
