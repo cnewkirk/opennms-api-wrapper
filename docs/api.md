@@ -1,6 +1,6 @@
 # API Reference
 
-::: opennms_api_wrapper.OpenNMS
+::: opennms.OpenNMS
     options:
       inherited_members: true
       filters: ["!^_"]
@@ -9,7 +9,7 @@
 
 ## Payload types
 
-::: opennms_api_wrapper.types
+::: opennms.types
     options:
       filters: ["!^_"]
       members_order: source

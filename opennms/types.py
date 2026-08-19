@@ -1,7 +1,7 @@
 """TypedDict schemas for OpenNMS API request payloads.
 
 These types describe the ``dict`` arguments accepted by write methods on
-:class:`~opennms_api_wrapper.OpenNMS`.  All fields are ``total=False``
+:class:`~opennms.OpenNMS`.  All fields are ``total=False``
 (every field is optional at the Python level); fields marked *Required*
 in the descriptions must be included or the server will return a 400.
 
@@ -10,7 +10,7 @@ exist purely for documentation and static type checking.
 
 Example usage::
 
-    from opennms_api_wrapper.types import SnmpConfig, RequisitionNode
+    from opennms.types import SnmpConfig, RequisitionNode
 
     client.set_snmp_config("10.0.0.1", SnmpConfig(version="v2c", community="public"))
 
@@ -30,8 +30,8 @@ from typing import Any, Dict, List, TypedDict
 
 
 class Node(TypedDict, total=False):
-    """Node payload for :meth:`~opennms_api_wrapper.OpenNMS.create_node` and
-    :meth:`~opennms_api_wrapper.OpenNMS.update_node`.
+    """Node payload for :meth:`~opennms.OpenNMS.create_node` and
+    :meth:`~opennms.OpenNMS.update_node`.
 
     Attributes:
         label: *Required for create.* Human-readable node display name.
@@ -58,8 +58,8 @@ class Node(TypedDict, total=False):
 
 class NodeIpInterface(TypedDict, total=False):
     """IP interface payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.create_node_ip_interface` and
-    :meth:`~opennms_api_wrapper.OpenNMS.update_node_ip_interface`.
+    :meth:`~opennms.OpenNMS.create_node_ip_interface` and
+    :meth:`~opennms.OpenNMS.update_node_ip_interface`.
 
     Attributes:
         ipAddress: *Required for create.* IP address of the interface.
@@ -78,8 +78,8 @@ class NodeIpInterface(TypedDict, total=False):
 
 class NodeSnmpInterface(TypedDict, total=False):
     """SNMP interface payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.create_node_snmp_interface` and
-    :meth:`~opennms_api_wrapper.OpenNMS.update_node_snmp_interface`.
+    :meth:`~opennms.OpenNMS.create_node_snmp_interface` and
+    :meth:`~opennms.OpenNMS.update_node_snmp_interface`.
 
     Attributes:
         ifIndex: *Required for create.* SNMP ifIndex.
@@ -102,7 +102,7 @@ class NodeSnmpInterface(TypedDict, total=False):
 
 class NodeAssetRecord(TypedDict, total=False):
     """Asset record payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.update_node_asset_record`.
+    :meth:`~opennms.OpenNMS.update_node_asset_record`.
 
     All fields are optional.  Pass only the fields you want to change.
 
@@ -137,8 +137,8 @@ class NodeAssetRecord(TypedDict, total=False):
 
 class HardwareEntity(TypedDict, total=False):
     """Hardware inventory entity payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.add_node_hardware_inventory` and
-    :meth:`~opennms_api_wrapper.OpenNMS.update_node_hardware_entity`.
+    :meth:`~opennms.OpenNMS.add_node_hardware_inventory` and
+    :meth:`~opennms.OpenNMS.update_node_hardware_entity`.
 
     Attributes:
         entityPhysicalIndex: *Required for create.* ENTITY-MIB
@@ -220,8 +220,8 @@ ForeignSource = TypedDict(
     total=False,
 )
 ForeignSource.__doc__ = """Foreign source definition for
-:meth:`~opennms_api_wrapper.OpenNMS.create_foreign_source` and
-:meth:`~opennms_api_wrapper.OpenNMS.update_foreign_source`.
+:meth:`~opennms.OpenNMS.create_foreign_source` and
+:meth:`~opennms.OpenNMS.update_foreign_source`.
 
 Keys:
     name (str): *Required.* Foreign source name.
@@ -297,7 +297,7 @@ RequisitionNode = TypedDict(
     total=False,
 )
 RequisitionNode.__doc__ = """Node payload for
-:meth:`~opennms_api_wrapper.OpenNMS.create_requisition_node`.
+:meth:`~opennms.OpenNMS.create_requisition_node`.
 
 Keys:
     foreign-id (str): *Required.* Unique node identifier within the
@@ -321,7 +321,7 @@ Requisition = TypedDict(
     total=False,
 )
 Requisition.__doc__ = """Requisition payload for
-:meth:`~opennms_api_wrapper.OpenNMS.create_requisition`.
+:meth:`~opennms.OpenNMS.create_requisition`.
 
 Keys:
     foreign-source (str): *Required.* Requisition (foreign source) name.
@@ -334,8 +334,8 @@ Keys:
 
 
 class Group(TypedDict, total=False):
-    """Group payload for :meth:`~opennms_api_wrapper.OpenNMS.create_group`
-    and :meth:`~opennms_api_wrapper.OpenNMS.update_group`.
+    """Group payload for :meth:`~opennms.OpenNMS.create_group`
+    and :meth:`~opennms.OpenNMS.update_group`.
 
     Attributes:
         name: *Required for create.* Unique group name.
@@ -362,8 +362,8 @@ User = TypedDict(
     },
     total=False,
 )
-User.__doc__ = """User payload for :meth:`~opennms_api_wrapper.OpenNMS.create_user`
-and :meth:`~opennms_api_wrapper.OpenNMS.update_user`.
+User.__doc__ = """User payload for :meth:`~opennms.OpenNMS.create_user`
+and :meth:`~opennms.OpenNMS.update_user`.
 
 Keys:
     user-id (str): *Required for create.* Unique username.
@@ -380,8 +380,8 @@ Keys:
 
 
 class Category(TypedDict, total=False):
-    """Category payload for :meth:`~opennms_api_wrapper.OpenNMS.create_category`
-    and :meth:`~opennms_api_wrapper.OpenNMS.update_category`.
+    """Category payload for :meth:`~opennms.OpenNMS.create_category`
+    and :meth:`~opennms.OpenNMS.update_category`.
 
     Attributes:
         name: *Required for create.* Unique category name.
@@ -416,7 +416,7 @@ class SchedOutageTime(TypedDict, total=False):
 
 class SchedOutage(TypedDict, total=False):
     """Scheduled outage payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.create_sched_outage`.
+    :meth:`~opennms.OpenNMS.create_sched_outage`.
 
     Attributes:
         name: *Required.* Unique scheduled outage name.
@@ -463,8 +463,8 @@ class KscGraph(TypedDict, total=False):
 
 class KscReport(TypedDict, total=False):
     """KSC report payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.create_ksc_report` and
-    :meth:`~opennms_api_wrapper.OpenNMS.update_ksc_report`.
+    :meth:`~opennms.OpenNMS.create_ksc_report` and
+    :meth:`~opennms.OpenNMS.update_ksc_report`.
 
     Attributes:
         id: Report ID (set to ``0`` for new reports).
@@ -489,8 +489,8 @@ class KscReport(TypedDict, total=False):
 
 
 class Map(TypedDict, total=False):
-    """Map payload for :meth:`~opennms_api_wrapper.OpenNMS.create_map`
-    and :meth:`~opennms_api_wrapper.OpenNMS.update_map`.
+    """Map payload for :meth:`~opennms.OpenNMS.create_map`
+    and :meth:`~opennms.OpenNMS.update_map`.
 
     Attributes:
         name: *Required for create.* Unique map name.
@@ -514,7 +514,7 @@ class Map(TypedDict, total=False):
 
 
 class Event(TypedDict, total=False):
-    """Event payload for :meth:`~opennms_api_wrapper.OpenNMS.create_event`.
+    """Event payload for :meth:`~opennms.OpenNMS.create_event`.
 
     Attributes:
         uei: *Required.* Event UEI,
@@ -565,8 +565,8 @@ class EventConfLogmsg(TypedDict, total=False):
 
 class EventConfEvent(TypedDict, total=False):
     """Event definition payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.create_eventconf_event` and
-    :meth:`~opennms_api_wrapper.OpenNMS.update_eventconf_event`.
+    :meth:`~opennms.OpenNMS.create_eventconf_event` and
+    :meth:`~opennms.OpenNMS.update_eventconf_event`.
 
     Attributes:
         uei: *Required.* Event UEI.
@@ -628,7 +628,7 @@ class MeasurementExpression(TypedDict, total=False):
 
 class MeasurementsQuery(TypedDict, total=False):
     """Query payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.get_measurements_multi`.
+    :meth:`~opennms.OpenNMS.get_measurements_multi`.
 
     Attributes:
         start: Query start time as a Unix millisecond epoch timestamp.
@@ -668,8 +668,8 @@ class BsFunction(TypedDict, total=False):
 
 class BusinessService(TypedDict, total=False):
     """Business service payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.create_business_service` and
-    :meth:`~opennms_api_wrapper.OpenNMS.update_business_service`.
+    :meth:`~opennms.OpenNMS.create_business_service` and
+    :meth:`~opennms.OpenNMS.update_business_service`.
 
     Attributes:
         name: *Required.* Unique business service name.
@@ -684,7 +684,7 @@ class BusinessService(TypedDict, total=False):
 
 class BsIpServiceEdge(TypedDict, total=False):
     """IP-service edge payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.add_ip_service_edge`.
+    :meth:`~opennms.OpenNMS.add_ip_service_edge`.
 
     Attributes:
         ipServiceId: *Required.* Database ID of the monitored IP service.
@@ -699,7 +699,7 @@ class BsIpServiceEdge(TypedDict, total=False):
 
 class BsReductionKeyEdge(TypedDict, total=False):
     """Reduction-key edge payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.add_reduction_key_edge`.
+    :meth:`~opennms.OpenNMS.add_reduction_key_edge`.
 
     Attributes:
         reductionKey: *Required.* Alarm reduction key to monitor.
@@ -714,7 +714,7 @@ class BsReductionKeyEdge(TypedDict, total=False):
 
 class BsChildEdge(TypedDict, total=False):
     """Child-service edge payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.add_child_edge`.
+    :meth:`~opennms.OpenNMS.add_child_edge`.
 
     Attributes:
         childId: *Required.* Database ID of the child business service.
@@ -734,8 +734,8 @@ class BsChildEdge(TypedDict, total=False):
 
 class ClassificationRule(TypedDict, total=False):
     """Classification rule payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.create_classification_rule` and
-    :meth:`~opennms_api_wrapper.OpenNMS.update_classification_rule`.
+    :meth:`~opennms.OpenNMS.create_classification_rule` and
+    :meth:`~opennms.OpenNMS.update_classification_rule`.
 
     Attributes:
         name: *Required.* Application name this rule identifies.
@@ -763,8 +763,8 @@ class ClassificationRule(TypedDict, total=False):
 
 class ClassificationGroup(TypedDict, total=False):
     """Classification group payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.create_classification_group` and
-    :meth:`~opennms_api_wrapper.OpenNMS.update_classification_group`.
+    :meth:`~opennms.OpenNMS.create_classification_group` and
+    :meth:`~opennms.OpenNMS.update_classification_group`.
 
     Attributes:
         name: *Required.* Unique group name.
@@ -777,7 +777,7 @@ class ClassificationGroup(TypedDict, total=False):
 
 class ClassifyRequest(TypedDict, total=False):
     """Flow classification request for
-    :meth:`~opennms_api_wrapper.OpenNMS.classify`.
+    :meth:`~opennms.OpenNMS.classify`.
 
     Attributes:
         srcAddress: Source IP address.
@@ -803,8 +803,8 @@ class ClassifyRequest(TypedDict, total=False):
 
 class Credential(TypedDict, total=False):
     """Secure Credentials Vault payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.create_credential` and
-    :meth:`~opennms_api_wrapper.OpenNMS.update_credential`.
+    :meth:`~opennms.OpenNMS.create_credential` and
+    :meth:`~opennms.OpenNMS.update_credential`.
 
     Attributes:
         alias: *Required for create.* Unique credential alias.
@@ -821,7 +821,7 @@ class Credential(TypedDict, total=False):
 
 class Application(TypedDict, total=False):
     """Application payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.create_application`.
+    :meth:`~opennms.OpenNMS.create_application`.
 
     Attributes:
         name: *Required.* Unique application name.
@@ -835,7 +835,7 @@ class Application(TypedDict, total=False):
 
 class UserDefinedLink(TypedDict, total=False):
     """User-defined link payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.create_user_defined_link`.
+    :meth:`~opennms.OpenNMS.create_user_defined_link`.
 
     Attributes:
         nodeIdA: *Required.* Database ID of the A-side node.
@@ -863,7 +863,7 @@ class UserDefinedLink(TypedDict, total=False):
 
 class SnmpConfig(TypedDict, total=False):
     """SNMP configuration payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.set_snmp_config`.
+    :meth:`~opennms.OpenNMS.set_snmp_config`.
 
     Fields correspond to ``<definition/>`` attributes in
     ``snmp-config.xsd``.  Unset fields inherit from the OpenNMS default
@@ -923,7 +923,7 @@ MonitoringLocation = TypedDict(
     total=False,
 )
 MonitoringLocation.__doc__ = """Monitoring location payload for
-:meth:`~opennms_api_wrapper.OpenNMS.create_monitoring_location`.
+:meth:`~opennms.OpenNMS.create_monitoring_location`.
 
 Keys:
     location-name (str): *Required.* Unique location identifier.
@@ -940,8 +940,8 @@ Keys:
 
 class SnmpTrapNbiTrapSink(TypedDict, total=False):
     """SNMP trap sink payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.create_snmptrap_nbi_trapsink` and
-    :meth:`~opennms_api_wrapper.OpenNMS.update_snmptrap_nbi_trapsink`.
+    :meth:`~opennms.OpenNMS.create_snmptrap_nbi_trapsink` and
+    :meth:`~opennms.OpenNMS.update_snmptrap_nbi_trapsink`.
 
     Attributes:
         name: *Required.* Unique trap sink name.
@@ -958,7 +958,7 @@ class SnmpTrapNbiTrapSink(TypedDict, total=False):
 
 class SnmpTrapNbiConfig(TypedDict, total=False):
     """SNMP trap NBI configuration payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.update_snmptrap_nbi_config`.
+    :meth:`~opennms.OpenNMS.update_snmptrap_nbi_config`.
 
     Attributes:
         enabled: Whether SNMP trap forwarding is enabled.
@@ -971,8 +971,8 @@ class SnmpTrapNbiConfig(TypedDict, total=False):
 
 class EmailNbiDestination(TypedDict, total=False):
     """Email NBI destination payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.create_email_nbi_destination` and
-    :meth:`~opennms_api_wrapper.OpenNMS.update_email_nbi_destination`.
+    :meth:`~opennms.OpenNMS.create_email_nbi_destination` and
+    :meth:`~opennms.OpenNMS.update_email_nbi_destination`.
 
     Attributes:
         name: *Required.* Unique destination name.
@@ -988,7 +988,7 @@ class EmailNbiDestination(TypedDict, total=False):
 
 class EmailNbiConfig(TypedDict, total=False):
     """Email NBI configuration payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.update_email_nbi_config`.
+    :meth:`~opennms.OpenNMS.update_email_nbi_config`.
 
     Attributes:
         enabled: Whether email alarm forwarding is enabled.
@@ -1001,8 +1001,8 @@ class EmailNbiConfig(TypedDict, total=False):
 
 class SyslogNbiDestination(TypedDict, total=False):
     """Syslog NBI destination payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.create_syslog_nbi_destination` and
-    :meth:`~opennms_api_wrapper.OpenNMS.update_syslog_nbi_destination`.
+    :meth:`~opennms.OpenNMS.create_syslog_nbi_destination` and
+    :meth:`~opennms.OpenNMS.update_syslog_nbi_destination`.
 
     Attributes:
         name: *Required.* Unique destination name.
@@ -1022,7 +1022,7 @@ class SyslogNbiDestination(TypedDict, total=False):
 
 class SyslogNbiConfig(TypedDict, total=False):
     """Syslog NBI configuration payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.update_syslog_nbi_config`.
+    :meth:`~opennms.OpenNMS.update_syslog_nbi_config`.
 
     Attributes:
         enabled: Whether syslog alarm forwarding is enabled.
@@ -1040,7 +1040,7 @@ class SyslogNbiConfig(TypedDict, total=False):
 
 class JavamailDefaultConfig(TypedDict, total=False):
     """Default Javamail configuration payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.set_javamail_default_config`.
+    :meth:`~opennms.OpenNMS.set_javamail_default_config`.
 
     Attributes:
         defaultReadConfigName: Name of the default read-mail configuration.
@@ -1056,8 +1056,8 @@ class JavamailDefaultConfig(TypedDict, total=False):
 
 class JavamailReadmail(TypedDict, total=False):
     """Read-mail configuration payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.create_javamail_readmail` and
-    :meth:`~opennms_api_wrapper.OpenNMS.update_javamail_readmail`.
+    :meth:`~opennms.OpenNMS.create_javamail_readmail` and
+    :meth:`~opennms.OpenNMS.update_javamail_readmail`.
 
     Attributes:
         name: *Required.* Unique configuration name.
@@ -1075,8 +1075,8 @@ class JavamailReadmail(TypedDict, total=False):
 
 class JavamailSendmail(TypedDict, total=False):
     """Send-mail configuration payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.create_javamail_sendmail` and
-    :meth:`~opennms_api_wrapper.OpenNMS.update_javamail_sendmail`.
+    :meth:`~opennms.OpenNMS.create_javamail_sendmail` and
+    :meth:`~opennms.OpenNMS.update_javamail_sendmail`.
 
     Attributes:
         name: *Required.* Unique configuration name.
@@ -1093,8 +1093,8 @@ class JavamailSendmail(TypedDict, total=False):
 
 class JavamailEnd2End(TypedDict, total=False):
     """End-to-end mail test configuration payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.create_javamail_end2end` and
-    :meth:`~opennms_api_wrapper.OpenNMS.update_javamail_end2end`.
+    :meth:`~opennms.OpenNMS.create_javamail_end2end` and
+    :meth:`~opennms.OpenNMS.update_javamail_end2end`.
 
     Attributes:
         name: *Required.* Unique configuration name.
@@ -1114,9 +1114,9 @@ class JavamailEnd2End(TypedDict, total=False):
 
 class GrafanaEndpoint(TypedDict, total=False):
     """Grafana endpoint payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.create_grafana_endpoint`,
-    :meth:`~opennms_api_wrapper.OpenNMS.update_grafana_endpoint`, and
-    :meth:`~opennms_api_wrapper.OpenNMS.verify_grafana_endpoint`.
+    :meth:`~opennms.OpenNMS.create_grafana_endpoint`,
+    :meth:`~opennms.OpenNMS.update_grafana_endpoint`, and
+    :meth:`~opennms.OpenNMS.verify_grafana_endpoint`.
 
     Attributes:
         id: Numeric identifier (required when updating).
@@ -1144,9 +1144,9 @@ class GrafanaEndpoint(TypedDict, total=False):
 
 class ReportParameter(TypedDict, total=False):
     """Report parameter payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.run_report`,
-    :meth:`~opennms_api_wrapper.OpenNMS.deliver_report`, and
-    :meth:`~opennms_api_wrapper.OpenNMS.schedule_report`.
+    :meth:`~opennms.OpenNMS.run_report`,
+    :meth:`~opennms.OpenNMS.deliver_report`, and
+    :meth:`~opennms.OpenNMS.schedule_report`.
 
     Attributes:
         name: *Required.* Parameter name from the report template.
@@ -1162,8 +1162,8 @@ class ReportParameter(TypedDict, total=False):
 
 class ReportDeliveryOptions(TypedDict, total=False):
     """Report delivery options payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.deliver_report` and
-    :meth:`~opennms_api_wrapper.OpenNMS.schedule_report`.
+    :meth:`~opennms.OpenNMS.deliver_report` and
+    :meth:`~opennms.OpenNMS.schedule_report`.
 
     Attributes:
         instanceId: *Required.* Identifier for the report instance.
@@ -1191,7 +1191,7 @@ class ReportDeliveryOptions(TypedDict, total=False):
 
 class ProductUpdateEnrollment(TypedDict, total=False):
     """Product-update enrollment form payload for
-    :meth:`~opennms_api_wrapper.OpenNMS.submit_product_update_enrollment`.
+    :meth:`~opennms.OpenNMS.submit_product_update_enrollment`.
 
     Attributes:
         consent: *Required.* Consent to the enrollment.

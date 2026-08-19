@@ -5,8 +5,8 @@ Bug reports and pull requests are welcome.
 ## Development setup
 
 ```bash
-git clone https://github.com/cnewkirk/opennms-api-wrapper.git
-cd opennms-api-wrapper
+git clone https://github.com/cnewkirk/python-opennms.git
+cd python-opennms
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
@@ -31,12 +31,12 @@ every push and pull request.
 
 ## Adding a new endpoint
 
-1. Find the appropriate mixin file in `opennms_api_wrapper/` (or create a
+1. Find the appropriate mixin file in `opennms/` (or create a
    new one following the existing pattern).
 2. Add the method using `self._get`, `self._post`, `self._put`, or
    `self._delete`. Pass `v2=True` for `/api/v2/` endpoints.
 3. If the method accepts a write payload (POST/PUT body), add a `TypedDict`
-   for it in `opennms_api_wrapper/types.py` and import it in the mixin.
+   for it in `opennms/types.py` and import it in the mixin.
 4. If you created a new mixin, import and add it to the inheritance list in
    `client.py`.
 5. Add a corresponding test in `tests/test_<mixin>.py`. Mock the HTTP call
@@ -55,7 +55,7 @@ every push and pull request.
 2. Make your changes and ensure all local checks pass:
    ```bash
    pytest tests/ -v
-   ruff check opennms_api_wrapper/
-   mypy opennms_api_wrapper/types.py
+   ruff check opennms/
+   mypy opennms/types.py
    ```
 3. Open a pull request — CI will run all checks automatically.

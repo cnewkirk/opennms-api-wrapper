@@ -9,7 +9,7 @@ picks it up automatically.
 A thin, synchronous Python 3 wrapper for the OpenNMS REST API
 (Horizon 30+ and Meridian; coverage baseline is Meridian 2025 — see
 COVERAGE.md and the README Compatibility section).
-Users `import opennms_api_wrapper as opennms` and get a single `OpenNMS`
+Users `import opennms` and get a single `OpenNMS`
 client class with one method per API endpoint.
 
 ## Development environment
@@ -21,7 +21,7 @@ pip install -e ".[dev]"        # installs requests + pytest + responses + ruff +
 pytest tests/ -v               # run full suite (~0.4 s)
 pytest tests/test_alarms.py -v # run a single test file
 ruff check .                   # lint
-mypy opennms_api_wrapper/      # type-check
+mypy opennms/      # type-check
 mkdocs serve                   # preview docs at http://127.0.0.1:8000
 ```
 
@@ -31,7 +31,7 @@ system Python or system pip.
 ## Repository layout
 
 ```
-opennms_api_wrapper/    # installable package
+opennms/                # installable package (PyPI name: python-opennms)
     __init__.py         # exports OpenNMS, __version__
     client.py           # OpenNMS class (combines all mixins via multiple inheritance)
     _base.py            # _OpenNMSBase: HTTP helpers (_get/_post/_put/_delete/_patch/_parse)
@@ -45,6 +45,9 @@ tests/
     test_*.py           # one file per mixin
 
 docs/                   # MkDocs source (mkdocs-material + mkdocstrings)
+shim/                   # transitional opennms-api-wrapper PyPI package
+                        # (depends on python-opennms; published once via
+                        # publish-shim.yml, then frozen)
 pyproject.toml          # build config, project metadata, ruff/mypy/pytest config
 smoke_test.py           # live-server smoke test (read-only + --write mode)
 ARCHITECTURE.md         # architecture decision records (ADRs)
@@ -53,7 +56,7 @@ TODO.md                 # deferred items
 
 ## Adding a new endpoint group
 
-1. Create `opennms_api_wrapper/_<name>.py` with a `<Name>Mixin` class.
+1. Create `opennms/_<name>.py` with a `<Name>Mixin` class.
 2. Import it in `client.py` and add it to the `OpenNMS` base class list.
 3. Add response fixture(s) to `tests/fixtures.py`.
 4. Create `tests/test_<name>.py` with `@responses.activate` tests.

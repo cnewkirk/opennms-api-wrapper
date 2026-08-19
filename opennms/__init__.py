@@ -1,4 +1,4 @@
-"""opennms_api_wrapper – a thin Python wrapper for the OpenNMS REST API."""
+"""opennms – a thin Python wrapper for the OpenNMS REST API."""
 from .client import OpenNMS
 from ._exceptions import (
     OpenNMSError,
@@ -25,6 +25,6 @@ __all__ = [
 ]
 
 try:
-    __version__ = version("opennms-api-wrapper")
+    __version__ = version("python-opennms")
 except PackageNotFoundError:
     __version__ = "unknown"

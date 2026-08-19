@@ -1,8 +1,8 @@
-site_name: opennms-api-wrapper
+site_name: python-opennms
 site_description: A thin Python wrapper for the OpenNMS REST API (Horizon 35+)
-site_url: https://cnewkirk.github.io/opennms-api-wrapper/
-repo_url: https://github.com/cnewkirk/opennms-api-wrapper
-repo_name: cnewkirk/opennms-api-wrapper
+site_url: https://cnewkirk.github.io/python-opennms/
+repo_url: https://github.com/cnewkirk/python-opennms
+repo_name: cnewkirk/python-opennms
 
 theme:
   name: material

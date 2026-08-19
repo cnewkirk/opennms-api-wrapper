@@ -1,9 +1,9 @@
-# opennms-api-wrapper
+# python-opennms
 
-[![CI](https://github.com/cnewkirk/opennms-api-wrapper/actions/workflows/ci.yml/badge.svg)](https://github.com/cnewkirk/opennms-api-wrapper/actions/workflows/ci.yml)
-[![Coverage](https://codecov.io/gh/cnewkirk/opennms-api-wrapper/graph/badge.svg)](https://codecov.io/gh/cnewkirk/opennms-api-wrapper)
-[![PyPI](https://img.shields.io/pypi/v/opennms-api-wrapper)](https://pypi.org/project/opennms-api-wrapper/)
-[![Docs](https://readthedocs.org/projects/opennms-api-wrapper/badge/?version=stable)](https://opennms-api-wrapper.readthedocs.io/en/stable/)
+[![CI](https://github.com/cnewkirk/python-opennms/actions/workflows/ci.yml/badge.svg)](https://github.com/cnewkirk/python-opennms/actions/workflows/ci.yml)
+[![Coverage](https://codecov.io/gh/cnewkirk/python-opennms/graph/badge.svg)](https://codecov.io/gh/cnewkirk/python-opennms)
+[![PyPI](https://img.shields.io/pypi/v/python-opennms)](https://pypi.org/project/python-opennms/)
+[![Docs](https://readthedocs.org/projects/python-opennms/badge/?version=stable)](https://python-opennms.readthedocs.io/en/stable/)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -16,7 +16,7 @@ live-validated read and write — see [Compatibility](#compatibility).
 > [REST API reference](https://docs.opennms.com/horizon/latest/development/rest/rest-api.html) ·
 > [Community forum](https://opennms.discourse.group/)
 
-**[Full API reference →](https://opennms-api-wrapper.readthedocs.io/en/stable/api/)**
+**[Full API reference →](https://python-opennms.readthedocs.io/en/stable/api/)**
 
 ## Features
 
@@ -34,21 +34,21 @@ live-validated read and write — see [Compatibility](#compatibility).
 ## Installation
 
 ```bash
-pip install opennms-api-wrapper
+pip install python-opennms
 ```
 
 **From source** (latest development version):
 
 ```bash
-git clone https://github.com/cnewkirk/opennms-api-wrapper.git
-cd opennms-api-wrapper
+git clone https://github.com/cnewkirk/python-opennms.git
+cd python-opennms
 pip install .
 ```
 
 ## Quick start
 
 ```python
-import opennms_api_wrapper as opennms
+import opennms
 
 client = opennms.OpenNMS(
     url="https://opennms.example.com:8443",
@@ -77,7 +77,7 @@ alarms = client.get_alarms_v2(fiql="severity==MAJOR")
 HTTP errors raise typed exceptions — no need to import `requests`:
 
 ```python
-import opennms_api_wrapper as opennms
+import opennms
 
 try:
     node = client.get_node(99999)
@@ -273,8 +273,8 @@ whose label starts with `get_flow`.
 ## Development
 
 ```bash
-git clone https://github.com/cnewkirk/opennms-api-wrapper.git
-cd opennms-api-wrapper
+git clone https://github.com/cnewkirk/python-opennms.git
+cd python-opennms
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
@@ -284,7 +284,7 @@ pytest tests/ -v
 ## Contributing
 
 Bug reports and pull requests are welcome on
-[GitHub](https://github.com/cnewkirk/opennms-api-wrapper).
+[GitHub](https://github.com/cnewkirk/python-opennms).
 
 ## Acknowledgements
 

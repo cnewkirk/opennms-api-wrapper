@@ -1,8 +1,8 @@
-"""Exception hierarchy for opennms-api-wrapper."""
+"""Exception hierarchy for python-opennms."""
 
 
 class OpenNMSError(Exception):
-    """Base class for all opennms-api-wrapper exceptions."""
+    """Base class for all python-opennms exceptions."""
 
 
 class OpenNMSHTTPError(OpenNMSError):

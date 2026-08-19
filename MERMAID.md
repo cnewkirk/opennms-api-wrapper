@@ -1,4 +1,4 @@
-# Architecture Diagrams — opennms-api-wrapper
+# Architecture Diagrams — python-opennms
 
 ## Package composition
 

@@ -1,5 +1,5 @@
 """Tests for retry adapter configuration."""
-import opennms_api_wrapper as opennms
+import opennms
 from urllib3.util.retry import Retry
 
 BASE_URL = "http://opennms:8980"
