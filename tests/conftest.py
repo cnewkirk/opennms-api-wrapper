@@ -4,7 +4,7 @@ from urllib.parse import urlparse, parse_qs
 
 import pytest
 import responses as _responses
-import opennms_api_wrapper as opennms
+import opennms
 
 BASE_URL = "http://opennms:8980"
 V1 = f"{BASE_URL}/opennms/rest"

@@ -22,7 +22,7 @@ class SnmpConfigMixin(_OpenNMSBase):
 
         Args:
             ip_address: Target IP address.
-            config: SNMP configuration.  See :class:`~opennms_api_wrapper.types.SnmpConfig`
+            config: SNMP configuration.  See :class:`~opennms.types.SnmpConfig`
                 for all available fields.
         """
         return self._put(f"snmpConfig/{ip_address}", json_data=config)

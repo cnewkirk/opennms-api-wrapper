@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2026-08-19
+
+### Changed
+
+- **Project renamed to `python-opennms`** (was `opennms-api-wrapper`),
+  following the `python-<service>` client naming convention
+  (cf. `python-gitlab`). The import name is now simply
+  `import opennms`.
+  - Install with `pip install python-opennms`.
+  - The repository moved to
+    <https://github.com/cnewkirk/python-opennms>; GitHub redirects
+    the old URLs.
+  - Docs moved to <https://python-opennms.readthedocs.io>.
+  - A final `opennms-api-wrapper` release (0.6.0) is a transitional
+    shim that depends on `python-opennms` and re-exports the
+    `opennms` package under the old `opennms_api_wrapper` module
+    name with a `DeprecationWarning`. Existing installs and pins
+    keep working; switch imports to `import opennms` at your
+    convenience.
+
+No API changes — the `OpenNMS` client, exceptions, and types are
+identical to 0.5.0.
+
 ## [0.5.0] - 2026-08-19
 
 Promotion of 0.5.0rc1, with one additional fix found while extending

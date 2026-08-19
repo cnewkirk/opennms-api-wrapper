@@ -3,8 +3,8 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "opennms-api-wrapper"
-version = "0.5.0"
+name = "python-opennms"
+version = "0.6.0"
 description = "An unofficial Python 3 client for the OpenNMS REST API (Horizon 35+)"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -39,19 +39,19 @@ dependencies = [
 dev = ["pytest", "pytest-cov", "responses", "mkdocs-material", "mkdocstrings[python]", "ruff", "mypy", "types-requests"]
 
 [project.urls]
-Homepage = "https://opennms-api-wrapper.readthedocs.io/en/stable/"
-Documentation = "https://opennms-api-wrapper.readthedocs.io/en/stable/"
-"API Reference" = "https://opennms-api-wrapper.readthedocs.io/en/stable/api/"
-Repository = "https://github.com/cnewkirk/opennms-api-wrapper"
-"Bug Tracker" = "https://github.com/cnewkirk/opennms-api-wrapper/issues"
-Changelog = "https://github.com/cnewkirk/opennms-api-wrapper/blob/main/CHANGELOG.md"
+Homepage = "https://python-opennms.readthedocs.io/en/stable/"
+Documentation = "https://python-opennms.readthedocs.io/en/stable/"
+"API Reference" = "https://python-opennms.readthedocs.io/en/stable/api/"
+Repository = "https://github.com/cnewkirk/python-opennms"
+"Bug Tracker" = "https://github.com/cnewkirk/python-opennms/issues"
+Changelog = "https://github.com/cnewkirk/python-opennms/blob/main/CHANGELOG.md"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["opennms_api_wrapper*"]
+include = ["opennms*"]
 
 [tool.setuptools.package-data]
-opennms_api_wrapper = ["py.typed"]
+opennms = ["py.typed"]
 
 [tool.ruff]
 line-length = 79

@@ -33,7 +33,7 @@ body:
       description: The smallest code snippet that reproduces the bug.
       render: python
       value: |
-        import opennms_api_wrapper as opennms
+        import opennms
         client = opennms.OpenNMS(url="...", username="...", password="...")
         # ...
     validations:
@@ -72,8 +72,8 @@ body:
   - type: input
     id: wrapper_version
     attributes:
-      label: opennms-api-wrapper version
-      placeholder: "e.g. 0.4.3  (pip show opennms-api-wrapper)"
+      label: python-opennms version
+      placeholder: "e.g. 0.4.3  (pip show python-opennms)"
     validations:
       required: true
 

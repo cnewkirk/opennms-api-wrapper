@@ -1,10 +1,10 @@
-# opennms-api-wrapper
+# python-opennms
 
-[![CI](https://github.com/cnewkirk/opennms-api-wrapper/actions/workflows/ci.yml/badge.svg)](https://github.com/cnewkirk/opennms-api-wrapper/actions/workflows/ci.yml)
-[![Coverage](https://codecov.io/gh/cnewkirk/opennms-api-wrapper/graph/badge.svg)](https://codecov.io/gh/cnewkirk/opennms-api-wrapper)
-[![PyPI](https://img.shields.io/pypi/v/opennms-api-wrapper)](https://pypi.org/project/opennms-api-wrapper/)
+[![CI](https://github.com/cnewkirk/python-opennms/actions/workflows/ci.yml/badge.svg)](https://github.com/cnewkirk/python-opennms/actions/workflows/ci.yml)
+[![Coverage](https://codecov.io/gh/cnewkirk/python-opennms/graph/badge.svg)](https://codecov.io/gh/cnewkirk/python-opennms)
+[![PyPI](https://img.shields.io/pypi/v/python-opennms)](https://pypi.org/project/python-opennms/)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/cnewkirk/opennms-api-wrapper/blob/main/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/cnewkirk/python-opennms/blob/main/LICENSE)
 
 An unofficial, dependency-minimal Python 3 client for the [OpenNMS](https://www.opennms.com/) REST API (Horizon 30+ and Meridian).
 Covers 100% of the [Meridian 2025 REST API reference](https://docs.opennms.com/meridian/2025/development/rest/rest-api.html) (excluding the three web-UI-internal APIs), smoke-tested read and write against the Meridian 2025 foundation (Horizon 34.0.1). Expected server range: Horizon 30+; eventconf requires Horizon 35+, and the legacy maps API only exists before Horizon 16.
@@ -14,21 +14,21 @@ Covers 100% of the [Meridian 2025 REST API reference](https://docs.opennms.com/m
 ## Installation
 
 ```bash
-pip install opennms-api-wrapper
+pip install python-opennms
 ```
 
 **From source** (latest development version):
 
 ```bash
-git clone https://github.com/cnewkirk/opennms-api-wrapper.git
-cd opennms-api-wrapper
+git clone https://github.com/cnewkirk/python-opennms.git
+cd python-opennms
 pip install .
 ```
 
 ## Quick start
 
 ```python
-import opennms_api_wrapper as opennms
+import opennms
 
 client = opennms.OpenNMS(
     url="https://opennms.example.com:8443",

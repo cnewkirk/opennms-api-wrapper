@@ -31,7 +31,7 @@ class MonitoringLocationsMixin(_OpenNMSBase):
 
         Args:
             location: Monitoring location definition.  See
-                :class:`~opennms_api_wrapper.types.MonitoringLocation`
+                :class:`~opennms.types.MonitoringLocation`
                 for all available fields.
         """
         return self._post("monitoringLocations", json_data=location)

@@ -83,7 +83,7 @@ class RequisitionsMixin(_OpenNMSBase):
         Args:
             name: Foreign source name of the requisition.
             node: Node definition.  See
-                :class:`~opennms_api_wrapper.types.RequisitionNode`
+                :class:`~opennms.types.RequisitionNode`
                 for all available fields.
         """
         return self._post(f"requisitions/{name}/nodes", json_data=node)

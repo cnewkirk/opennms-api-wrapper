@@ -142,12 +142,12 @@ class OpenNMS(
     """Thin Python wrapper for the OpenNMS REST API.
 
     All responses are returned as parsed Python objects (dicts/lists/ints).
-    Failed HTTP requests raise :class:`~opennms_api_wrapper.OpenNMSHTTPError`
-    (or a specific subclass such as :class:`~opennms_api_wrapper.NotFoundError`).
+    Failed HTTP requests raise :class:`~opennms.OpenNMSHTTPError`
+    (or a specific subclass such as :class:`~opennms.NotFoundError`).
 
     Usage::
 
-        import opennms_api_wrapper as opennms
+        import opennms
 
         client = opennms.OpenNMS(
             url="http://localhost:8980",

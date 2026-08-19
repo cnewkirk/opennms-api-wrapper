@@ -30,7 +30,7 @@ import re
 import sys
 import time
 
-import opennms_api_wrapper as opennms
+import opennms
 
 
 # ── Output ─────────────────────────────────────────────────────────────────────
@@ -1786,7 +1786,7 @@ def test_write_reports_graphml_misc(c):
         run("set_active_geocoder (restore)", c.set_active_geocoder,
             geo["activeGeocoderId"])
     warn("configure_geocoder", c.configure_geocoder, "nominatim",
-         {"userAgent": "opennms-api-wrapper-smoke"},
+         {"userAgent": "python-opennms-smoke"},
          note="geocoder config keys vary by provider")
 
     stats = warn("get_usage_statistics_status",

@@ -1,7 +1,7 @@
-# Architecture Decision Record — opennms-api-wrapper
+# Architecture Decision Record — python-opennms
 
 This document captures the significant design decisions made in building
-`opennms-api-wrapper`, the rationale behind each, and their tradeoffs.  It
+`python-opennms`, the rationale behind each, and their tradeoffs.  It
 is intended to serve both as institutional memory and as a guide for
 contributors evaluating future changes.
 
@@ -454,7 +454,7 @@ now derived at runtime from installed package metadata:
 ```python
 from importlib.metadata import version, PackageNotFoundError
 try:
-    __version__ = version("opennms-api-wrapper")
+    __version__ = version("python-opennms")
 except PackageNotFoundError:
     __version__ = "unknown"   # running directly from source, not installed
 ```

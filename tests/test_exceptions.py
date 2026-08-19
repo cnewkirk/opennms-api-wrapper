@@ -2,7 +2,7 @@
 import pytest
 import responses as rsps
 
-import opennms_api_wrapper as opennms
+import opennms
 from tests.conftest import V1, V2
 
 
