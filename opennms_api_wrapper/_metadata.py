@@ -22,14 +22,18 @@ class MetadataMixin(_OpenNMSBase):
     def set_node_metadata(self, node_id, metadata: list):
         """Set metadata entries for *node_id*.
 
+        The endpoint accepts one entry per request, so each entry is
+        posted individually.
+
         Args:
             node_id: Node database ID or ``"foreignSource:foreignId"``.
             metadata: List of dicts with keys ``context``, ``key``,
                 ``value``. Only user-defined contexts (prefixed ``X-``)
                 can be modified.
         """
-        return self._post(f"nodes/{node_id}/metadata", json_data=metadata,
-                          v2=True)
+        for entry in metadata:
+            self._post(f"nodes/{node_id}/metadata", json_data=entry,
+                       v2=True)
 
     def set_node_metadata_value(self, node_id, context: str, key: str,
                                 value: str):
@@ -85,11 +89,14 @@ class MetadataMixin(_OpenNMSBase):
         Args:
             node_id: Node database ID or ``"foreignSource:foreignId"``.
             ip_interface: IP address of the interface.
-            metadata: List of dicts with keys ``context``, ``key``, ``value``.
+            metadata: List of dicts with keys ``context``, ``key``,
+                ``value``. Each entry is posted individually — the
+                endpoint accepts one entry per request.
         """
-        return self._post(
-            f"nodes/{node_id}/ipinterfaces/{ip_interface}/metadata",
-            json_data=metadata, v2=True)
+        for entry in metadata:
+            self._post(
+                f"nodes/{node_id}/ipinterfaces/{ip_interface}/metadata",
+                json_data=entry, v2=True)
 
     def set_interface_metadata_value(self, node_id, ip_interface: str,
                                      context: str, key: str, value: str):
@@ -162,13 +169,16 @@ class MetadataMixin(_OpenNMSBase):
             node_id: Node database ID or ``"foreignSource:foreignId"``.
             ip_interface: IP address of the interface.
             service: Monitored service name.
-            metadata: List of dicts with keys ``context``, ``key``, ``value``.
+            metadata: List of dicts with keys ``context``, ``key``,
+                ``value``. Each entry is posted individually — the
+                endpoint accepts one entry per request.
         """
-        return self._post(
-            f"nodes/{node_id}/ipinterfaces/{ip_interface}"
-            f"/services/{service}/metadata",
-            json_data=metadata, v2=True,
-        )
+        for entry in metadata:
+            self._post(
+                f"nodes/{node_id}/ipinterfaces/{ip_interface}"
+                f"/services/{service}/metadata",
+                json_data=entry, v2=True,
+            )
 
     def set_service_metadata_value(self, node_id, ip_interface: str,
                                    service: str, context: str, key: str,

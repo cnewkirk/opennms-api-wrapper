@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- `set_node_metadata`, `set_interface_metadata`, and
+  `set_service_metadata` post one metadata entry per request — the
+  v2 endpoint accepts a single entry, so the previous list body
+  always failed with 500. Callers still pass a list.
+
 ## [0.5.0rc1] - 2026-08-18
 
 ### Added

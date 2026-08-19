@@ -50,12 +50,14 @@ def test_get_node_metadata_value(client):
 @responses.activate
 def test_set_node_metadata(client):
     responses.add(responses.POST, _NODE, status=204)
-    payload = [{"context": CTX, "key": KEY, "value": VAL}]
-    result = client.set_node_metadata(NODE_ID, payload)
-    assert result is None
+    payload = [{"context": CTX, "key": KEY, "value": VAL},
+               {"context": CTX, "key": "k2", "value": VAL}]
+    client.set_node_metadata(NODE_ID, payload)
+    assert len(responses.calls) == 2
     body = json.loads(responses.calls[0].request.body)
-    assert body[0]["context"] == CTX
-    assert body[0]["value"] == VAL
+    assert body["context"] == CTX
+    assert body["value"] == VAL
+    assert json.loads(responses.calls[1].request.body)["key"] == "k2"
 
 
 @responses.activate
@@ -119,10 +121,9 @@ def test_get_interface_metadata_value(client):
 def test_set_interface_metadata(client):
     responses.add(responses.POST, _IFACE, status=204)
     payload = [{"context": CTX, "key": KEY, "value": VAL}]
-    result = client.set_interface_metadata(NODE_ID, IP, payload)
-    assert result is None
+    client.set_interface_metadata(NODE_ID, IP, payload)
     body = json.loads(responses.calls[0].request.body)
-    assert body[0]["key"] == KEY
+    assert body["key"] == KEY
 
 
 @responses.activate
@@ -187,10 +188,9 @@ def test_get_service_metadata_value(client):
 def test_set_service_metadata(client):
     responses.add(responses.POST, _SVC, status=204)
     payload = [{"context": CTX, "key": KEY, "value": VAL}]
-    result = client.set_service_metadata(NODE_ID, IP, SVC, payload)
-    assert result is None
+    client.set_service_metadata(NODE_ID, IP, SVC, payload)
     body = json.loads(responses.calls[0].request.body)
-    assert body[0]["value"] == VAL
+    assert body["value"] == VAL
 
 
 @responses.activate
