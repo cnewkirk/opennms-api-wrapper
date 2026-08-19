@@ -2,22 +2,6 @@
 
 Deferred items.
 
-## Pre-commit config
-
-Add `.pre-commit-config.yaml` so contributors get ruff feedback before
-pushing:
-
-```yaml
-repos:
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.0   # pin to a recent release
-    hooks:
-      - id: ruff
-```
-
-Update `CONTRIBUTING.md` to mention `pre-commit install` as an optional
-setup step.
-
 ## OpenNMS Discourse announcement
 
 Post in the existing Python REST API thread on the OpenNMS community forum:
