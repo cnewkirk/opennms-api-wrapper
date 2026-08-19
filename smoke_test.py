@@ -1127,6 +1127,784 @@ def test_write_ops(c):
         _skip("update_map / delete_map", "maps API unavailable")
 
 
+
+
+def _cleanup(fn, *args):
+    """Best-effort cleanup; never affects pass/fail counts."""
+    try:
+        fn(*args)
+    except Exception:
+        pass
+
+
+def test_write_node_lifecycle(c):
+    tag = f"smoke-{int(time.time())}"
+    _section("write: node lifecycle")
+
+    # Rescan the stable self-monitor node; scanning (or emptying) a
+    # throwaway REST-created node triggers async delete propagation.
+    run("rescan_node  id=1", c.rescan_node, 1)
+
+    run("create_node", c.create_node,
+        {"label": f"{tag}-node", "type": "A", "location": "Default"})
+    nid = None
+    try:
+        for n in c.get_nodes(limit=0).get("node", []):
+            if n.get("label") == f"{tag}-node":
+                nid = n["id"]
+    except Exception:
+        pass
+    if not nid:
+        _skip("node lifecycle suite", "create_node produced no node")
+        return
+
+    run(f"update_node  id={nid}", c.update_node, nid,
+        {"label": f"{tag}-node"})
+
+    ip, ip2 = "10.254.0.1", "10.254.0.2"
+    run("create_node_ip_interface", c.create_node_ip_interface, nid,
+        {"ipAddress": ip, "isManaged": "M", "snmpPrimary": "N"})
+    run("update_node_ip_interface", c.update_node_ip_interface, nid,
+        ip, {"isManaged": "M"})
+    run("create_node_ip_interface (second)",
+        c.create_node_ip_interface, nid,
+        {"ipAddress": ip2, "isManaged": "M", "snmpPrimary": "N"})
+
+    run("create_node_snmp_interface", c.create_node_snmp_interface,
+        nid, {"ifIndex": 991, "ifName": f"{tag}0", "ifType": 6})
+    run("update_node_snmp_interface", c.update_node_snmp_interface,
+        nid, 991, {"ifAlias": tag})
+    run("delete_node_snmp_interface", c.delete_node_snmp_interface,
+        nid, 991)
+
+    cat = f"{tag}-cat"
+    run("create_category", c.create_category, {"name": cat})
+    run("add_node_category", c.add_node_category, nid, {"name": cat})
+    run("update_node_category", c.update_node_category, nid, cat,
+        {"name": cat})
+    run("delete_node_category", c.delete_node_category, nid, cat)
+    run("associate_category_with_node", c.associate_category_with_node,
+        cat, nid)
+    run("dissociate_category_from_node",
+        c.dissociate_category_from_node, cat, nid)
+    run("update_category", c.update_category, cat,
+        {"description": "smoke"})
+
+    run("update_node_asset_record", c.update_node_asset_record, nid,
+        {"building": tag})
+
+    warn("add_node_hardware_inventory", c.add_node_hardware_inventory,
+         nid, {"entPhysicalIndex": 1, "entPhysicalName": tag,
+               "entPhysicalClass": 3},
+         note="hardware inventory root entity may need SNMP data")
+    warn("update_node_hardware_entity", c.update_node_hardware_entity,
+         nid, 1, {"entPhysicalAlias": tag},
+         note="requires the entity created above")
+    warn("delete_node_hardware_entity", c.delete_node_hardware_entity,
+         nid, 1, note="requires the entity created above")
+
+    meta = [{"context": "X-smoke", "key": "k1", "value": "v1"}]
+    run("set_node_metadata", c.set_node_metadata, nid, meta)
+    run("set_node_metadata_value", c.set_node_metadata_value, nid,
+        "X-smoke", "k2", "v2")
+    run("delete_node_metadata_key", c.delete_node_metadata_key, nid,
+        "X-smoke", "k2")
+    run("delete_node_metadata_context", c.delete_node_metadata_context,
+        nid, "X-smoke")
+    run("set_interface_metadata", c.set_interface_metadata, nid, ip,
+        meta)
+    run("set_interface_metadata_value", c.set_interface_metadata_value,
+        nid, ip, "X-smoke", "k2", "v2")
+    run("delete_interface_metadata_key",
+        c.delete_interface_metadata_key, nid, ip, "X-smoke", "k2")
+    run("delete_interface_metadata_context",
+        c.delete_interface_metadata_context, nid, ip, "X-smoke")
+
+    # Deleting the last service (or interface) of a node starts
+    # async delete propagation, so keep a second service and a second
+    # interface alive until the node itself is deleted.
+    run("create_node_ip_service", c.create_node_ip_service, nid, ip,
+        {"serviceType": {"name": "ICMP"}, "status": "A"})
+    run("create_node_ip_service (second)", c.create_node_ip_service,
+        nid, ip, {"serviceType": {"name": "SNMP"}, "status": "A"})
+    run("set_service_metadata", c.set_service_metadata, nid, ip,
+        "ICMP", meta)
+    run("set_service_metadata_value", c.set_service_metadata_value,
+        nid, ip, "ICMP", "X-smoke", "k2", "v2")
+    run("delete_service_metadata_key", c.delete_service_metadata_key,
+        nid, ip, "ICMP", "X-smoke", "k2")
+    run("delete_service_metadata_context",
+        c.delete_service_metadata_context, nid, ip, "ICMP", "X-smoke")
+    run("delete_node_ip_service", c.delete_node_ip_service, nid, ip,
+        "ICMP")
+    run("delete_node_ip_interface (second)",
+        c.delete_node_ip_interface, nid, ip2)
+    run(f"delete_node  id={nid}", c.delete_node, nid)
+    run("delete_category", c.delete_category, cat)
+
+
+def test_write_identity(c):
+    tag = f"smoke-{int(time.time())}"
+    _section("write: users, groups, roles")
+
+    user, grp, cat = f"{tag}-user", f"{tag}-grp", f"{tag}-gcat"
+    run("create_user", c.create_user,
+        {"user-id": user, "password": "smoke-pw"}, hash_password=True)
+    run("update_user", c.update_user, user, {"fullName": "Smoke User"})
+    run("assign_role_to_user", c.assign_role_to_user, user,
+        "ROLE_READONLY")
+    run("revoke_role_from_user", c.revoke_role_from_user, user,
+        "ROLE_READONLY")
+    run("create_group", c.create_group, {"name": grp})
+    run("update_group", c.update_group, grp, {"comments": "smoke"})
+    run("add_user_to_group", c.add_user_to_group, grp, user)
+    run("remove_user_from_group", c.remove_user_from_group, grp, user)
+    run("create_category (group assoc)", c.create_category,
+        {"name": cat})
+    run("add_category_to_group", c.add_category_to_group, grp, cat)
+    run("remove_category_from_group", c.remove_category_from_group,
+        grp, cat)
+    run("associate_category_with_group",
+        c.associate_category_with_group, cat, grp)
+    run("dissociate_category_from_group",
+        c.dissociate_category_from_group, cat, grp)
+    run("delete_category (group assoc)", c.delete_category, cat)
+    run("delete_group", c.delete_group, grp)
+    run("delete_user", c.delete_user, user)
+
+
+def test_write_sched_outage_assoc(c):
+    tag = f"smoke-{int(time.time())}"
+    _section("write: scheduled outage daemon associations")
+
+    name = f"{tag}-outage"
+    run("create_sched_outage", c.create_sched_outage, {
+        "name": name, "type": "specific",
+        "time": [{"begins": "01-Jan-2030 00:00:00",
+                  "ends": "01-Jan-2030 01:00:00"}],
+        "interface": [{"address": "10.254.0.99"}],
+    })
+    run("associate_sched_outage_notifd",
+        c.associate_sched_outage_notifd, name)
+    run("dissociate_sched_outage_notifd",
+        c.dissociate_sched_outage_notifd, name)
+    warn("associate_sched_outage_collectd",
+         c.associate_sched_outage_collectd, name, "example1",
+         note="package name is config-defined")
+    warn("dissociate_sched_outage_collectd",
+         c.dissociate_sched_outage_collectd, name, "example1",
+         note="package name is config-defined")
+    warn("associate_sched_outage_pollerd",
+         c.associate_sched_outage_pollerd, name, "example1",
+         note="package name is config-defined")
+    warn("dissociate_sched_outage_pollerd",
+         c.dissociate_sched_outage_pollerd, name, "example1",
+         note="package name is config-defined")
+    warn("associate_sched_outage_threshd",
+         c.associate_sched_outage_threshd, name, "example1",
+         note="package name is config-defined")
+    warn("dissociate_sched_outage_threshd",
+         c.dissociate_sched_outage_threshd, name, "example1",
+         note="package name is config-defined")
+    run("delete_sched_outage", c.delete_sched_outage, name)
+
+
+def test_write_provisioning(c):
+    tag = f"smoke-{int(time.time())}"
+    _section("write: requisitions and foreign sources")
+
+    req, fid, ip = f"{tag}-req", f"{tag}-n1", "10.254.1.1"
+    run("create_requisition", c.create_requisition,
+        {"foreign-source": req})
+    run("create_requisition_node", c.create_requisition_node, req, {
+        "foreign-id": fid, "node-label": f"{tag}-rnode",
+    })
+    run("create_requisition_node_interface",
+        c.create_requisition_node_interface, req, fid,
+        {"ip-addr": ip, "status": 1, "snmp-primary": "N"})
+    run("create_requisition_node_service",
+        c.create_requisition_node_service, req, fid, ip,
+        {"service-name": "ICMP"})
+    run("add_requisition_node_category",
+        c.add_requisition_node_category, req, fid,
+        {"name": "Production"})
+    run("set_requisition_node_asset", c.set_requisition_node_asset,
+        req, fid, {"name": "building", "value": tag})
+    run("update_requisition", c.update_requisition, req,
+        {"foreign-source": req})
+    run("update_requisition_node", c.update_requisition_node, req,
+        fid, {"node-label": f"{tag}-rnode2"})
+    run("update_requisition_node_interface",
+        c.update_requisition_node_interface, req, fid, ip,
+        {"descr": "smoke"})
+    run("delete_requisition_node_service",
+        c.delete_requisition_node_service, req, fid, ip, "ICMP")
+    run("delete_requisition_node_category",
+        c.delete_requisition_node_category, req, fid, "Production")
+    run("delete_requisition_node_asset",
+        c.delete_requisition_node_asset, req, fid, "building")
+    run("delete_requisition_node_interface",
+        c.delete_requisition_node_interface, req, fid, ip)
+    run("delete_requisition_node", c.delete_requisition_node, req,
+        fid)
+    run("import_requisition", c.import_requisition, req)
+
+    fs = f"{tag}-req"
+    run("create_foreign_source", c.create_foreign_source,
+        {"name": fs, "scan-interval": "12w"})
+    run("update_foreign_source", c.update_foreign_source, fs,
+        {"scan-interval": "6w"})
+    run("add_foreign_source_detector", c.add_foreign_source_detector,
+        fs, {"name": "ICMP",
+             "class": "org.opennms.netmgt.provision.detector.icmp"
+                      ".IcmpDetector"})
+    run("delete_foreign_source_detector",
+        c.delete_foreign_source_detector, fs, "ICMP")
+    run("add_foreign_source_policy", c.add_foreign_source_policy, fs, {
+        "name": "no-discovered-ips",
+        "class": "org.opennms.netmgt.provision.persist.policies"
+                 ".MatchingIpInterfacePolicy",
+        "parameter": [{"key": "action", "value": "DO_NOT_PERSIST"},
+                      {"key": "matchBehavior",
+                       "value": "NO_PARAMETERS"}],
+    })
+    run("delete_foreign_source_policy",
+        c.delete_foreign_source_policy, fs, "no-discovered-ips")
+    run("delete_foreign_source", c.delete_foreign_source, fs)
+    _cleanup(c.delete_foreign_source, f"deployed/{fs}")
+    run("delete_requisition", c.delete_requisition, req)
+    run("delete_deployed_requisition", c.delete_deployed_requisition,
+        req)
+
+
+def test_write_monitoring_locations(c):
+    tag = f"smoke-{int(time.time())}"
+    _section("write: monitoring locations")
+
+    loc = f"{tag}-loc"
+    run("create_monitoring_location", c.create_monitoring_location,
+        {"location-name": loc, "monitoring-area": "smoke"})
+    run("update_monitoring_location", c.update_monitoring_location,
+        loc, {"monitoring-area": "smoke2"})
+    run("delete_monitoring_location", c.delete_monitoring_location,
+        loc)
+
+
+
+
+def test_write_service_entities(c):
+    tag = f"smoke-{int(time.time())}"
+    _section("write: BSM, situations, applications, links")
+
+    bs = f"{tag}-bs"
+    run("create_business_service", c.create_business_service, {
+        "name": bs, "attributes": {"attribute": []},
+        "reduce-function": {"type": "HighestSeverity"},
+    })
+    bid = None
+    try:
+        for b in c.get_business_services().get("business-services", []):
+            pass
+    except Exception:
+        pass
+    try:
+        for b in (c.get_business_services() or {}).get(
+                "business-services", []):
+            detail = c.get_business_service(
+                int(str(b).rsplit("/", 1)[-1])) if isinstance(
+                b, str) else b
+            if isinstance(detail, dict) and detail.get("name") == bs:
+                bid = detail.get("id")
+    except Exception:
+        pass
+    if bid:
+        run("update_business_service", c.update_business_service, bid,
+            {"name": bs,
+             "reduce-function": {"type": "HighestSeverity"}})
+        run("add_reduction_key_edge", c.add_reduction_key_edge, bid, {
+            "reduction-key": f"{tag}-rk",
+            "map-function": {"type": "Identity"}, "weight": 1,
+        })
+        warn("add_ip_service_edge", c.add_ip_service_edge, bid,
+             {"ip-service-id": 1,
+              "map-function": {"type": "Identity"}, "weight": 1},
+             note="requires monitored service with id=1")
+        bs2 = f"{tag}-bs2"
+        run("create_business_service (child)",
+            c.create_business_service,
+            {"name": bs2,
+             "reduce-function": {"type": "HighestSeverity"}})
+        cid = None
+        try:
+            for b in (c.get_business_services() or {}).get(
+                    "business-services", []):
+                detail = c.get_business_service(
+                    int(str(b).rsplit("/", 1)[-1])) if isinstance(
+                    b, str) else b
+                if isinstance(detail, dict) and \
+                        detail.get("name") == bs2:
+                    cid = detail.get("id")
+        except Exception:
+            pass
+        if cid:
+            run("add_child_edge", c.add_child_edge, bid, {
+                "child-id": cid,
+                "map-function": {"type": "Identity"}, "weight": 1,
+            })
+        edge_removed = False
+        try:
+            detail = c.get_business_service(bid)
+            for edge in (detail.get("reduction-key-edges") or []):
+                eid = edge if isinstance(edge, int) else edge.get("id")
+                if eid is not None:
+                    run("remove_business_service_edge",
+                        c.remove_business_service_edge, bid, eid)
+                    edge_removed = True
+                    break
+        except Exception:
+            pass
+        if not edge_removed:
+            _skip("remove_business_service_edge", "no edge id found")
+        run("reload_business_service_daemon",
+            c.reload_business_service_daemon)
+        if cid:
+            run("delete_business_service (child)",
+                c.delete_business_service, cid)
+        run("delete_business_service", c.delete_business_service, bid)
+    else:
+        _skip("business service mutations", "create returned no id")
+
+    # Situations need existing alarms to group
+    _, aid = _first(c.get_alarms, "alarm")
+    if aid:
+        warn("create_situation", c.create_situation, [aid],
+             description=f"{tag}-situation",
+             note="requires situation support for the alarm set")
+        _, sid = _first(c.get_situations, "alarm")
+        if sid:
+            warn(f"accept_situation  id={sid}", c.accept_situation,
+                 sid, note="situation lifecycle")
+            warn(f"clear_situation  id={sid}", c.clear_situation, sid,
+                 note="situation lifecycle")
+    else:
+        _skip("create_situation", "no alarms present")
+    _, aid2 = _first(c.get_alarms, "alarm")
+    _, sid2 = _first(c.get_situations, "alarm")
+    if sid2 and aid2:
+        warn("add_alarms_to_situation", c.add_alarms_to_situation,
+             sid2, [aid2], note="situation lifecycle")
+        warn("remove_alarms_from_situation",
+             c.remove_alarms_from_situation, sid2, [aid2],
+             note="situation lifecycle")
+        warn("clear_situation_alarms", c.clear_situation_alarms,
+             sid2, note="situation lifecycle")
+    else:
+        _skip("situation alarm mutations", "no situation present")
+    if aid2:
+        run("create_ack (alarm)", c.create_ack, "ack",
+            alarm_id=aid2)
+        run("create_ack (unack)", c.create_ack, "unack",
+            alarm_id=aid2)
+    else:
+        _skip("create_ack", "no alarms")
+    warn("submit_situation_feedback", c.submit_situation_feedback,
+         f"{tag}-rk", [],
+         note="requires situation-feedback feature")
+
+    app = f"{tag}-app"
+    run("create_application", c.create_application, {"name": app})
+    app_id = None
+    try:
+        for a in (c.get_applications(limit=0) or {}).get(
+                "application", []):
+            if a.get("name") == app:
+                app_id = a.get("id")
+    except Exception:
+        pass
+    if app_id:
+        run("delete_application", c.delete_application, app_id)
+    else:
+        _skip("delete_application", "application id not found")
+
+    warn("create_user_defined_link", c.create_user_defined_link,
+         {"node-id-a": 1, "node-id-z": 1, "link-id": tag,
+          "owner": "smoke"},
+         note="requires two existing nodes")
+    try:
+        for link in (c.get_user_defined_links() or []):
+            if link.get("link-id") == tag:
+                run("delete_user_defined_link",
+                    c.delete_user_defined_link, link["db-id"])
+    except Exception:
+        pass
+
+
+def test_write_classification_scv(c):
+    tag = f"smoke-{int(time.time())}"
+    _section("write: flow classification and credentials vault")
+
+    grp_id = rule_id = None
+    run("create_classification_group",
+        c.create_classification_group,
+        {"name": f"{tag}-cgrp", "enabled": True,
+         "description": "smoke"})
+    try:
+        for g in c.get_classification_groups() or []:
+            if g.get("name") == f"{tag}-cgrp":
+                grp_id = g.get("id")
+    except Exception:
+        pass
+    if grp_id:
+        run("update_classification_group",
+            c.update_classification_group, grp_id,
+            {"name": f"{tag}-cgrp", "enabled": False,
+             "description": "smoke2"})
+        run("create_classification_rule",
+            c.create_classification_rule,
+            {"name": f"{tag}-rule", "dstPort": "9999",
+             "protocol": "tcp", "omnidirectional": False,
+             "group": {"id": grp_id}})
+        try:
+            for r in c.get_classification_rules(
+                    group_id=grp_id) or []:
+                if r.get("name") == f"{tag}-rule":
+                    rule_id = r.get("id")
+        except Exception:
+            pass
+        if rule_id:
+            run("update_classification_rule",
+                c.update_classification_rule, rule_id,
+                {"name": f"{tag}-rule", "dstPort": "9998",
+                 "protocol": "tcp", "omnidirectional": False,
+                 "group": {"id": grp_id}})
+            run("delete_classification_rule",
+                c.delete_classification_rule, rule_id)
+        warn("import_classification_rules",
+             c.import_classification_rules, grp_id,
+             f"name;protocol;srcAddress;srcPort;dstAddress;dstPort;"
+             f"exporterFilter;omnidirectional\n"
+             f"{tag}-csv;tcp;;;;9997;;false\n",
+             note="CSV import format varies by version")
+        warn("delete_classification_rules (group)",
+             c.delete_classification_rules, grp_id,
+             note="bulk delete of the group rules")
+        run("delete_classification_group",
+            c.delete_classification_group, grp_id)
+    else:
+        _skip("classification mutations", "group id not found")
+    run("classify", c.classify,
+        {"protocol": "tcp", "dstPort": "443", "srcAddress": "10.0.0.1",
+         "srcPort": "55555", "dstAddress": "10.0.0.2",
+         "exporterAddress": "10.0.0.3"})
+
+    alias = f"{tag}-cred"
+    run("create_credential", c.create_credential,
+        {"alias": alias, "username": "smoke", "password": "pw"})
+    run("update_credential", c.update_credential, alias,
+        {"alias": alias, "username": "smoke2", "password": "pw2"})
+    run("delete_credential", c.delete_credential, alias)
+
+
+def test_write_configs_nbi(c):
+    tag = f"smoke-{int(time.time())}"
+    _section("write: config management and northbounders")
+
+    cfg = warn("get_config (provisiond)", c.get_config, "provisiond",
+               "default", note="cm API payload for round-trip update")
+    if isinstance(cfg, dict):
+        run("update_config (no-op round-trip)", c.update_config,
+            "provisiond", "default", cfg)
+    else:
+        _skip("update_config", "no provisiond config payload")
+    warn("create_config", c.create_config, "provisiond", tag,
+         {"importThreads": 8},
+         note="most cm schemas are single-instance")
+    warn("delete_config", c.delete_config, "provisiond", tag,
+         note="cleanup of the instance above")
+    warn("delete_config_part", c.delete_config_part, "provisiond",
+         "default", "nonexistent-part",
+         note="requires a part path in the schema")
+
+    dest = f"{tag}-dest"
+    run("create_email_nbi_destination", c.create_email_nbi_destination,
+        {"name": dest})
+    run("update_email_nbi_destination", c.update_email_nbi_destination,
+        dest, {"firstOccurrenceOnly": "true"})
+    run("delete_email_nbi_destination", c.delete_email_nbi_destination,
+        dest)
+    status = warn("get_email_nbi_status", c.get_email_nbi_status,
+                  note="read for status round-trip")
+    enabled = bool(status.get("enabled")) if isinstance(
+        status, dict) else False
+    run("set_email_nbi_status (restore)", c.set_email_nbi_status,
+        enabled)
+    ecfg = warn("get_email_nbi_config", c.get_email_nbi_config,
+                note="read for config round-trip")
+    if isinstance(ecfg, dict):
+        run("update_email_nbi_config (no-op)",
+            c.update_email_nbi_config, ecfg)
+
+    sink = f"{tag}-sink"
+    run("create_snmptrap_nbi_trapsink",
+        c.create_snmptrap_nbi_trapsink,
+        {"name": sink, "ip-address": "127.0.0.1", "port": 1162})
+    run("update_snmptrap_nbi_trapsink",
+        c.update_snmptrap_nbi_trapsink, sink, {"port": 1163})
+    run("delete_snmptrap_nbi_trapsink",
+        c.delete_snmptrap_nbi_trapsink, sink)
+    tstat = warn("get_snmptrap_nbi_status", c.get_snmptrap_nbi_status,
+                 note="read for status round-trip")
+    run("set_snmptrap_nbi_status (restore)",
+        c.set_snmptrap_nbi_status,
+        bool(tstat.get("enabled")) if isinstance(tstat, dict)
+        else False)
+    tcfg = warn("get_snmptrap_nbi_config", c.get_snmptrap_nbi_config,
+                note="read for config round-trip")
+    if isinstance(tcfg, dict):
+        run("update_snmptrap_nbi_config (no-op)",
+            c.update_snmptrap_nbi_config, tcfg)
+
+    sdest = f"{tag}-sdest"
+    run("create_syslog_nbi_destination",
+        c.create_syslog_nbi_destination,
+        {"destination-name": sdest, "host": "127.0.0.1", "port": 1514})
+    run("update_syslog_nbi_destination",
+        c.update_syslog_nbi_destination, sdest, {"port": 1515})
+    run("delete_syslog_nbi_destination",
+        c.delete_syslog_nbi_destination, sdest)
+    sstat = warn("get_syslog_nbi_status", c.get_syslog_nbi_status,
+                 note="read for status round-trip")
+    run("set_syslog_nbi_status (restore)", c.set_syslog_nbi_status,
+        bool(sstat.get("enabled")) if isinstance(sstat, dict)
+        else False)
+    scfg = warn("get_syslog_nbi_config", c.get_syslog_nbi_config,
+                note="read for config round-trip")
+    if isinstance(scfg, dict):
+        run("update_syslog_nbi_config (no-op)",
+            c.update_syslog_nbi_config, scfg)
+
+    warn("create_javamail_readmail", c.create_javamail_readmail,
+         {"name": f"{tag}-rm"},
+         note="javamail config API absent on some versions")
+    warn("update_javamail_readmail", c.update_javamail_readmail,
+         f"{tag}-rm", {"host": "127.0.0.1"},
+         note="javamail config API absent on some versions")
+    warn("delete_javamail_readmail", c.delete_javamail_readmail,
+         f"{tag}-rm", note="cleanup")
+    warn("create_javamail_sendmail", c.create_javamail_sendmail,
+         {"name": f"{tag}-sm"},
+         note="javamail config API absent on some versions")
+    warn("update_javamail_sendmail", c.update_javamail_sendmail,
+         f"{tag}-sm", {"host": "127.0.0.1"},
+         note="javamail config API absent on some versions")
+    warn("delete_javamail_sendmail", c.delete_javamail_sendmail,
+         f"{tag}-sm", note="cleanup")
+    warn("create_javamail_end2end", c.create_javamail_end2end,
+         {"name": f"{tag}-e2e"},
+         note="javamail config API absent on some versions")
+    warn("update_javamail_end2end", c.update_javamail_end2end,
+         f"{tag}-e2e", {"readMailConfigName": f"{tag}-rm"},
+         note="javamail config API absent on some versions")
+    warn("delete_javamail_end2end", c.delete_javamail_end2end,
+         f"{tag}-e2e", note="cleanup")
+    warn("set_javamail_default_config", c.set_javamail_default_config,
+         {"defaultReadConfigName": "default",
+          "defaultSendConfigName": "default"},
+         note="javamail config API absent on some versions")
+
+
+def test_write_reports_graphml_misc(c):
+    tag = f"smoke-{int(time.time())}"
+    _section("write: reports, graphml, grafana, settings")
+
+    template = None
+    try:
+        templates = c.get_report_templates() or []
+        if templates:
+            template = templates[0].get("id")
+    except Exception:
+        pass
+    if template:
+        trigger = f"{tag}-trigger"
+        warn("schedule_report", c.schedule_report, template, "PDF",
+             "0 0 6 1 1 ? 2099",
+             [], {"instanceId": trigger, "persist": True},
+             note="requires schedulable template parameters")
+        warn("update_scheduled_report", c.update_scheduled_report,
+             trigger, {"cronExpression": "0 0 7 1 1 ? 2099"},
+             note="requires the trigger created above")
+        warn("delete_scheduled_report", c.delete_scheduled_report,
+             trigger, note="cleanup")
+        run("delete_scheduled_reports", c.delete_scheduled_reports)
+        warn("run_report", c.run_report, template, "PDF", [],
+             note="server-side render can be heavy or need params")
+        warn("deliver_report", c.deliver_report, template, "PDF", [],
+             {"instanceId": f"{tag}-deliver", "persist": True},
+             note="delivery needs renderable template")
+        run("delete_persisted_reports", c.delete_persisted_reports)
+    else:
+        _skip("report write suite", "no report templates")
+
+    gname = f"{tag}-graph"
+    run("create_graphml", c.create_graphml, gname,
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<graphml xmlns="http://graphml.graphdrawing.org/xmlns">'
+        '<key id="label" for="all" attr.name="label"'
+        ' attr.type="string"/>'
+        f'<graph id="{gname}"><data key="label">smoke</data>'
+        '<node id="n0"><data key="label">n0</data></node>'
+        '</graph></graphml>')
+    run("delete_graphml", c.delete_graphml, gname)
+
+    guid = f"{tag}-grafana"
+    run("create_grafana_endpoint", c.create_grafana_endpoint,
+        {"uid": guid, "url": "http://127.0.0.1:3000",
+         "apiKey": "smoke"})
+    gid = None
+    try:
+        for e in c.get_grafana_endpoints() or []:
+            if e.get("uid") == guid:
+                gid = e.get("id")
+    except Exception:
+        pass
+    if gid:
+        run("update_grafana_endpoint", c.update_grafana_endpoint, gid,
+            {"id": gid, "uid": guid, "url": "http://127.0.0.1:3000",
+             "apiKey": "smoke2"})
+        warn("verify_grafana_endpoint", c.verify_grafana_endpoint,
+             {"url": "http://127.0.0.1:3000", "apiKey": "smoke"},
+             note="verification calls the Grafana URL")
+        run("delete_grafana_endpoint", c.delete_grafana_endpoint, gid)
+    else:
+        _skip("grafana endpoint mutations", "endpoint id not found")
+    run("delete_grafana_endpoints", c.delete_grafana_endpoints)
+
+    geo = warn("get_geocoding_config", c.get_geocoding_config,
+               note="read for round-trip restore")
+    run("reset_geocoding_config", c.reset_geocoding_config)
+    if isinstance(geo, dict) and geo.get("activeGeocoderId"):
+        run("set_active_geocoder (restore)", c.set_active_geocoder,
+            geo["activeGeocoderId"])
+    warn("configure_geocoder", c.configure_geocoder, "nominatim",
+         {"userAgent": "opennms-api-wrapper-smoke"},
+         note="geocoder config keys vary by provider")
+
+    stats = warn("get_usage_statistics_status",
+                 c.get_usage_statistics_status,
+                 note="read for round-trip restore")
+    if isinstance(stats, dict):
+        run("set_usage_statistics_status (restore)",
+            c.set_usage_statistics_status,
+            enabled=stats.get("enabled"),
+            initial_notice_acknowledged=stats.get(
+                "initialNoticeAcknowledged"))
+    pstat = warn("get_product_update_status",
+                 c.get_product_update_status,
+                 note="read for round-trip restore")
+    if isinstance(pstat, dict):
+        run("set_product_update_status (restore)",
+            c.set_product_update_status,
+            opted_in=pstat.get("optedIn"),
+            notice_acknowledged=pstat.get("noticeAcknowledged"))
+    warn("submit_product_update_enrollment",
+         c.submit_product_update_enrollment,
+         {"consent": False, "email": "smoke@example.invalid"},
+         note="returns 500 when enrollment is disabled (documented)")
+
+    run("set_snmp_config", c.set_snmp_config, "10.254.99.1",
+        {"readCommunity": "smoke", "version": "v2c"})
+    warn("delete_persisted_report", c.delete_persisted_report, 999999,
+         note="requires an existing persisted report id")
+    warn("update_eventconf_event", c.update_eventconf_event, "smoke",
+         "1", {"uei": "uei.opennms.org/smoke", "event-label": "smoke",
+               "descr": "smoke", "logmsg": {"content": "smoke"},
+               "severity": "Normal"},
+         note="eventconf v2 API requires Horizon 35+")
+    run("query_geolocations", c.query_geolocations)
+    warn("get_measurements_multi", c.get_measurements_multi, {
+        "start": 0, "end": 1,
+        "source": [{"aggregation": "AVERAGE", "attribute": "loadavg1",
+                    "label": "l", "resourceId":
+                    "node[1].nodeSnmp[]"}],
+    }, note="requires collected time-series data")
+    warn("get_graph_view", c.get_graph_view, "bsm", "bsm",
+         note="requires the topology container")
+
+    _, eid = _first(c.get_events, "event")
+    if eid:
+        run(f"ack_event  id={eid}", c.ack_event, eid)
+        run(f"unack_event  id={eid}", c.unack_event, eid)
+    else:
+        _skip("ack_event / unack_event", "no events")
+    run("bulk_ack_events", c.bulk_ack_events, limit=1)
+    run("bulk_unack_events", c.bulk_unack_events, limit=1)
+    run("bulk_ack_alarms", c.bulk_ack_alarms, limit=1)
+    run("bulk_unack_alarms", c.bulk_unack_alarms, limit=1)
+    warn("bulk_clear_alarms", c.bulk_clear_alarms, limit=1,
+         note="clears matching alarms permanently")
+    warn("bulk_escalate_alarms", c.bulk_escalate_alarms, limit=1,
+         note="escalates matching alarms")
+    _, aid = _first(c.get_alarms, "alarm")
+    if aid:
+        warn(f"escalate_alarm  id={aid}", c.escalate_alarm, aid,
+             note="raises severity permanently")
+        warn(f"clear_alarm  id={aid}", c.clear_alarm, aid,
+             note="clears the alarm permanently")
+    else:
+        _skip("clear_alarm / escalate_alarm", "no alarms")
+
+    warn("discover (127.0.0.1 one-shot)", c.discover, {
+        "specifics": [{"ip": "127.0.0.1", "location": "Default",
+                       "retries": 1, "timeout": 2000}],
+    }, note="submits a discovery scan job")
+    warn("update_ifservices", c.update_ifservices,
+         services="ICMP", status="R",
+         note="parameters depend on existing services")
+    warn("backup_device_config", c.backup_device_config, "1", "",
+         note="requires DeviceConfig-enabled service")
+    warn("delete_resource", c.delete_resource,
+         "node[999999].nodeSnmp[]",
+         note="requires the resource to exist")
+    warn("trigger_destination_path", c.trigger_destination_path,
+         "smoke-nonexistent-path",
+         note="requires a configured destination path")
+    warn("upload_filesystem_contents", c.upload_filesystem_contents,
+         "smoke-test.xml", "<x/>",
+         note="requires FILESYSTEM EDITOR role")
+    warn("delete_filesystem_file", c.delete_filesystem_file,
+         "smoke-test.xml", note="requires FILESYSTEM EDITOR role")
+    warn("upload_eventconf", c.upload_eventconf,
+         b"<events xmlns='http://xmlns.opennms.org/xsd/eventconf'/>",
+         note="eventconf v2 API requires Horizon 35+")
+    warn("create_eventconf_event", c.create_eventconf_event, "smoke", {
+        "uei": f"uei.opennms.org/{tag}", "event-label": tag,
+        "descr": "smoke", "logmsg": {"content": "smoke"},
+        "severity": "Normal",
+    }, note="eventconf v2 API requires Horizon 35+")
+    warn("set_eventconf_sources_status",
+         c.set_eventconf_sources_status, {"sources": []},
+         note="eventconf v2 API requires Horizon 35+")
+    warn("set_eventconf_events_status", c.set_eventconf_events_status,
+         "smoke", {"events": []},
+         note="eventconf v2 API requires Horizon 35+")
+    warn("delete_eventconf_events", c.delete_eventconf_events,
+         "smoke", note="eventconf v2 API requires Horizon 35+")
+    warn("delete_eventconf_sources", c.delete_eventconf_sources,
+         {"sources": ["smoke"]},
+         note="eventconf v2 API requires Horizon 35+")
+
+    # KSC reports have no DELETE endpoint; use a timestamp-unique ID
+    # and accept the leftover on throwaway instances only.
+    ksc_id = int(time.time()) % 100000 + 10000
+    warn(f"create_ksc_report  id={ksc_id}", c.create_ksc_report,
+         {"id": ksc_id, "label": f"{tag}-ksc"},
+         note="KSC API has no DELETE; leaves a report behind")
+    warn(f"add_graph_to_ksc_report  id={ksc_id}",
+         c.add_graph_to_ksc_report, ksc_id, "mib2.bits",
+         "node[1].nodeSnmp[]", title=tag,
+         note="requires the report above and a valid resource")
+
+
 # ── Entry point ────────────────────────────────────────────────────────────────
 
 def main():
@@ -1270,6 +2048,15 @@ def main():
 
     if args.write:
         test_write_ops(client)
+        test_write_node_lifecycle(client)
+        test_write_identity(client)
+        test_write_sched_outage_assoc(client)
+        test_write_provisioning(client)
+        test_write_monitoring_locations(client)
+        test_write_service_entities(client)
+        test_write_classification_scv(client)
+        test_write_configs_nbi(client)
+        test_write_reports_graphml_misc(client)
 
     total = _passed + _failed + _warned + _skipped
     print(f"\n{'─' * 56}")
