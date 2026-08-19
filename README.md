@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/cnewkirk/python-opennms/actions/workflows/ci.yml/badge.svg)](https://github.com/cnewkirk/python-opennms/actions/workflows/ci.yml)
 [![Coverage](https://codecov.io/gh/cnewkirk/python-opennms/graph/badge.svg)](https://codecov.io/gh/cnewkirk/python-opennms)
-[![PyPI](https://img.shields.io/pypi/v/python-opennms)](https://pypi.org/project/python-opennms/)
+[![PyPI](https://img.shields.io/pypi/v/python-opennms?label=pypi)](https://pypi.org/project/python-opennms/)
 [![Docs](https://readthedocs.org/projects/python-opennms/badge/?version=stable)](https://python-opennms.readthedocs.io/en/stable/)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
