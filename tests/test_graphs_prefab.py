@@ -11,7 +11,7 @@ from .fixtures import (
 def test_get_prefab_graph_names(client):
     responses.add(responses.GET, f"{V1}/graphs", json=PREFAB_GRAPH_NAMES)
     result = client.get_prefab_graph_names()
-    assert "mib2.bits" in result
+    assert "mib2.bits" in result["name"]
 
 
 @responses.activate

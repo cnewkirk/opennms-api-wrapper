@@ -3,7 +3,7 @@ import json
 import responses
 from .conftest import V1
 from .fixtures import (
-    SYSLOG_NBI_CONFIG, SYSLOG_NBI_STATUS,
+    SYSLOG_NBI_CONFIG,
     SYSLOG_NBI_DESTINATION, SYSLOG_NBI_DESTINATION_LIST,
 )
 
@@ -19,9 +19,9 @@ def test_get_syslog_nbi_config(client):
 @responses.activate
 def test_get_syslog_nbi_status(client):
     responses.add(responses.GET, f"{V1}/config/syslog-nbi/status",
-                  json=SYSLOG_NBI_STATUS)
+                  body="false", content_type="text/plain")
     result = client.get_syslog_nbi_status()
-    assert result["enabled"] is False
+    assert result == "false"
 
 
 @responses.activate

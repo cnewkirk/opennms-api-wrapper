@@ -24,13 +24,13 @@ def test_get_alarm_stats_by_severity(client):
     responses.add(responses.GET, f"{V1}/stats/alarms/by-severity",
                   json=ALARM_STATS_BY_SEVERITY)
     result = client.get_alarm_stats_by_severity()
-    assert isinstance(result, list)
-    assert result[0]["severity"] == "CRITICAL"
+    assert result["alarmStatistics"][0]["severity"] == "CRITICAL"
 
 
 @responses.activate
 def test_get_alarm_stats_by_severity_filtered(client):
     responses.add(responses.GET, f"{V1}/stats/alarms/by-severity",
-                  json=ALARM_STATS_BY_SEVERITY[:2])
+                  json={"alarmStatistics":
+                        ALARM_STATS_BY_SEVERITY["alarmStatistics"][:2]})
     client.get_alarm_stats_by_severity(severities=["CRITICAL", "MAJOR"])
     assert qs(responses.calls[0].request.url)["severities"] == ["CRITICAL,MAJOR"]

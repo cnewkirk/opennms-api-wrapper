@@ -3,7 +3,7 @@ import json
 import responses
 from .conftest import V1
 from .fixtures import (
-    SNMPTRAP_NBI_CONFIG, SNMPTRAP_NBI_STATUS,
+    SNMPTRAP_NBI_CONFIG,
     SNMPTRAP_NBI_TRAPSINK, SNMPTRAP_NBI_TRAPSINK_LIST,
 )
 
@@ -19,9 +19,9 @@ def test_get_snmptrap_nbi_config(client):
 @responses.activate
 def test_get_snmptrap_nbi_status(client):
     responses.add(responses.GET, f"{V1}/config/snmptrap-nbi/status",
-                  json=SNMPTRAP_NBI_STATUS)
+                  body="true", content_type="text/plain")
     result = client.get_snmptrap_nbi_status()
-    assert result["enabled"] is True
+    assert result == "true"
 
 
 @responses.activate

@@ -75,7 +75,7 @@ def test_get_map_functions(client):
                   f"{V2}/business-services/functions/map",
                   json=BS_MAP_FUNCTIONS)
     result = client.get_map_functions()
-    assert result[0]["name"] == "Identity"
+    assert result["function"][0]["name"] == "Identity"
 
 
 @responses.activate
@@ -93,7 +93,7 @@ def test_get_reduce_functions(client):
                   f"{V2}/business-services/functions/reduce",
                   json=BS_REDUCE_FUNCTIONS)
     result = client.get_reduce_functions()
-    assert result[0]["name"] == "HighestSeverity"
+    assert result["function"][0]["name"] == "HighestSeverity"
 
 
 @responses.activate

@@ -20,7 +20,7 @@ def test_get_flow_exporters(client):
     responses.add(responses.GET, f"{V1}/flows/exporters",
                   json=FLOW_EXPORTER_LIST)
     result = client.get_flow_exporters()
-    assert result["exporters"][0]["node"]["id"] == 1
+    assert result[0]["node"]["id"] == 1
 
 
 @responses.activate

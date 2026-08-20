@@ -25,8 +25,8 @@ _SVC = f"{V2}/nodes/{NODE_ID}/ipinterfaces/{IP}/services/{SVC}/metadata"
 def test_get_node_metadata(client):
     responses.add(responses.GET, _NODE, json=METADATA_LIST)
     result = client.get_node_metadata(NODE_ID)
-    assert result[0]["context"] == CTX
-    assert result[0]["key"] == KEY
+    assert result["metaData"][0]["context"] == CTX
+    assert result["metaData"][0]["key"] == KEY
     assert f"/nodes/{NODE_ID}/metadata" in responses.calls[0].request.url
 
 
@@ -34,7 +34,7 @@ def test_get_node_metadata(client):
 def test_get_node_metadata_context(client):
     responses.add(responses.GET, f"{_NODE}/{CTX}", json=METADATA_LIST)
     result = client.get_node_metadata_context(NODE_ID, CTX)
-    assert isinstance(result, list)
+    assert isinstance(result["metaData"], list)
     assert f"/metadata/{CTX}" in responses.calls[0].request.url
 
 
@@ -96,7 +96,7 @@ def test_delete_node_metadata_key(client):
 def test_get_interface_metadata(client):
     responses.add(responses.GET, _IFACE, json=METADATA_LIST)
     result = client.get_interface_metadata(NODE_ID, IP)
-    assert isinstance(result, list)
+    assert isinstance(result["metaData"], list)
     assert f"/ipinterfaces/{IP}/metadata" in responses.calls[0].request.url
 
 
@@ -104,7 +104,7 @@ def test_get_interface_metadata(client):
 def test_get_interface_metadata_context(client):
     responses.add(responses.GET, f"{_IFACE}/{CTX}", json=METADATA_LIST)
     result = client.get_interface_metadata_context(NODE_ID, IP, CTX)
-    assert isinstance(result, list)
+    assert isinstance(result["metaData"], list)
     assert f"/metadata/{CTX}" in responses.calls[0].request.url
 
 
@@ -162,7 +162,7 @@ def test_delete_interface_metadata_key(client):
 def test_get_service_metadata(client):
     responses.add(responses.GET, _SVC, json=METADATA_LIST)
     result = client.get_service_metadata(NODE_ID, IP, SVC)
-    assert isinstance(result, list)
+    assert isinstance(result["metaData"], list)
     assert f"/services/{SVC}/metadata" in responses.calls[0].request.url
 
 
@@ -170,7 +170,7 @@ def test_get_service_metadata(client):
 def test_get_service_metadata_context(client):
     responses.add(responses.GET, f"{_SVC}/{CTX}", json=METADATA_LIST)
     result = client.get_service_metadata_context(NODE_ID, IP, SVC, CTX)
-    assert isinstance(result, list)
+    assert isinstance(result["metaData"], list)
     assert f"/metadata/{CTX}" in responses.calls[0].request.url
 
 

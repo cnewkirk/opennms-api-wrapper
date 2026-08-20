@@ -3,7 +3,7 @@ import json
 import responses
 from .conftest import V1
 from .fixtures import (
-    EMAIL_NBI_CONFIG, EMAIL_NBI_STATUS,
+    EMAIL_NBI_CONFIG,
     EMAIL_NBI_DESTINATION, EMAIL_NBI_DESTINATION_LIST,
 )
 
@@ -19,9 +19,9 @@ def test_get_email_nbi_config(client):
 @responses.activate
 def test_get_email_nbi_status(client):
     responses.add(responses.GET, f"{V1}/config/email-nbi/status",
-                  json=EMAIL_NBI_STATUS)
+                  body="false", content_type="text/plain")
     result = client.get_email_nbi_status()
-    assert result["enabled"] is False
+    assert result == "false"
 
 
 @responses.activate
