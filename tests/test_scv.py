@@ -9,7 +9,7 @@ from .fixtures import CREDENTIAL, CREDENTIAL_LIST
 def test_get_credentials(client):
     responses.add(responses.GET, f"{V1}/scv", json=CREDENTIAL_LIST)
     result = client.get_credentials()
-    assert result["credential"][0]["alias"] == "my-device"
+    assert result == ["my-device"]
 
 
 @responses.activate

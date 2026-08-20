@@ -77,11 +77,11 @@ ALARM_STATS = {
     "oldestUnacknowledged": {**ALARM, "id": 11, "ackTime": None, "ackUser": None},
 }
 
-ALARM_STATS_BY_SEVERITY = [
+ALARM_STATS_BY_SEVERITY = {"alarmStatistics": [
     {"severity": "CRITICAL", "totalCount": 2, "acknowledgedCount": 0, "unacknowledgedCount": 2},
     {"severity": "MAJOR",    "totalCount": 5, "acknowledgedCount": 2, "unacknowledgedCount": 3},
     {"severity": "MINOR",    "totalCount": 4, "acknowledgedCount": 2, "unacknowledgedCount": 2},
-]
+]}
 
 # ---------------------------------------------------------------------------
 # Alarm History
@@ -705,7 +705,7 @@ FLOW_EXPORTER = {
     },
 }
 
-FLOW_EXPORTER_LIST = {"exporters": [FLOW_EXPORTER]}
+FLOW_EXPORTER_LIST = [FLOW_EXPORTER]
 
 FLOW_APPLICATIONS = {
     "start": 1425580938256,
@@ -846,11 +846,11 @@ METADATA_ENTRY = {
     "value": "ansible-tower",
 }
 
-METADATA_LIST = [
+METADATA_LIST = {"offset": 0, "count": 3, "totalCount": 3, "metaData": [
     METADATA_ENTRY,
     {"context": "X-OpenNMS-System", "key": "environment", "value": "production"},
     {"context": "requisition",       "key": "category",    "value": "Routers"},
-]
+]}
 
 # ---------------------------------------------------------------------------
 # Server Info
@@ -1011,7 +1011,10 @@ SERVER_INFO = {
 # Prefab Graphs
 # ---------------------------------------------------------------------------
 
-PREFAB_GRAPH_NAMES = ["mib2.bits", "mib2.percentdiscards", "netsnmp.cpuStats"]
+PREFAB_GRAPH_NAMES = {
+    "offset": 0, "count": 3, "totalCount": 3,
+    "name": ["mib2.bits", "mib2.percentdiscards", "netsnmp.cpuStats"],
+}
 
 PREFAB_GRAPH = {
     "name": "mib2.bits",
@@ -1079,7 +1082,10 @@ BS_MAP_FUNCTION = {
     "properties": {},
 }
 
-BS_MAP_FUNCTIONS = [BS_MAP_FUNCTION, {"name": "Increase", "type": "Increase", "properties": {}}]
+BS_MAP_FUNCTIONS = {"function": [
+    BS_MAP_FUNCTION,
+    {"name": "Increase", "type": "Increase", "properties": {}},
+]}
 
 BS_REDUCE_FUNCTION = {
     "name": "HighestSeverity",
@@ -1087,10 +1093,10 @@ BS_REDUCE_FUNCTION = {
     "properties": {},
 }
 
-BS_REDUCE_FUNCTIONS = [
+BS_REDUCE_FUNCTIONS = {"function": [
     BS_REDUCE_FUNCTION,
     {"name": "Threshold", "type": "Threshold", "properties": {"threshold": "0.5"}},
-]
+]}
 
 # ---------------------------------------------------------------------------
 # Monitoring Location
@@ -1199,7 +1205,6 @@ HEALTH = {
     ],
 }
 
-HEALTH_PROBE = {"status": "Everything is awesome"}
 
 # ---------------------------------------------------------------------------
 # Whoami
@@ -1474,12 +1479,7 @@ CREDENTIAL = {
     "attributes": {},
 }
 
-CREDENTIAL_LIST = {
-    "credential": [CREDENTIAL],
-    "totalCount": 1,
-    "count": 1,
-    "offset": 0,
-}
+CREDENTIAL_LIST = ["my-device"]
 
 # ---------------------------------------------------------------------------
 # Configuration Management
@@ -1518,7 +1518,6 @@ SNMPTRAP_NBI_CONFIG = {
     ],
 }
 
-SNMPTRAP_NBI_STATUS = {"enabled": True}
 
 SNMPTRAP_NBI_TRAPSINK = {
     "name": "remote-nms",
@@ -1538,7 +1537,6 @@ EMAIL_NBI_CONFIG = {
     "destinations": [],
 }
 
-EMAIL_NBI_STATUS = {"enabled": False}
 
 EMAIL_NBI_DESTINATION = {
     "name": "ops-team",
@@ -1557,7 +1555,6 @@ SYSLOG_NBI_CONFIG = {
     "destinations": [],
 }
 
-SYSLOG_NBI_STATUS = {"enabled": False}
 
 SYSLOG_NBI_DESTINATION = {
     "name": "siem",

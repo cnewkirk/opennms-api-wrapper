@@ -1,7 +1,7 @@
 """Tests for HealthMixin – /rest/health."""
 import responses
 from .conftest import V1, qs
-from .fixtures import HEALTH, HEALTH_PROBE
+from .fixtures import HEALTH
 
 
 @responses.activate
@@ -20,6 +20,7 @@ def test_get_health_with_tag(client):
 
 @responses.activate
 def test_get_health_probe(client):
-    responses.add(responses.GET, f"{V1}/health/probe", json=HEALTH_PROBE)
+    responses.add(responses.GET, f"{V1}/health/probe",
+                  body="Everything is awesome", content_type="text/plain")
     result = client.get_health_probe()
-    assert "awesome" in result["status"]
+    assert result == "Everything is awesome"
